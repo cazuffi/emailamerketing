@@ -13,7 +13,7 @@
     <mj-section background-color="#ffffff" padding="32px 24px 16px">
       <mj-column>
         <mj-text font-size="26px" font-weight="bold" color="#111827" align="center">
-          Welcome, {{first_name}}!
+          Welcome, {{contact.firstname}}!
         </mj-text>
         <mj-text align="center" color="#6b7280">
           We're glad you're here. Here's what to do next.

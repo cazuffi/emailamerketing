@@ -11,5 +11,6 @@
   "companyName": "Your Company",
   "footerAddress": "123 Main St, City, ST 12345",
   "websiteUrl": "https://example.com",
-  "unsubscribeUrl": "{{unsubscribe_url}}"
+  "subscriptionCenterUrl": "{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}",
+  "physicalAddress": "{{msdyncrm_contentsettings.msdyncrm_addressmain}}"
 }
