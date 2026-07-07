@@ -7,14 +7,14 @@
   <mj-body background-color="#f4f4f4" width="640px">
     <mj-include path="../../components/d365-wrapped/wm-header.mjml" />
 
-    <mj-section background-color="#ffffff" padding="10px">
+    <mj-section background-color="#ffffff" padding="10px 16px">
       <mj-column>
         <mj-text css-class="h1" padding="10px 10px 0 0">This Week's Update</mj-text>
         <mj-text css-class="h2" padding="10px 10px 0 0">{{preheader_or_intro}}</mj-text>
       </mj-column>
     </mj-section>
 
-    <mj-section background-color="#ffffff" padding="10px">
+    <mj-section background-color="#ffffff" padding="10px 16px">
       <mj-column>
         <mj-text css-class="h3" padding="0 10px 4px 0">{{section_1_title}}</mj-text>
         <mj-text padding="0 10px 10px 0">{{section_1_body}}</mj-text>
@@ -23,7 +23,7 @@
 
     <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
 
-    <mj-section background-color="#ffffff" padding="10px">
+    <mj-section background-color="#ffffff" padding="10px 16px">
       <mj-column>
         <mj-text css-class="h3" padding="0 10px 4px 0">{{section_2_title}}</mj-text>
         <mj-text padding="0 10px 10px 0">{{section_2_body}}</mj-text>

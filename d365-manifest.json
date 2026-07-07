@@ -1,5 +1,10 @@
 {
   "version": 1,
+  "responsive": {
+    "breakpoint": "640px",
+    "classes": ["stack-column", "mobile-padding", "mobile-text-left", "mobile-center"],
+    "testWidths": ["640px", "375px", "desktop"]
+  },
   "tenant": {
     "assetsBaseUrl": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41",
     "footerContentBlockId": "21f619dc-9f5e-f111-a826-7ced8d2d3171"

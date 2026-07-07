@@ -89,3 +89,7 @@ Full catalog: `d365-manifest.json`
 | `d365-manifest.json` | |
 
 After editing D365 sources, always run `npm run build:d365` then republish in D365.
+
+## Responsive design
+
+All blocks and templates are optimized for **desktop (640px)** and **mobile**. Styles use fluid widths, `stack-column` stacking, touch-friendly buttons (44px min), and `@media` queries. Test at 640px, 375px, and desktop before publishing. See `docs/brand-guidelines.md`.

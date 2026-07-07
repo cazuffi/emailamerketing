@@ -7,44 +7,35 @@
   <mj-body background-color="#f4f4f4" width="640px">
     <mj-include path="../../components/d365-wrapped/wm-header.mjml" />
 
-    <mj-section background-color="#ffffff" padding="10px">
+    <mj-section background-color="#ffffff" padding="10px 16px">
       <mj-column>
-        <mj-text css-class="h1" padding="10px 10px 0 0">Welcome, {{FirstName}}!</mj-text>
-        <mj-text css-class="h2" padding="10px 10px 0 0">We're glad you're here</mj-text>
-        <mj-text padding="10px 10px 0 0">Here's what to do next.</mj-text>
+        <mj-text css-class="h1" padding="10px 0 0 0">Welcome, {{FirstName}}!</mj-text>
+        <mj-text css-class="h2" padding="10px 0 0 0">We're glad you're here</mj-text>
+        <mj-text padding="10px 0 0 0">Here's what to do next.</mj-text>
       </mj-column>
     </mj-section>
 
-    <mj-section background-color="#ffffff" padding="10px">
-      <mj-column width="15%" vertical-align="top">
-        <mj-text align="center" font-size="20px" color="#ef7800" font-family="ARIALNB, Arial, Verdana, sans-serif" padding="10px 0">1</mj-text>
-      </mj-column>
-      <mj-column width="85%" vertical-align="top">
-        <mj-text css-class="h3" padding="10px 0 4px 0">{{step_1_title}}</mj-text>
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h3" padding="0 0 4px 0"><span style="color: #ef7800; font-size: 20px; font-family: ARIALNB, Arial, Verdana, sans-serif;">1.</span> {{step_1_title}}</mj-text>
         <mj-text padding="0 0 10px 0">{{step_1_description}}</mj-text>
       </mj-column>
     </mj-section>
 
     <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
 
-    <mj-section background-color="#ffffff" padding="10px">
-      <mj-column width="15%" vertical-align="top">
-        <mj-text align="center" font-size="20px" color="#ef7800" font-family="ARIALNB, Arial, Verdana, sans-serif" padding="10px 0">2</mj-text>
-      </mj-column>
-      <mj-column width="85%" vertical-align="top">
-        <mj-text css-class="h3" padding="10px 0 4px 0">{{step_2_title}}</mj-text>
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h3" padding="0 0 4px 0"><span style="color: #ef7800; font-size: 20px; font-family: ARIALNB, Arial, Verdana, sans-serif;">2.</span> {{step_2_title}}</mj-text>
         <mj-text padding="0 0 10px 0">{{step_2_description}}</mj-text>
       </mj-column>
     </mj-section>
 
     <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
 
-    <mj-section background-color="#ffffff" padding="10px">
-      <mj-column width="15%" vertical-align="top">
-        <mj-text align="center" font-size="20px" color="#ef7800" font-family="ARIALNB, Arial, Verdana, sans-serif" padding="10px 0">3</mj-text>
-      </mj-column>
-      <mj-column width="85%" vertical-align="top">
-        <mj-text css-class="h3" padding="10px 0 4px 0">{{step_3_title}}</mj-text>
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h3" padding="0 0 4px 0"><span style="color: #ef7800; font-size: 20px; font-family: ARIALNB, Arial, Verdana, sans-serif;">3.</span> {{step_3_title}}</mj-text>
         <mj-text padding="0 0 10px 0">{{step_3_description}}</mj-text>
       </mj-column>
     </mj-section>

@@ -55,6 +55,7 @@ After publishing, create a test email and drag each block in. Confirm:
 - Images can be swapped
 - Buttons link correctly
 - `WM_footer` resolves `{{CompanyAddress}}` and `{{PreferenceCenter}}`
+- **Mobile:** use D365 preview at phone width — columns stack, images scale, buttons are tappable
 
 ---
 

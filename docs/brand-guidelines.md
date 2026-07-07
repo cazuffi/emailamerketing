@@ -33,10 +33,26 @@ Font files are loaded via `@font-face` in `components/brand-head.mjml` from your
 
 ## Layout
 
-- **Max width:** 640px
-- **Section padding:** 10px
-- **Buttons:** square corners (`border-radius: 0`), padding `10px 20px`
+- **Max width:** 640px (fluid below that on mobile)
+- **Section padding:** 10px desktop, 16px mobile
+- **Buttons:** square corners (`border-radius: 0`), min 44px tap target on mobile
 - **Dividers:** 2px solid `#ef7800`
+
+### Responsive (desktop + mobile)
+
+All D365 blocks and templates are optimized for both viewports:
+
+| Technique | Purpose |
+|-----------|---------|
+| `width="640"` + `max-width: 100%` | Fluid email width on mobile |
+| `stack-column` | Multi-column sections stack vertically |
+| `mobile-padding` | Reduced side padding on small screens |
+| `mobile-text-left` | Right-aligned header tagline flips left on mobile |
+| `mobile-center` | Centers logos/images when stacked |
+| `@media (max-width: 640px)` | Typography, buttons, images scale for mobile |
+| Touch targets | Buttons expand to full-width, min 44px height |
+
+Test every template at **640px**, **375px** (iPhone), and **desktop** before publishing to D365. Use D365 **Preview and Test** with mobile preview.
 
 ### Common layout patterns
 
