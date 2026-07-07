@@ -15,8 +15,9 @@
   "layoutMaxWidth": "640px",
   "logoUrl": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/fe07e416-099a-f011-b4cb-7c1e52725572?ts=638943992386672616",
   "companyName": "Weidmüller",
-  "subscriptionCenterUrl": "{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}",
-  "physicalAddress": "{{msdyncrm_contentsettings.msdyncrm_addressmain}}",
+  "companyAddress": "{{CompanyAddress}}",
+  "preferenceCenterUrl": "{{PreferenceCenter}}",
+  "footerContentBlock": "WM_footer",,
   "fonts": {
     "ARIALN": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/69b33865-88ad-f011-bbd2-000d3aa91324",
     "ARIALNB": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/76b33865-88ad-f011-bbd2-000d3aa91324",

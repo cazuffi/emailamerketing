@@ -49,20 +49,23 @@ See [Microsoft docs: custom template attributes](https://learn.microsoft.com/en-
 
 ## Required compliance fields
 
-D365 will block publishing if these are missing from commercial emails:
+All emails end with the corporate footer (`components/footer.mjml`):
+
+1. **Orange address band** — Weidmuller USA + Richmond, VA office details
+2. **D365 compliance block** (`WM_footer` content block) — copyright, address, unsubscribe
 
 | Requirement | Token | Notes |
 |-------------|-------|-------|
-| Physical address | `{{msdyncrm_contentsettings.msdyncrm_addressmain}}` | Pulled from Content Settings |
-| Subscription center | `{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}` | Required unsubscribe link |
+| Company address | `{{CompanyAddress}}` | In `WM_footer` content block |
+| Unsubscribe | `{{PreferenceCenter}}` | Preference center link in footer |
 
-These are already included in `components/footer.mjml`. The actual values come from the **Content Settings** record assigned to your Customer Journey.
+These tokens are resolved by Dynamics 365 at send time. Do not remove or replace the footer include from templates.
 
 ### Content Settings
 
 - Configure under **Settings → Email marketing → Content settings** (or **Marketing templates → Content settings**)
 - Each Customer Journey uses one Content Settings record
-- Same email can be reused across journeys with different subscription centers / addresses
+- The `WM_footer` content block reference (`data-lookup-name="WM_footer"`) must exist in your D365 tenant
 
 ## Personalization tokens
 

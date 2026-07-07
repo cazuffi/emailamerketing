@@ -55,7 +55,7 @@ Font files are loaded via `@font-face` in `components/brand-head.mjml` from your
 |------|---------|
 | `brand-head.mjml` | Fonts, colors, global MJML attributes |
 | `header.mjml` | Logo + `{{email_label}} \| {{email_tagline}}` |
-| `footer.mjml` | D365 address + subscription center |
+| `footer.mjml` | Corporate orange address band + D365 `WM_footer` compliance block |
 | `cta-button.mjml` | Orange square primary button |
 | `divider.mjml` | Orange 2px rule |
 | `accent-band.mjml` | Full-width orange highlight section |
@@ -68,7 +68,12 @@ Corporate templates use D365 dynamic text **labels**:
 - `{{FirstName}}`
 - `{{LastName}}`
 
-Compliance tokens (required):
+Compliance tokens (required, in corporate footer):
+
+- `{{CompanyAddress}}`
+- `{{PreferenceCenter}}`
+
+Legacy content-settings tokens (older templates):
 
 - `{{msdyncrm_contentsettings.msdyncrm_addressmain}}`
 - `{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}`
