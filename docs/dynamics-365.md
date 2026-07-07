@@ -25,7 +25,16 @@ flowchart LR
 7. **Schedule** — add the email to a **Customer Journey**, assign **Content Settings**, set send timing, go live
 8. **Archive** — move the draft folder to `campaigns/` after send
 
-## Importing HTML into D365
+## Publishing for team reuse
+
+To register blocks and templates so your team can use them in the D365 designer, see **[d365-publish-guide.md](d365-publish-guide.md)**.
+
+Quick summary:
+- **Content blocks** — `dist/d365/blocks/` → Marketing templates → Content blocks
+- **Email templates** — `dist/d365/templates/` → New email → paste HTML → Save as template
+- **Catalog** — `d365-manifest.json` lists all `d365Name` values
+
+## Importing HTML into D365 (one-off)
 
 1. Open **Customer Insights — Journeys** → **Emails** → **New email**
 2. Go to **Design → HTML** tab

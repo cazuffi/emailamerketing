@@ -1,0 +1,12 @@
+@font-face { font-family: ARIALN; font-display: swap; src: url("https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/69b33865-88ad-f011-bbd2-000d3aa91324"); }
+@font-face { font-family: ARIALNB; font-display: swap; src: url("https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/76b33865-88ad-f011-bbd2-000d3aa91324"); }
+@font-face { font-family: ARIALNI; font-display: swap; src: url("https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/6bb33865-88ad-f011-bbd2-000d3aa91324"); }
+@font-face { font-family: ARIALNBI; font-display: swap; src: url("https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/6ab33865-88ad-f011-bbd2-000d3aa91324"); }
+body { font-family: Arial, Verdana, sans-serif; font-size: 14px; color: #000; background-color: #f4f4f4; }
+h1 { color: #000; font-size: 22px; font-weight: normal; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0; }
+h2 { color: #ef7800; font-size: 20px; font-weight: normal; font-family: ARIALN, Arial, Verdana, sans-serif; margin: 0; }
+h3 { color: #000; font-size: 14px; font-weight: normal; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0; }
+p { font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 12px; color: #000; }
+a { font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 14px; color: #ef7800; text-decoration: underline; }
+.buttonClass { font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 14px; color: #fff; background-color: #ef7800; border-radius: 0; padding: 10px 20px; text-decoration: none; display: inline-block; }
+[data-layout="true"] { margin: 0 auto; background-color: #fff; max-width: 640px; }

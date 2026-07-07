@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "tenant": {
+    "assetsBaseUrl": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41",
+    "footerContentBlockId": "21f619dc-9f5e-f111-a826-7ced8d2d3171"
+  },
+  "contentBlocks": [
+    {
+      "id": "wm-header",
+      "d365Name": "WM_header",
+      "source": "blocks/wm-header.html",
+      "description": "Logo (left) + tagline with orange pipe separator (right)",
+      "editable": ["Image", "Text"]
+    },
+    {
+      "id": "wm-hero",
+      "d365Name": "WM_hero",
+      "source": "blocks/wm-hero.html",
+      "description": "Full-width hero banner image",
+      "editable": ["Image"]
+    },
+    {
+      "id": "wm-intro",
+      "d365Name": "WM_intro",
+      "source": "blocks/wm-intro.html",
+      "description": "H1 headline + H2 orange subheadline",
+      "editable": ["Text"]
+    },
+    {
+      "id": "wm-body",
+      "d365Name": "WM_body",
+      "source": "blocks/wm-body.html",
+      "description": "Body copy with Hi {{FirstName}} greeting",
+      "editable": ["Text"]
+    },
+    {
+      "id": "wm-cta-button",
+      "d365Name": "WM_cta_button",
+      "source": "blocks/wm-cta-button.html",
+      "description": "Orange square primary button",
+      "editable": ["Button"]
+    },
+    {
+      "id": "wm-accent-band",
+      "d365Name": "WM_accent_band",
+      "source": "blocks/wm-accent-band.html",
+      "description": "Full-width orange highlight strip",
+      "editable": ["Text"]
+    },
+    {
+      "id": "wm-feature-block-left",
+      "d365Name": "WM_feature_block_left",
+      "source": "blocks/wm-feature-block-left.html",
+      "description": "60/40 feature block — text left, image right",
+      "editable": ["Text", "Image", "Button"]
+    },
+    {
+      "id": "wm-divider",
+      "d365Name": "WM_divider",
+      "source": "blocks/wm-divider.html",
+      "description": "2px orange horizontal rule",
+      "editable": ["Divider"]
+    },
+    {
+      "id": "wm-footer",
+      "d365Name": "WM_footer",
+      "source": "blocks/wm-footer.html",
+      "description": "Orange address band + D365 compliance block (required on every email)",
+      "editable": ["Text", "Content"],
+      "required": true,
+      "protected": true
+    }
+  ],
+  "emailTemplates": [
+    {
+      "id": "wm-newsletter",
+      "d365Name": "WM_newsletter",
+      "source": "wm-newsletter.html",
+      "description": "Weekly newsletter — header, intro, body sections, CTA, footer"
+    },
+    {
+      "id": "wm-promo",
+      "d365Name": "WM_promo",
+      "source": "wm-promo.html",
+      "description": "Promo / event invitation — hero, intro, accent band, feature block"
+    },
+    {
+      "id": "wm-welcome",
+      "d365Name": "WM_welcome",
+      "source": "wm-welcome.html",
+      "description": "Welcome / onboarding — intro, stepped body sections, CTA"
+    }
+  ]
+}

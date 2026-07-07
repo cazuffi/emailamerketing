@@ -5,7 +5,7 @@
     <mj-include path="../../components/brand-head.mjml" />
   </mj-head>
   <mj-body background-color="#f4f4f4" width="640px">
-    <mj-include path="../../components/header.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-header.mjml" />
 
     <mj-section background-color="#ffffff" padding="10px">
       <mj-column>
@@ -25,7 +25,7 @@
       </mj-column>
     </mj-section>
 
-    <mj-include path="../../components/divider.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
 
     <mj-section background-color="#ffffff" padding="10px">
       <mj-column width="15%" vertical-align="top">
@@ -37,7 +37,7 @@
       </mj-column>
     </mj-section>
 
-    <mj-include path="../../components/divider.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
 
     <mj-section background-color="#ffffff" padding="10px">
       <mj-column width="15%" vertical-align="top">
@@ -49,7 +49,7 @@
       </mj-column>
     </mj-section>
 
-    <mj-include path="../../components/cta-button.mjml" />
-    <mj-include path="../../components/footer.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-cta-button.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-footer.mjml" />
   </mj-body>
 </mjml>

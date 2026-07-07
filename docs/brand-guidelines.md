@@ -51,15 +51,21 @@ Font files are loaded via `@font-face` in `components/brand-head.mjml` from your
 
 ## Components
 
-| File | Purpose |
-|------|---------|
-| `brand-head.mjml` | Fonts, colors, global MJML attributes |
-| `header.mjml` | Logo + `{{email_label}} \| {{email_tagline}}` |
-| `footer.mjml` | Corporate orange address band + D365 `WM_footer` compliance block |
-| `cta-button.mjml` | Orange square primary button |
-| `divider.mjml` | Orange 2px rule |
-| `accent-band.mjml` | Full-width orange highlight section |
-| `feature-block.mjml` | 60/40 text + image block |
+D365-native blocks live in `components/d365/blocks/`. Each file uses `data-editorblocktype` for designer editability.
+
+| File | D365 name | Purpose |
+|------|-----------|---------|
+| `wm-header.html` | `WM_header` | Logo + tagline (50/50) |
+| `wm-hero.html` | `WM_hero` | Full-width banner |
+| `wm-intro.html` | `WM_intro` | H1 + H2 subheadline |
+| `wm-body.html` | `WM_body` | Greeting + body copy |
+| `wm-cta-button.html` | `WM_cta_button` | Orange square button |
+| `wm-accent-band.html` | `WM_accent_band` | Orange highlight strip |
+| `wm-feature-block-left.html` | `WM_feature_block_left` | 60/40 text + image |
+| `wm-divider.html` | `WM_divider` | 2px orange rule |
+| `wm-footer.html` | `WM_footer` | Address band + compliance (required) |
+
+Publish to D365: **[docs/d365-publish-guide.md](d365-publish-guide.md)**
 
 ## Personalization (HQ convention)
 
