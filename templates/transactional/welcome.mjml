@@ -1,0 +1,46 @@
+<mjml>
+  <mj-head>
+    <mj-title>Welcome</mj-title>
+    <mj-preview>Thanks for joining — here's how to get started.</mj-preview>
+    <mj-include path="../../components/brand-head.mjml" />
+  </mj-head>
+  <mj-body background-color="#f4f4f4" width="640px">
+    <mj-include path="../../components/d365-wrapped/wm-header.mjml" />
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h1" padding="10px 0 0 0">Welcome, {{FirstName}}!</mj-text>
+        <mj-text css-class="h2" padding="10px 0 0 0">We're glad you're here</mj-text>
+        <mj-text padding="10px 0 0 0">Here's what to do next.</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h3" padding="0 0 4px 0"><span style="color: #ef7800; font-size: 20px; font-family: ARIALNB, Arial, Verdana, sans-serif;">1.</span> {{step_1_title}}</mj-text>
+        <mj-text padding="0 0 10px 0">{{step_1_description}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h3" padding="0 0 4px 0"><span style="color: #ef7800; font-size: 20px; font-family: ARIALNB, Arial, Verdana, sans-serif;">2.</span> {{step_2_title}}</mj-text>
+        <mj-text padding="0 0 10px 0">{{step_2_description}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h3" padding="0 0 4px 0"><span style="color: #ef7800; font-size: 20px; font-family: ARIALNB, Arial, Verdana, sans-serif;">3.</span> {{step_3_title}}</mj-text>
+        <mj-text padding="0 0 10px 0">{{step_3_description}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/d365-wrapped/wm-cta-button.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-footer.mjml" />
+  </mj-body>
+</mjml>
