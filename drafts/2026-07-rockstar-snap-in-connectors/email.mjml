@@ -1,0 +1,134 @@
+<mjml>
+  <mj-head>
+    <mj-title>RockStar® Heavy Duty Connectors — SNAP IN Technology</mj-title>
+    <mj-preview>Install heavy duty connectors up to 60% faster with SNAP IN technology.</mj-preview>
+    <mj-include path="../../components/brand-head.mjml" />
+  </mj-head>
+  <mj-body background-color="#f4f4f4" width="640px">
+    <mj-raw>
+<!-- Header: Sales Ignitor campaign tagline -->
+<div data-section="true" class="emptyContainer columns-equal-class wrap-section" style="margin: 0px; border-radius: 0px;">
+<table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width: 100%; max-width: 640px; display: block;" role="presentation">
+<tbody>
+<tr>
+<th class="mobile-padding" style="padding: 10px;" role="presentation">
+<table style="width: 100%; border-collapse: collapse;" class="containerWrapper tbContainer multi" cellpadding="0" cellspacing="0" role="presentation">
+<tbody>
+<tr>
+<th data-container="true" class="columnContainer stack-column col-pad-right" data-container-width="50.00" style="vertical-align: middle; width: 50%;" role="presentation">
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tbody><tr>
+<th class="inner mobile-center" style="padding: 0px; font-weight: normal;" role="presentation">
+<div data-editorblocktype="Image" style="margin: 10px 10px 10px 15px;">
+<div align="left" class="imageWrapper" style="width: 100%;">
+<img src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/fe07e416-099a-f011-b4cb-7c1e52725572?ts=638943992386672616" width="200" style="max-width: 200px; width: 100%; height: auto; display: block;" alt="Weidmuller">
+</div>
+</div>
+</th>
+</tr></tbody></table>
+</th>
+<th data-container="true" class="columnContainer stack-column stack-column-gap col-pad-left" data-container-width="50.00" style="vertical-align: bottom; width: 50%;" role="presentation">
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tbody><tr>
+<th class="inner" style="padding: 10px; font-weight: normal;" role="presentation">
+<div data-editorblocktype="Text" style="margin: 10px 0px 0px 10px;">
+<p class="mobile-text-left" style="margin: 0px; text-align: right;"><span style="font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 15px;">Sales Ignitor&nbsp;</span><span style="color: rgb(239, 120, 0); font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 15px;">|</span><span style="font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 15px;"> RockStar® SNAP IN</span></p>
+</div>
+</th>
+</tr></tbody></table>
+</th>
+</tr>
+</tbody>
+</table>
+</th>
+</tr>
+</tbody>
+</table>
+</div>
+    </mj-raw>
+
+    <mj-include path="../../components/d365-wrapped/wm-hero.mjml" />
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h1" padding="10px 0 0 0">RockStar® Heavy Duty Connectors with SNAP IN Technology</mj-text>
+        <mj-text css-class="h2" padding="10px 0 0 0">Install up to 60% faster — without compromising reliability</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text padding="0 0 10px 0">Hi {{FirstName}},</mj-text>
+        <mj-text padding="0 0 10px 0">
+          Wiring heavy duty applications shouldn't slow your team down. Weidmuller's RockStar® Heavy Duty Connectors with SNAP IN technology deliver the rugged performance you expect — with a fraction of the assembly time.
+        </mj-text>
+        <mj-text padding="0 0 10px 0">
+          SNAP IN inserts click into place securely, eliminating tedious screw terminations and reducing installation errors in the field. Whether you're building panels, machinery, or outdoor installations, RockStar® gives you IP65/IP69K protection and vibration resistance in a connector that's built to last.
+        </mj-text>
+        <mj-text padding="0 0 10px 0">
+          <strong>Key benefits:</strong>
+        </mj-text>
+        <mj-text padding="0 0 4px 0">• Up to 60% faster installation with SNAP IN technology</mj-text>
+        <mj-text padding="0 0 4px 0">• Heavy duty housing for demanding industrial environments</mj-text>
+        <mj-text padding="0 0 4px 0">• Modular design — mix power, signal, and data in one connector</mj-text>
+        <mj-text padding="0 0 10px 0">• Tool-free assembly reduces labor costs and rework</mj-text>
+        <mj-text padding="0 0 10px 0">Kind regards</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-button
+          background-color="#ef7800"
+          color="#ffffff"
+          font-size="14px"
+          font-family="ARIALNB, Arial, Verdana, sans-serif"
+          border-radius="0px"
+          inner-padding="12px 24px"
+          align="left"
+          href="https://www.weidmuller.com"
+        >
+          Explore RockStar® SNAP IN
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-raw>
+<div data-section="true" class="emptyContainer columns-equal-class wrap-section" style="margin: 0px; background-color: rgb(239, 120, 0);">
+<table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width: 100%; max-width: 640px; display: block; background-color: rgb(239, 120, 0);" role="presentation">
+<tbody><tr>
+<th class="mobile-padding" style="padding: 10px; background-color: rgb(239, 120, 0);" role="presentation">
+<div data-editorblocktype="Text"><h1 style="color: #ffffff; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 22px; margin: 0;">See SNAP IN in action</h1></div>
+<div data-editorblocktype="Text"><p style="color: #ffffff; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 18px; margin: 8px 0 0 0;">Request a demo or sample for your next project</p></div>
+</th>
+</tr></tbody>
+</table>
+</div>
+    </mj-raw>
+
+    <mj-include path="../../components/d365-wrapped/wm-divider.mjml" />
+
+    <mj-raw>
+<div data-section="true" class="emptyContainer columns-equal-class wrap-section">
+<table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width: 100%; max-width: 640px; display: block;" role="presentation">
+<tbody><tr>
+<th class="mobile-padding" style="padding: 10px" role="presentation">
+<table style="width: 100%; border-collapse: collapse;" class="containerWrapper tbContainer multi" cellpadding="0" cellspacing="0" role="presentation">
+<tbody><tr>
+<th data-container="true" class="columnContainer stack-column col-pad-right" data-container-width="60.00" style="vertical-align: top; width: 60%;" role="presentation">
+<div data-editorblocktype="Text" style="margin: 10px 10px 4px 0;"><h3>SNAP IN — faster wiring, same RockStar® reliability</h3></div>
+<div data-editorblocktype="Text" style="margin: 0 10px 10px 0;"><p>Push-in termination means no tools, no loose screws, and no callbacks. RockStar® Heavy Duty Connectors with SNAP IN are ideal for machine builders, panel shops, and OEMs who need speed without sacrificing IP ratings or vibration resistance.</p></div>
+<div data-editorblocktype="Button" class="buttonWrapper"><a class="buttonClass" href="https://www.weidmuller.com" style="display: inline-block; min-height: 44px; padding: 12px 24px; background-color: #ef7800; color: #fff; text-decoration: none; font-family: ARIALNB, Arial, Verdana, sans-serif;">Request a demo</a></div>
+</th>
+<th data-container="true" class="columnContainer stack-column stack-column-gap col-pad-left" data-container-width="40.00" style="vertical-align: top; width: 40%;" role="presentation">
+<div data-editorblocktype="Image" style="margin: 10px;"><div align="Center" class="imageWrapper"><img src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/8a4796b7-109a-f011-b4cb-7c1e52725572?ts=638944025144813367" width="248" style="max-width: 100%; width: 100%; height: auto; display: block;" alt="RockStar Heavy Duty Connector"></div></div>
+</th>
+</tr></tbody>
+</table>
+</th>
+</tr></tbody>
+</table>
+</div>
+    </mj-raw>
+
+    <mj-include path="../../components/d365-wrapped/wm-footer.mjml" />
+  </mj-body>
+</mjml>
