@@ -1,0 +1,57 @@
+<mjml>
+  <mj-head>
+    <mj-title>Welcome</mj-title>
+    <mj-preview>Thanks for joining — here's how to get started.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Arial, sans-serif" />
+      <mj-text color="#374151" font-size="16px" line-height="26px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f3f4f6">
+    <mj-include path="../../components/header.mjml" />
+
+    <mj-section background-color="#ffffff" padding="32px 24px 16px">
+      <mj-column>
+        <mj-text font-size="26px" font-weight="bold" color="#111827" align="center">
+          Welcome, {{first_name}}!
+        </mj-text>
+        <mj-text align="center" color="#6b7280">
+          We're glad you're here. Here's what to do next.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="8px 24px">
+      <mj-column width="15%">
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#2563eb">1</mj-text>
+      </mj-column>
+      <mj-column width="85%">
+        <mj-text font-weight="bold" color="#111827" padding-bottom="4px">{{step_1_title}}</mj-text>
+        <mj-text font-size="14px" color="#6b7280">{{step_1_description}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="8px 24px">
+      <mj-column width="15%">
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#2563eb">2</mj-text>
+      </mj-column>
+      <mj-column width="85%">
+        <mj-text font-weight="bold" color="#111827" padding-bottom="4px">{{step_2_title}}</mj-text>
+        <mj-text font-size="14px" color="#6b7280">{{step_2_description}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="8px 24px">
+      <mj-column width="15%">
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#2563eb">3</mj-text>
+      </mj-column>
+      <mj-column width="85%">
+        <mj-text font-weight="bold" color="#111827" padding-bottom="4px">{{step_3_title}}</mj-text>
+        <mj-text font-size="14px" color="#6b7280">{{step_3_description}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/cta-button.mjml" />
+    <mj-include path="../../components/footer.mjml" />
+  </mj-body>
+</mjml>

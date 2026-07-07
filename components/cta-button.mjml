@@ -1,0 +1,15 @@
+<mj-section background-color="#ffffff" padding="8px 24px 32px">
+  <mj-column>
+    <mj-button
+      background-color="#2563eb"
+      color="#ffffff"
+      font-size="16px"
+      font-weight="bold"
+      border-radius="6px"
+      inner-padding="14px 28px"
+      href="{{cta_url}}"
+    >
+      {{cta_text}}
+    </mj-button>
+  </mj-column>
+</mj-section>

@@ -1,0 +1,10 @@
+<mj-section background-color="#ffffff" padding="24px 0 16px">
+  <mj-column>
+    <mj-image
+      src="https://via.placeholder.com/200x60/2563eb/ffffff?text=Your+Logo"
+      alt="Your Company"
+      width="200px"
+      align="center"
+    />
+  </mj-column>
+</mj-section>

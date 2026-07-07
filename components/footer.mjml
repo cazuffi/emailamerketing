@@ -1,0 +1,12 @@
+<mj-section background-color="#f3f4f6" padding="24px 16px">
+  <mj-column>
+    <mj-text align="center" color="#6b7280" font-size="12px" line-height="20px">
+      © {{year}} Your Company · 123 Main St, City, ST 12345
+    </mj-text>
+    <mj-text align="center" color="#6b7280" font-size="12px" line-height="20px">
+      <a href="{{unsubscribe_url}}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a>
+      ·
+      <a href="https://example.com" style="color: #6b7280; text-decoration: underline;">View in browser</a>
+    </mj-text>
+  </mj-column>
+</mj-section>

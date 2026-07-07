@@ -1,0 +1,57 @@
+<mjml>
+  <mj-head>
+    <mj-title>Product Launch</mj-title>
+    <mj-preview>Introducing something new — be the first to try it.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Arial, sans-serif" />
+      <mj-text color="#374151" font-size="16px" line-height="26px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f3f4f6">
+    <mj-include path="../../components/header.mjml" />
+
+    <mj-section background-color="#2563eb" padding="40px 24px">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="28px" font-weight="bold" line-height="36px">
+          {{headline}}
+        </mj-text>
+        <mj-text align="center" color="#dbeafe" font-size="16px" line-height="24px">
+          {{subheadline}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="0">
+      <mj-column>
+        <mj-image
+          src="{{hero_image_url}}"
+          alt="{{hero_image_alt}}"
+          padding="0"
+        />
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="24px">
+      <mj-column>
+        <mj-text>
+          {{body_copy}}
+        </mj-text>
+        <mj-text font-size="20px" font-weight="bold" color="#2563eb" align="center" padding-top="8px">
+          {{offer_text}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/cta-button.mjml" />
+
+    <mj-section background-color="#ffffff" padding="0 24px 24px">
+      <mj-column>
+        <mj-text align="center" color="#6b7280" font-size="13px">
+          {{urgency_text}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/footer.mjml" />
+  </mj-body>
+</mjml>

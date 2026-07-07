@@ -1,0 +1,15 @@
+{
+  "name": "emailamerketing",
+  "version": "1.0.0",
+  "description": "Email marketing planner — templates, drafts, and iteration",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.js",
+    "preview": "node scripts/preview.js",
+    "new-draft": "node scripts/new-draft.js"
+  },
+  "devDependencies": {
+    "chokidar": "^3.6.0",
+    "mjml": "^4.15.3"
+  }
+}

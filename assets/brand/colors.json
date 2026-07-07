@@ -1,0 +1,15 @@
+{
+  "primaryColor": "#2563eb",
+  "secondaryColor": "#1e40af",
+  "accentColor": "#f59e0b",
+  "textColor": "#374151",
+  "mutedTextColor": "#6b7280",
+  "backgroundColor": "#f3f4f6",
+  "cardBackground": "#ffffff",
+  "fontFamily": "Arial, sans-serif",
+  "logoUrl": "https://via.placeholder.com/200x60/2563eb/ffffff?text=Your+Logo",
+  "companyName": "Your Company",
+  "footerAddress": "123 Main St, City, ST 12345",
+  "websiteUrl": "https://example.com",
+  "unsubscribeUrl": "{{unsubscribe_url}}"
+}

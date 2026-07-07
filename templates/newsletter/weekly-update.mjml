@@ -1,0 +1,52 @@
+<mjml>
+  <mj-head>
+    <mj-title>Weekly Newsletter</mj-title>
+    <mj-preview>Your weekly update — news, tips, and highlights.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Arial, sans-serif" />
+      <mj-text color="#374151" font-size="16px" line-height="26px" />
+    </mj-attributes>
+    <mj-style>
+      .link { color: #2563eb; text-decoration: underline; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6">
+    <mj-include path="../../components/header.mjml" />
+
+    <mj-section background-color="#ffffff" padding="0 24px 8px">
+      <mj-column>
+        <mj-text font-size="24px" font-weight="bold" color="#111827" padding-bottom="8px">
+          This Week's Update
+        </mj-text>
+        <mj-text color="#6b7280" font-size="14px">
+          {{preheader_or_intro}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="8px 24px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="bold" color="#111827">
+          {{section_1_title}}
+        </mj-text>
+        <mj-text>
+          {{section_1_body}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="8px 24px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="bold" color="#111827">
+          {{section_2_title}}
+        </mj-text>
+        <mj-text>
+          {{section_2_body}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/cta-button.mjml" />
+    <mj-include path="../../components/footer.mjml" />
+  </mj-body>
+</mjml>
