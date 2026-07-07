@@ -8,7 +8,6 @@ A file-based workspace for creating, drafting, and publishing marketing emails t
 npm install
 npm run build:d365                        # export D365 blocks + templates
 npm run new-draft -- summer-sale promo    # create a dev draft
-npm run preview -- summer-sale            # live preview in browser
 npm run build                             # build D365 exports + MJML drafts
 ```
 
@@ -45,8 +44,12 @@ docs/                     D365 publish guide, brand guidelines, workflow
 
 1. `npm run new-draft -- <slug> [template]`
 2. Edit MJML in `drafts/<folder>/`
-3. `npm run preview` / `npm run build`
-4. Paste `dist/drafts/<folder>/email.html` into D365
+3. `npm run build` — creates `drafts/<folder>/email.html` next to your draft
+4. **View:** open `email.html` in your browser, or paste into D365
+
+**View draft (no preview server):**
+1. Run `npm run build`
+2. Open `drafts/<folder>/email.html` in Cursor or double-click to open in Chrome/Edge/Safari
 
 ## D365 content blocks
 
@@ -72,7 +75,7 @@ Full catalog: `d365-manifest.json`
 | `npm run build` | Build D365 exports + compile all MJML |
 | `npm run build:mjml` | Compile MJML only (requires prior `build:d365`) |
 | `npm run new-draft -- <slug> [template]` | Scaffold a draft folder |
-| `npm run preview -- [path]` | Browser preview with auto-reload |
+| `npm run preview -- [path]` | Browser preview with auto-reload (optional) |
 
 ## Docs
 
