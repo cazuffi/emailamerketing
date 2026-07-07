@@ -8,14 +8,14 @@
     <mj-include path="../../components/d365-wrapped/wm-header.mjml" />
     <mj-include path="../../components/d365-wrapped/wm-hero.mjml" />
 
-    <mj-section background-color="#ffffff" padding="10px">
+    <mj-section background-color="#ffffff" padding="10px 16px">
       <mj-column>
         <mj-text css-class="h1" padding="10px 10px 0 0">{{headline}}</mj-text>
         <mj-text css-class="h2" padding="10px 10px 0 0">{{subheadline}}</mj-text>
       </mj-column>
     </mj-section>
 
-    <mj-section background-color="#ffffff" padding="10px">
+    <mj-section background-color="#ffffff" padding="10px 16px">
       <mj-column>
         <mj-text padding="0 10px 10px 0">Hi {{FirstName}},</mj-text>
         <mj-text padding="0 10px 10px 0">{{body_copy}}</mj-text>

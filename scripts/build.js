@@ -42,6 +42,13 @@ function compileFile(inputPath) {
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, result.html);
+
+  // Also write HTML next to draft MJML for easy open-in-browser / Cursor preview
+  if (relative.startsWith('drafts/') || relative.startsWith('campaigns/')) {
+    const sidecarPath = inputPath.replace(/\.mjml$/, '.html');
+    fs.writeFileSync(sidecarPath, result.html);
+  }
+
   return { relative, outputPath, errors: result.errors.length };
 }
 
