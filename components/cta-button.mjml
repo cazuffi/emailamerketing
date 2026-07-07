@@ -1,12 +1,14 @@
-<mj-section background-color="#ffffff" padding="8px 24px 32px">
+<mj-section background-color="#ffffff" padding="10px">
   <mj-column>
     <mj-button
-      background-color="#2563eb"
+      background-color="#ef7800"
       color="#ffffff"
-      font-size="16px"
-      font-weight="bold"
-      border-radius="6px"
-      inner-padding="14px 28px"
+      font-size="14px"
+      font-weight="normal"
+      font-family="ARIALNB, Arial, Verdana, sans-serif"
+      border-radius="0px"
+      inner-padding="10px 20px"
+      align="left"
       href="{{cta_url}}"
     >
       {{cta_text}}

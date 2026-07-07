@@ -19,9 +19,9 @@ Then paste the built HTML into D365 (**Design → HTML** tab). See [docs/dynamic
 templates/     Reusable starting points (newsletter, promo, welcome)
 drafts/        Work-in-progress campaigns (one folder per email)
 campaigns/     Finalized / sent emails (archive)
-components/    Shared MJML partials (header, footer, CTA)
-assets/brand/  Brand colors and reference values
-docs/          Dynamics 365 import and scheduling guide
+components/    Shared MJML partials (header, footer, CTA, brand styles)
+assets/brand/  Weidmüller colors, typography, and font references
+docs/          Dynamics 365 workflow and brand guidelines
 scripts/       Build, preview, and scaffolding tools
 dist/          Compiled HTML output (generated, not committed)
 ```
@@ -77,10 +77,12 @@ Full guide: **[docs/dynamics-365.md](docs/dynamics-365.md)**
 
 ## Customizing brand
 
-Edit shared components in `components/` (header, footer, CTA button). Brand reference values are in `assets/brand/colors.json`.
+Weidmüller corporate brand is applied across all templates (orange `#ef7800`, Arial Narrow, 640px layout). See **[docs/brand-guidelines.md](docs/brand-guidelines.md)** for the full spec.
 
-- **D365 tokens** (e.g. `{{contact.firstname}}`) — keep as-is; resolved at send time
-- **Draft placeholders** (e.g. `{{headline}}`) — replace with final copy before importing to D365
+Edit shared components in `components/`. Reference values are in `assets/brand/colors.json` and `assets/brand/typography.json`.
+
+- **D365 tokens** (e.g. `{{FirstName}}`, `{{msdyncrm_contentsettings.*}}`) — keep as-is; resolved at send time
+- **Draft placeholders** (e.g. `{{headline}}`, `{{email_tagline}}`) — replace with final copy before importing to D365
 
 ## Scripts
 

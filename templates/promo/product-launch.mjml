@@ -2,24 +2,10 @@
   <mj-head>
     <mj-title>Product Launch</mj-title>
     <mj-preview>Introducing something new — be the first to try it.</mj-preview>
-    <mj-attributes>
-      <mj-all font-family="Arial, sans-serif" />
-      <mj-text color="#374151" font-size="16px" line-height="26px" />
-    </mj-attributes>
+    <mj-include path="../../components/brand-head.mjml" />
   </mj-head>
-  <mj-body background-color="#f3f4f6">
+  <mj-body background-color="#f4f4f4" width="640px">
     <mj-include path="../../components/header.mjml" />
-
-    <mj-section background-color="#2563eb" padding="40px 24px">
-      <mj-column>
-        <mj-text align="center" color="#ffffff" font-size="28px" font-weight="bold" line-height="36px">
-          {{headline}}
-        </mj-text>
-        <mj-text align="center" color="#dbeafe" font-size="16px" line-height="24px">
-          {{subheadline}}
-        </mj-text>
-      </mj-column>
-    </mj-section>
 
     <mj-section background-color="#ffffff" padding="0">
       <mj-column>
@@ -31,25 +17,57 @@
       </mj-column>
     </mj-section>
 
-    <mj-section background-color="#ffffff" padding="24px">
+    <mj-section background-color="#ffffff" padding="10px">
       <mj-column>
-        <mj-text>
-          {{body_copy}}
-        </mj-text>
-        <mj-text font-size="20px" font-weight="bold" color="#2563eb" align="center" padding-top="8px">
-          {{offer_text}}
-        </mj-text>
+        <mj-text css-class="h1" padding="10px 10px 0 0">{{headline}}</mj-text>
+        <mj-text css-class="h2" padding="10px 10px 0 0">{{subheadline}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="10px">
+      <mj-column>
+        <mj-text padding="0 10px 10px 0">Hi {{FirstName}},</mj-text>
+        <mj-text padding="0 10px 10px 0">{{body_copy}}</mj-text>
+        <mj-text padding="0 10px 10px 0">{{offer_text}}</mj-text>
       </mj-column>
     </mj-section>
 
     <mj-include path="../../components/cta-button.mjml" />
 
-    <mj-section background-color="#ffffff" padding="0 24px 24px">
+    <mj-section background-color="#ffffff" padding="10px">
       <mj-column>
-        <mj-text align="center" color="#6b7280" font-size="13px">
-          {{urgency_text}}
-        </mj-text>
+        <mj-text padding="0 10px 10px 0">{{urgency_text}}</mj-text>
+        <mj-text padding="0 10px 10px 0">Kind regards</mj-text>
       </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/accent-band.mjml" />
+
+    <mj-include path="../../components/divider.mjml" />
+
+    <mj-section background-color="#ffffff" padding="10px">
+      <mj-group>
+        <mj-column width="60%" vertical-align="top">
+          <mj-text css-class="h3" padding="10px 10px 4px 0">{{feature_1_title}}</mj-text>
+          <mj-text padding="0 10px 10px 0">{{feature_1_body}}</mj-text>
+          <mj-button
+            background-color="#ef7800"
+            color="#ffffff"
+            font-size="14px"
+            font-family="ARIALNB, Arial, Verdana, sans-serif"
+            border-radius="0px"
+            inner-padding="10px 20px"
+            align="left"
+            href="{{feature_1_cta_url}}"
+            padding="0 10px 10px 0"
+          >
+            {{feature_1_cta_text}}
+          </mj-button>
+        </mj-column>
+        <mj-column width="40%" vertical-align="top">
+          <mj-image src="{{feature_1_image_url}}" alt="{{feature_1_image_alt}}" padding="10px" />
+        </mj-column>
+      </mj-group>
     </mj-section>
 
     <mj-include path="../../components/footer.mjml" />

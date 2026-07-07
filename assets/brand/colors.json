@@ -1,16 +1,26 @@
 {
-  "primaryColor": "#2563eb",
-  "secondaryColor": "#1e40af",
-  "accentColor": "#f59e0b",
-  "textColor": "#374151",
-  "mutedTextColor": "#6b7280",
-  "backgroundColor": "#f3f4f6",
+  "primaryColor": "#ef7800",
+  "brandColor1": "#ef7800",
+  "textColor": "#000000",
+  "backgroundColor": "#f4f4f4",
   "cardBackground": "#ffffff",
-  "fontFamily": "Arial, sans-serif",
-  "logoUrl": "https://via.placeholder.com/200x60/2563eb/ffffff?text=Your+Logo",
-  "companyName": "Your Company",
-  "footerAddress": "123 Main St, City, ST 12345",
-  "websiteUrl": "https://example.com",
+  "linkColor": "#ef7800",
+  "buttonBackground": "#ef7800",
+  "buttonTextColor": "#ffffff",
+  "dividerColor": "#ef7800",
+  "accentBandBackground": "#ef7800",
+  "accentBandText": "#ffffff",
+  "fontFamily": "ARIALN, Arial, Verdana, sans-serif",
+  "fontFamilyBold": "ARIALNB, Arial, Verdana, sans-serif",
+  "layoutMaxWidth": "640px",
+  "logoUrl": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/fe07e416-099a-f011-b4cb-7c1e52725572?ts=638943992386672616",
+  "companyName": "Weidmüller",
   "subscriptionCenterUrl": "{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}",
-  "physicalAddress": "{{msdyncrm_contentsettings.msdyncrm_addressmain}}"
+  "physicalAddress": "{{msdyncrm_contentsettings.msdyncrm_addressmain}}",
+  "fonts": {
+    "ARIALN": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/69b33865-88ad-f011-bbd2-000d3aa91324",
+    "ARIALNB": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/76b33865-88ad-f011-bbd2-000d3aa91324",
+    "ARIALNI": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/6bb33865-88ad-f011-bbd2-000d3aa91324",
+    "ARIALNBI": "https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/6ab33865-88ad-f011-bbd2-000d3aa91324"
+  }
 }

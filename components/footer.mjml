@@ -1,10 +1,10 @@
-<mj-section background-color="#f3f4f6" padding="24px 16px">
+<mj-section background-color="#f4f4f4" padding="10px 16px 24px">
   <mj-column>
-    <mj-text align="center" color="#6b7280" font-size="12px" line-height="20px">
+    <mj-text align="center" color="#000000" font-size="12px" line-height="20px" font-family="ARIALN, Arial, Verdana, sans-serif">
       {{msdyncrm_contentsettings.msdyncrm_addressmain}}
     </mj-text>
-    <mj-text align="center" color="#6b7280" font-size="12px" line-height="20px">
-      <a href="{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}" style="color: #6b7280; text-decoration: underline;">Manage email preferences</a>
+    <mj-text align="center" font-size="12px" line-height="20px" font-family="ARIALN, Arial, Verdana, sans-serif">
+      <a href="{{msdyncrm_contentsettings.msdyncrm_subscriptioncenter}}" style="color: #ef7800; text-decoration: underline;">Manage email preferences</a>
     </mj-text>
   </mj-column>
 </mj-section>
