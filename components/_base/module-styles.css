@@ -115,13 +115,200 @@
   text-transform: uppercase;
 }
 
+.preheader-text {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #666666;
+  margin: 0;
+}
+
+.eyebrow-label {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ef7800;
+  margin: 0 0 8px 0;
+}
+
+.section-rule {
+  border-top: 2px solid #ef7800;
+  width: 48px;
+  margin: 0 auto 12px auto;
+}
+
+.callout-box {
+  background-color: #f9f9f9;
+  border-left: 4px solid #ef7800;
+  padding: 16px 20px;
+}
+
+.icon-circle {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  background-color: #ef7800;
+  color: #ffffff;
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  margin: 0 0 10px 0;
+}
+
+.icon-grid-cell { vertical-align: top; text-align: center; padding: 0 8px 20px 8px; }
+
+.step-number {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  color: #ef7800;
+  margin: 0 0 8px 0;
+}
+
+.step-arrow {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 20px;
+  color: #ef7800;
+  vertical-align: middle;
+}
+
+.step-vertical-item {
+  padding: 0 0 16px 0;
+  border-left: 2px solid #ef7800;
+  margin-left: 12px;
+  padding-left: 16px;
+}
+
+.logo-strip-cell { vertical-align: middle; text-align: center; padding: 0 8px; }
+
+.faq-question {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 13px;
+  color: #000000;
+  margin: 0 0 4px 0;
+}
+
+.faq-answer {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 12px;
+  color: #333333;
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+
+.specs-label {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  color: #666666;
+  padding: 8px 12px;
+  background-color: #f4f4f4;
+}
+
+.specs-value {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  padding: 8px 12px;
+}
+
+.pricing-tier {
+  background-color: #f9f9f9;
+  padding: 20px 16px;
+  vertical-align: top;
+  text-align: center;
+}
+
+.pricing-tier-featured {
+  background-color: #fff5eb;
+  padding: 20px 16px;
+  vertical-align: top;
+  text-align: center;
+  border-top: 3px solid #ef7800;
+}
+
+.pricing-price {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 28px;
+  color: #ef7800;
+  margin: 0 0 4px 0;
+  line-height: 1.1;
+}
+
+.download-icon {
+  display: inline-block;
+  background-color: #ef7800;
+  color: #ffffff;
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  padding: 8px 10px;
+  text-align: center;
+  min-width: 40px;
+}
+
+.team-photo { vertical-align: top; width: 96px; }
+.team-info { vertical-align: top; padding-left: 16px; }
+
+.social-link {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 12px;
+  color: #ef7800 !important;
+  text-decoration: none !important;
+  padding: 0 10px;
+}
+
+.urgency-band { background-color: #333333; }
+.urgency-date {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  color: #ef7800;
+}
+
+.badge-new {
+  display: inline-block;
+  background-color: #ef7800;
+  color: #ffffff;
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.cta-band-grey { background-color: #f4f4f4; }
+
+.quote-centered { text-align: center; }
+.quote-centered .quote-text { font-style: italic; }
+
+.four-up-cell { vertical-align: top; text-align: center; padding: 0 4px 16px 4px; width: 25%; }
+
+.divider-dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #ef7800;
+  margin: 0 4px;
+  border-radius: 50%;
+}
+
 @media only screen and (max-width: 640px) {
   .stat-number { font-size: 28px !important; }
   .three-up-cell { display: block !important; width: 100% !important; padding: 0 0 16px 0 !important; }
+  .four-up-cell { display: block !important; width: 100% !important; padding: 0 0 16px 0 !important; }
+  .icon-grid-cell { display: block !important; width: 100% !important; padding: 0 0 20px 0 !important; }
   .article-thumb { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
   .article-body { display: block !important; width: 100% !important; padding-left: 0 !important; }
   .comparison-col,
   .comparison-col-highlight { display: block !important; width: 100% !important; margin-bottom: 12px !important; }
+  .pricing-tier,
+  .pricing-tier-featured { display: block !important; width: 100% !important; margin-bottom: 12px !important; }
+  .team-photo { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
+  .team-info { display: block !important; width: 100% !important; padding-left: 0 !important; }
+  .logo-strip-cell { display: inline-block !important; width: 48% !important; padding: 8px 4px !important; }
   .mod-intro-centered h1,
   .mod-intro-centered h2 { text-align: left !important; }
+  .quote-centered { text-align: left !important; }
 }

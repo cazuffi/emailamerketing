@@ -1,6 +1,6 @@
 # Module Library
 
-32 polished, on-brand modules for building long emails. Pick what you need, leave out the rest.
+58 polished, on-brand modules for building long emails. Pick what you need, leave out the rest.
 
 ## Preview all modules
 
@@ -15,18 +15,18 @@ Grey labels in the catalog show each module name. Copy `@include` lines into you
 
 | Category | Modules |
 |----------|---------|
-| **Header** | `header-standard`, `header-minimal` |
-| **Hero** | `hero-full`, `hero-caption` |
-| **Intro** | `intro-headline`, `intro-centered` |
-| **Body** | `body-paragraph`, `body-bullets`, `body-checklist` |
-| **CTA** | `cta-primary-left`, `cta-primary-center`, `cta-dual`, `cta-text-link` |
-| **Accent** | `accent-band`, `accent-band-cta` |
-| **Layout** | `divider-line`, `spacer-sm`, `spacer-lg` |
-| **Feature** | `feature-left`, `feature-right`, `two-up-cards`, `stats-three`, `three-up-benefits`, `comparison-split` |
+| **Header** | `preheader-bar`, `header-standard`, `header-minimal`, `header-cta` |
+| **Hero** | `hero-full`, `hero-caption`, `hero-split`, `hero-text-only` |
+| **Intro** | `eyebrow-headline`, `intro-headline`, `intro-centered` |
+| **Body** | `body-paragraph`, `body-bullets`, `body-checklist`, `callout-box`, `faq-list`, `disclaimer-small` |
+| **CTA** | `cta-primary-left`, `cta-primary-center`, `cta-outline-center`, `cta-dual`, `cta-text-link`, `cta-band-grey`, `download-resource` |
+| **Accent** | `accent-band`, `accent-band-cta`, `urgency-band` |
+| **Layout** | `divider-line`, `divider-dots`, `section-heading`, `spacer-sm`, `spacer-lg` |
+| **Feature** | `feature-left`, `feature-right`, `two-up-cards`, `badge-highlight`, `icon-grid-four`, `steps-horizontal`, `steps-vertical`, `stats-three`, `stats-four`, `three-up-benefits`, `comparison-split`, `specs-table`, `pricing-two-up` |
 | **Event** | `event-details`, `agenda-list` |
-| **Social proof** | `quote-testimonial` |
+| **Social proof** | `quote-testimonial`, `quote-centered`, `logo-strip`, `team-profile`, `social-links` |
 | **Newsletter** | `article-row`, `article-stack` |
-| **Media** | `image-caption`, `video-preview` |
+| **Media** | `image-caption`, `image-fullbleed`, `video-preview` |
 | **Footer** | `footer` (required on every email) |
 
 Full manifest: [components/modules/manifest.json](../components/modules/manifest.json)
@@ -36,20 +36,24 @@ Full manifest: [components/modules/manifest.json](../components/modules/manifest
 In `campaigns/your-campaign/source.html`:
 
 ```html
-<!-- @include ../../components/modules/hero-full.html -->
-<!-- @include ../../components/modules/intro-headline.html -->
-<!-- @include ../../components/modules/body-bullets.html -->
+<!-- @include ../../components/modules/preheader-bar.html -->
+<!-- @include ../../components/modules/header-cta.html -->
+<!-- @include ../../components/modules/hero-split.html -->
+<!-- @include ../../components/modules/eyebrow-headline.html -->
+<!-- @include ../../components/modules/icon-grid-four.html -->
+<!-- @include ../../components/modules/footer.html -->
 ```
 
-Mix and match any order. Always start with a header, end with `footer`.
+Mix and match any order. Always end with `footer`. Add `preheader-bar` first when you want inbox preview text.
 
 ## Example compositions
 
 | Email type | Suggested module flow |
 |------------|----------------------|
-| **Product launch** | header-standard → hero-full → intro-headline → body-bullets → stats-three → feature-left → feature-right → cta-primary-center → accent-band → footer |
-| **Event invite** | header-standard → hero-caption → intro-centered → body-paragraph → event-details → agenda-list → cta-primary-center → accent-band-cta → footer |
-| **Newsletter** | header-minimal → intro-headline → article-row → divider-line → article-row → article-stack → cta-text-link → footer |
+| **Product launch** | preheader-bar → header-standard → hero-split → eyebrow-headline → stats-four → icon-grid-four → feature-left → badge-highlight → quote-testimonial → cta-band-grey → footer |
+| **Event invite** | preheader-bar → header-cta → hero-caption → intro-centered → event-details → agenda-list → steps-vertical → urgency-band → cta-primary-center → footer |
+| **Newsletter** | header-minimal → intro-headline → article-row → divider-dots → article-stack → quote-centered → social-links → cta-text-link → footer |
+| **Technical promo** | header-standard → hero-full → body-paragraph → specs-table → comparison-split → download-resource → faq-list → accent-band-cta → disclaimer-small → footer |
 | **Long promo** | See `templates/long-form-promo.html` — preview with `npm run preview -- long-form` |
 
 ## Polish standards (built into every module)

@@ -25,7 +25,7 @@ Open the preview URL, edit `campaigns/*/source.html`, save — browser refreshes
 
 See **[docs/workflow.md](docs/workflow.md)** for the full guide.
 
-## Module library (32 modules)
+## Module library (58 modules)
 
 Pick-and-choose polished sections for long emails — headers, heroes, features, events, CTAs, and more.
 
@@ -42,7 +42,7 @@ See **[docs/modules.md](docs/modules.md)** for the full catalog and composition 
 brand/              Colors, fonts, tokens from HQ
 components/
   _base/            D365 head, styles, layout wrapper
-  modules/          32 polished pick-and-choose sections
+  modules/          58 polished pick-and-choose sections
   blocks/           Legacy sections (prefer modules for new work)
 templates/          Starting points (promo, long-form, catalog)
 campaigns/          One folder per send
