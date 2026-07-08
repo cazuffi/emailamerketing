@@ -80,6 +80,25 @@ img {
 .accent-band h1 { color: #ffffff !important; margin: 0 0 10px 0 !important; }
 .accent-band p { margin: 0 !important; }
 
+.footer-compliance,
+.footer-compliance p,
+.footer-compliance a,
+.footer-compliance div {
+  text-align: center !important;
+}
+
+.footer-compliance p {
+  margin: 0 0 8px 0;
+}
+
+.footer-compliance p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-compliance a {
+  text-decoration: underline;
+}
+
 @media only screen and (max-width: 640px) {
   [data-layout="true"] { width: 100% !important; max-width: 100% !important; }
   .outer { width: 100% !important; max-width: 100% !important; }
