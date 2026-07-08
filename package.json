@@ -4,7 +4,7 @@
   "description": "Email marketing planner — templates, drafts, and iteration",
   "private": true,
   "scripts": {
-    "build": "node scripts/build-d365.js && node scripts/build.js",
+    "build": "node scripts/build-d365.js && node scripts/build.js && node scripts/build-d365.js --drafts-only",
     "build:d365": "node scripts/build-d365.js",
     "build:mjml": "node scripts/build.js",
     "preview": "node scripts/preview.js",
