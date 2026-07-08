@@ -26,14 +26,122 @@ function loadResolvedModuleHtml(moduleId) {
   return resolveIncludes(raw, path.dirname(modulePath));
 }
 
-function inferTextLabel(tagName, index) {
+function inferTextLabel(tagName, index, $el) {
   const tag = tagName.toLowerCase();
+  const text = normalizeTextValue($el.text());
+  if ($el.hasClass('faq-question')) return `FAQ question ${index + 1}`;
+  if ($el.hasClass('faq-answer')) return `FAQ answer ${index + 1}`;
+  if ($el.hasClass('bullet-item')) return `Bullet ${index + 1}`;
   if (tag === 'h1') return 'Headline';
   if (tag === 'h2') return 'Subheadline';
   if (tag === 'h3') return 'Title';
-  if (tag === 'p') return index === 0 ? 'Paragraph' : `Paragraph ${index + 1}`;
+  if (tag === 'p') {
+    if (/regards/i.test(text)) return 'Sign-off';
+    if (/^\{\{|\bhi\b/i.test(text)) return 'Greeting';
+    if (index === 0) return 'Paragraph';
+    return `Paragraph ${index + 1}`;
+  }
   if (tag === 'li') return `List item ${index + 1}`;
   return `Text ${index + 1}`;
+}
+
+function normalizeTextValue(value) {
+  return String(value ?? '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .trim();
+}
+
+function isEmptyOverride(value) {
+  return normalizeTextValue(value).length === 0;
+}
+
+const HIDE_STYLE = 'display:none;mso-hide:all;font-size:0;line-height:0;max-height:0;margin:0;padding:0;overflow:hidden;height:0;';
+
+function isElementHidden($el) {
+  const style = ($el.attr('style') || '').toLowerCase();
+  return style.includes('display:none') || style.includes('display: none');
+}
+
+function hideForEmail($el) {
+  if (isElementHidden($el)) return;
+  if ($el.attr('data-studio-style') === undefined) {
+    $el.attr('data-studio-style', $el.attr('style') || '');
+  }
+  const base = $el.attr('data-studio-style') || '';
+  $el.attr('style', base ? `${base};${HIDE_STYLE}` : HIDE_STYLE);
+}
+
+function showForEmail($el) {
+  if ($el.attr('data-studio-style') !== undefined) {
+    const original = $el.attr('data-studio-style');
+    if (original) $el.attr('style', original);
+    else $el.removeAttr('style');
+    $el.removeAttr('data-studio-style');
+    return;
+  }
+  const style = ($el.attr('style') || '')
+    .replace(/display\s*:\s*none\s*;?/gi, '')
+    .replace(/mso-hide\s*:\s*all\s*;?/gi, '')
+    .replace(/font-size\s*:\s*0\s*;?/gi, '')
+    .replace(/line-height\s*:\s*0\s*;?/gi, '')
+    .replace(/max-height\s*:\s*0\s*;?/gi, '')
+    .replace(/overflow\s*:\s*hidden\s*;?/gi, '')
+    .replace(/height\s*:\s*0\s*;?/gi, '')
+    .replace(/^\s*;+\s*|\s*;+\s*$/g, '')
+    .replace(/;{2,}/g, ';')
+    .trim();
+  if (style) $el.attr('style', style);
+  else $el.removeAttr('style');
+}
+
+function shouldSkipEmptyNonParagraph($el) {
+  const tag = $el[0].tagName.toLowerCase();
+  return !normalizeTextValue($el.text()) && tag !== 'p';
+}
+
+function eachTextField($, $block, startCount, fn) {
+  let textCount = startCount;
+  $block.find('h1, h2, h3, p, li').each((idx, el) => {
+    const $el = $(el);
+    if (shouldSkipEmptyNonParagraph($el)) return;
+    const tag = el.tagName.toLowerCase();
+    const isSpacer = $el.hasClass('text-spacer');
+    fn($el, textCount, isSpacer, tag, idx);
+    textCount += 1;
+  });
+  return textCount;
+}
+
+function collapseOrphanSpacers($) {
+  $('p.text-spacer').each((_, el) => {
+    const $spacer = $(el);
+    const $prev = $spacer.prev('p');
+    const $next = $spacer.next('p');
+    const prevHidden = $prev.length && isElementHidden($prev);
+    const nextHidden = $next.length && isElementHidden($next);
+    if (prevHidden || nextHidden) hideForEmail($spacer);
+  });
+}
+
+function collapseEmptyFaqPairs($) {
+  $('p.faq-question').each((_, el) => {
+    const $question = $(el);
+    const $answer = $question.next('p.faq-answer');
+    const questionHidden = isElementHidden($question);
+    const answerHidden = $answer.length && isElementHidden($answer);
+    if (questionHidden && $answer.length) hideForEmail($answer);
+    if (answerHidden) hideForEmail($question);
+  });
+}
+
+function applyTextOverride($el, value) {
+  if (isEmptyOverride(value)) {
+    hideForEmail($el);
+    return;
+  }
+  showForEmail($el);
+  $el.text(value);
 }
 
 function extractFields(moduleId) {
@@ -50,19 +158,19 @@ function extractFields(moduleId) {
     const blockType = ($block.attr('data-editorblocktype') || '').toLowerCase();
 
     if (blockType === 'text') {
-      $block.find('h1, h2, h3, p, li').each((idx, el) => {
-        const $el = $(el);
-        const tag = el.tagName.toLowerCase();
-        if (!$el.text().trim() && tag !== 'p') return;
+      let visibleTextIndex = 0;
+      textCount = eachTextField($, $block, textCount, ($el, index, isSpacer, tag) => {
+        if (isSpacer) return;
 
         fields.push({
-          key: `text_${textCount}`,
+          key: `text_${index}`,
           type: 'text',
-          label: inferTextLabel(tag, idx),
-          value: $el.text().trim(),
+          label: inferTextLabel(tag, visibleTextIndex, $el),
+          value: normalizeTextValue($el.text()),
           multiline: tag === 'p' || tag === 'li',
+          hideWhenEmpty: tag === 'p' || tag === 'li',
         });
-        textCount += 1;
+        visibleTextIndex += 1;
       });
     }
 
@@ -143,16 +251,12 @@ function applyOverrides(moduleId, overrides = {}) {
     const blockType = ($block.attr('data-editorblocktype') || '').toLowerCase();
 
     if (blockType === 'text') {
-      $block.find('h1, h2, h3, p, li').each((idx, el) => {
-        const $el = $(el);
-        const tag = el.tagName.toLowerCase();
-        if (!$el.text().trim() && tag !== 'p') return;
-
-        const key = `text_${textCount}`;
+      textCount = eachTextField($, $block, textCount, ($el, index, isSpacer) => {
+        if (isSpacer) return;
+        const key = `text_${index}`;
         if (Object.prototype.hasOwnProperty.call(overrides, key)) {
-          $el.text(overrides[key]);
+          applyTextOverride($el, overrides[key]);
         }
-        textCount += 1;
       });
     }
 
@@ -199,6 +303,9 @@ function applyOverrides(moduleId, overrides = {}) {
     }
     linkCount += 1;
   });
+
+  collapseOrphanSpacers($);
+  collapseEmptyFaqPairs($);
 
   const result = $.root().html();
   return result || html;

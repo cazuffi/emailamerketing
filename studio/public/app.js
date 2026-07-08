@@ -467,7 +467,7 @@ function addModule(moduleId) {
   const uid = newUid();
   state.instances.push({ uid, moduleId });
   state.editUid = uid;
-  state.previewScope = 'module';
+  state.previewScope = 'full';
   renderComposer();
   updatePreviewScopeUI();
   switchPanel('preview');
@@ -508,7 +508,6 @@ function moveModule(index, dir) {
 
 function selectInstance(uid) {
   state.editUid = uid;
-  state.previewScope = 'module';
   renderComposer();
   updatePreviewScopeUI();
   switchPanel('preview');
@@ -721,6 +720,13 @@ async function loadEditForm(uid) {
 
     wrap.appendChild(label);
     wrap.appendChild(input);
+
+    if (field.hideWhenEmpty) {
+      const hint = document.createElement('div');
+      hint.className = 'edit-field-hint';
+      hint.textContent = 'Leave empty to hide this block';
+      wrap.appendChild(hint);
+    }
 
     if (field.type === 'image-src') {
       const hint = document.createElement('div');
