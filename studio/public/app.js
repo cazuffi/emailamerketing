@@ -680,6 +680,11 @@ async function loadEditForm(uid) {
   }
 
   for (const field of fields) {
+    if (field.type === 'text-list') {
+      form.appendChild(renderTextListField(uid, field, current));
+      continue;
+    }
+
     const value = Object.prototype.hasOwnProperty.call(current, field.key)
       ? current[field.key]
       : field.value;
@@ -742,6 +747,96 @@ async function loadEditForm(uid) {
 
     form.appendChild(wrap);
   }
+}
+
+function renderTextListField(uid, field, current) {
+  const wrap = document.createElement('div');
+  wrap.className = 'edit-field edit-field-list';
+
+  const label = document.createElement('label');
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  const listEl = document.createElement('div');
+  listEl.className = 'edit-list';
+  wrap.appendChild(listEl);
+
+  const hint = document.createElement('div');
+  hint.className = 'edit-field-hint';
+  hint.textContent = 'Add or remove items · leave empty to hide';
+  wrap.appendChild(hint);
+
+  const items = Array.isArray(current[field.key])
+    ? [...current[field.key]]
+    : [...field.value];
+
+  function syncList() {
+    if (!state.overrides[uid]) state.overrides[uid] = {};
+    state.overrides[uid][field.key] = [...items];
+    renderComposer();
+    scheduleBuild();
+    markDirty();
+    if (state.previewScope === 'module' && state.editUid === uid) {
+      scheduleBuild();
+    }
+  }
+
+  function renderItems() {
+    listEl.innerHTML = '';
+    items.forEach((val, index) => {
+      const row = document.createElement('div');
+      row.className = 'edit-list-item';
+
+      const rowLabel = document.createElement('span');
+      rowLabel.className = 'edit-list-item-label';
+      rowLabel.textContent = `${field.itemLabel || 'Item'} ${index + 1}`;
+
+      const textarea = document.createElement('textarea');
+      textarea.rows = 3;
+      textarea.value = val;
+      textarea.addEventListener('input', () => {
+        items[index] = textarea.value;
+        syncList();
+      });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-ghost btn-sm edit-list-remove';
+      removeBtn.textContent = 'Remove';
+      removeBtn.disabled = items.length <= (field.minItems || 1);
+      removeBtn.addEventListener('click', () => {
+        if (items.length <= (field.minItems || 1)) return;
+        items.splice(index, 1);
+        renderItems();
+        syncList();
+      });
+
+      row.appendChild(rowLabel);
+      row.appendChild(textarea);
+      row.appendChild(removeBtn);
+      listEl.appendChild(row);
+    });
+  }
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'btn btn-ghost btn-sm edit-list-add';
+  addBtn.textContent = `+ Add ${(field.itemLabel || 'item').toLowerCase()}`;
+  addBtn.addEventListener('click', () => {
+    if (items.length >= (field.maxItems || 12)) {
+      toast(`Maximum ${field.maxItems || 12} items`);
+      return;
+    }
+    items.push('');
+    renderItems();
+    syncList();
+    const lastTextarea = listEl.querySelector('.edit-list-item:last-child textarea');
+    if (lastTextarea) lastTextarea.focus();
+  });
+
+  renderItems();
+  wrap.appendChild(addBtn);
+  return wrap;
 }
 
 $('#btn-reset-module').addEventListener('click', () => {

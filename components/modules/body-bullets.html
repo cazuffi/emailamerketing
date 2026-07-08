@@ -2,14 +2,16 @@
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;" role="presentation"><tbody><tr>
 <td class="section-pad" style="padding:20px 24px;" role="presentation">
 <div data-editorblocktype="Text">
-<p>Hi {{FirstName}},</p>
+<p data-studio-field="greeting" data-studio-label="Greeting">Hi {{FirstName}},</p>
 <p class="text-spacer">&nbsp;</p>
-<p><span style="font-family:ARIALNB,Arial,sans-serif;">Key benefits:</span></p>
+<p data-studio-field="intro" data-studio-label="Intro line"><span style="font-family:ARIALNB,Arial,sans-serif;">Key benefits:</span></p>
+<div data-studio-repeat="bullets" data-studio-label="Bullet points" data-studio-item=".bullet-item" data-studio-item-label="Bullet" data-studio-min="1" data-studio-max="12">
 <p class="bullet-item">• First benefit or feature highlight</p>
 <p class="bullet-item">• Second benefit or feature highlight</p>
 <p class="bullet-item">• Third benefit or feature highlight</p>
+</div>
 <p class="text-spacer">&nbsp;</p>
-<p>Kind regards</p>
+<p data-studio-field="signoff" data-studio-label="Sign-off">Kind regards</p>
 </div>
 </td></tr></tbody></table>
 </div>

@@ -104,6 +104,8 @@ function eachTextField($, $block, startCount, fn) {
   let textCount = startCount;
   $block.find('h1, h2, h3, p, li').each((idx, el) => {
     const $el = $(el);
+    if ($el.attr('data-studio-field')) return;
+    if (isInsideStudioRepeat($el)) return;
     if (shouldSkipEmptyNonParagraph($el)) return;
     const tag = el.tagName.toLowerCase();
     const isSpacer = $el.hasClass('text-spacer');
@@ -141,7 +143,119 @@ function applyTextOverride($el, value) {
     return;
   }
   showForEmail($el);
-  $el.text(value);
+  const $span = $el.find('span').first();
+  if ($span.length === 1 && $el.children().length === 1) {
+    $span.text(value);
+  } else {
+    $el.text(value);
+  }
+}
+
+function normalizeOverrides(moduleId, overrides = {}) {
+  const o = { ...overrides };
+
+  if (moduleId === 'body-paragraph') {
+    if (!o.list_body && o.text_2) o.list_body = [o.text_2];
+    if (!o.greeting && o.text_0) o.greeting = o.text_0;
+    if (!o.signoff && o.text_4) o.signoff = o.text_4;
+  }
+
+  if (moduleId === 'body-bullets') {
+    if (!o.greeting && o.text_0) o.greeting = o.text_0;
+    if (!o.intro && o.text_2) o.intro = o.text_2;
+    if (!o.signoff && o.text_7) o.signoff = o.text_7;
+    if (!o.list_bullets) {
+      const bullets = [o.text_3, o.text_4, o.text_5].filter((v) => v !== undefined);
+      if (bullets.length) o.list_bullets = bullets;
+    }
+  }
+
+  return o;
+}
+
+function isInsideStudioRepeat($el) {
+  return $el.closest('[data-studio-repeat]').length > 0;
+}
+
+function extractStudioFields($, $block, fields) {
+  $block.find('[data-studio-field], [data-studio-repeat]').each((_, el) => {
+    const $el = $(el);
+
+    if ($el.attr('data-studio-field')) {
+      const key = $el.attr('data-studio-field');
+      fields.push({
+        key,
+        type: 'text',
+        label: $el.attr('data-studio-label') || key,
+        value: normalizeTextValue($el.text()),
+        multiline: true,
+        hideWhenEmpty: true,
+      });
+      return;
+    }
+
+    const name = $el.attr('data-studio-repeat');
+    if (!name) return;
+
+    const itemSel = $el.attr('data-studio-item') || 'p';
+    const items = [];
+    $el.children(itemSel).each((__, child) => {
+      const $child = $(child);
+      if ($child.hasClass('text-spacer')) return;
+      items.push(normalizeTextValue($child.text()));
+    });
+    if (!items.length) items.push('');
+
+    fields.push({
+      key: `list_${name}`,
+      type: 'text-list',
+      label: $el.attr('data-studio-label') || `${name} items`,
+      itemLabel: $el.attr('data-studio-item-label') || 'Item',
+      value: items,
+      minItems: Number($el.attr('data-studio-min') || 1),
+      maxItems: Number($el.attr('data-studio-max') || 12),
+      hideWhenEmpty: true,
+    });
+  });
+}
+
+function applyStudioFields($, $block, overrides) {
+  $block.find('[data-studio-field]').each((_, el) => {
+    const $el = $(el);
+    const key = $el.attr('data-studio-field');
+    if (!key || !Object.prototype.hasOwnProperty.call(overrides, key)) return;
+    applyTextOverride($el, overrides[key]);
+  });
+
+  $block.find('[data-studio-repeat]').each((_, el) => {
+    const $repeat = $(el);
+    const name = $repeat.attr('data-studio-repeat');
+    if (!name) return;
+
+    const key = `list_${name}`;
+    if (!Object.prototype.hasOwnProperty.call(overrides, key)) return;
+
+    const raw = overrides[key];
+    const items = Array.isArray(raw) ? raw : [raw];
+    const itemSel = $repeat.attr('data-studio-item') || 'p';
+    const $template = $repeat.children(itemSel).first();
+
+    if (!$template.length) return;
+
+    $repeat.empty();
+    for (const text of items) {
+      if (isEmptyOverride(text)) continue;
+      const $item = $template.clone();
+      applyTextOverride($item, text);
+      $repeat.append($item);
+    }
+
+    if (!$repeat.children().length) {
+      hideForEmail($repeat);
+    } else {
+      showForEmail($repeat);
+    }
+  });
 }
 
 function extractFields(moduleId) {
@@ -158,6 +272,8 @@ function extractFields(moduleId) {
     const blockType = ($block.attr('data-editorblocktype') || '').toLowerCase();
 
     if (blockType === 'text') {
+      extractStudioFields($, $block, fields);
+
       let visibleTextIndex = 0;
       textCount = eachTextField($, $block, textCount, ($el, index, isSpacer, tag) => {
         if (isSpacer) return;
@@ -234,7 +350,8 @@ function extractFields(moduleId) {
 }
 
 function applyOverrides(moduleId, overrides = {}) {
-  if (!overrides || !Object.keys(overrides).length) {
+  const normalized = normalizeOverrides(moduleId, overrides);
+  if (!normalized || !Object.keys(normalized).length) {
     return loadResolvedModuleHtml(moduleId);
   }
 
@@ -251,11 +368,13 @@ function applyOverrides(moduleId, overrides = {}) {
     const blockType = ($block.attr('data-editorblocktype') || '').toLowerCase();
 
     if (blockType === 'text') {
+      applyStudioFields($, $block, normalized);
+
       textCount = eachTextField($, $block, textCount, ($el, index, isSpacer) => {
         if (isSpacer) return;
         const key = `text_${index}`;
-        if (Object.prototype.hasOwnProperty.call(overrides, key)) {
-          applyTextOverride($el, overrides[key]);
+        if (Object.prototype.hasOwnProperty.call(normalized, key)) {
+          applyTextOverride($el, normalized[key]);
         }
       });
     }
@@ -265,11 +384,11 @@ function applyOverrides(moduleId, overrides = {}) {
       if ($img.length) {
         const srcKey = `image_${imageCount}_src`;
         const altKey = `image_${imageCount}_alt`;
-        if (Object.prototype.hasOwnProperty.call(overrides, srcKey)) {
-          $img.attr('src', overrides[srcKey]);
+        if (Object.prototype.hasOwnProperty.call(normalized, srcKey)) {
+          $img.attr('src', normalized[srcKey]);
         }
-        if (Object.prototype.hasOwnProperty.call(overrides, altKey)) {
-          $img.attr('alt', overrides[altKey]);
+        if (Object.prototype.hasOwnProperty.call(normalized, altKey)) {
+          $img.attr('alt', normalized[altKey]);
         }
         imageCount += 1;
       }
@@ -280,11 +399,11 @@ function applyOverrides(moduleId, overrides = {}) {
       if ($link.length) {
         const labelKey = `button_${buttonCount}_label`;
         const hrefKey = `button_${buttonCount}_href`;
-        if (Object.prototype.hasOwnProperty.call(overrides, labelKey)) {
-          $link.text(overrides[labelKey]);
+        if (Object.prototype.hasOwnProperty.call(normalized, labelKey)) {
+          $link.text(normalized[labelKey]);
         }
-        if (Object.prototype.hasOwnProperty.call(overrides, hrefKey)) {
-          $link.attr('href', overrides[hrefKey]);
+        if (Object.prototype.hasOwnProperty.call(normalized, hrefKey)) {
+          $link.attr('href', normalized[hrefKey]);
         }
         buttonCount += 1;
       }
@@ -295,11 +414,11 @@ function applyOverrides(moduleId, overrides = {}) {
     const $el = $(el);
     const labelKey = `link_${linkCount}_label`;
     const hrefKey = `link_${linkCount}_href`;
-    if (Object.prototype.hasOwnProperty.call(overrides, labelKey)) {
-      $el.text(overrides[labelKey]);
+    if (Object.prototype.hasOwnProperty.call(normalized, labelKey)) {
+      $el.text(normalized[labelKey]);
     }
-    if (Object.prototype.hasOwnProperty.call(overrides, hrefKey)) {
-      $el.attr('href', overrides[hrefKey]);
+    if (Object.prototype.hasOwnProperty.call(normalized, hrefKey)) {
+      $el.attr('href', normalized[hrefKey]);
     }
     linkCount += 1;
   });
@@ -315,4 +434,5 @@ module.exports = {
   extractFields,
   applyOverrides,
   loadResolvedModuleHtml,
+  normalizeOverrides,
 };
