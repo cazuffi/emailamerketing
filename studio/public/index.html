@@ -107,6 +107,18 @@
 
     <!-- Toast -->
     <div id="toast" class="toast hidden"></div>
+
+    <!-- Module hover preview -->
+    <div id="module-hover-preview" class="module-hover-preview hidden" aria-hidden="true">
+      <div class="module-hover-header">
+        <span id="hover-module-id" class="hover-module-id"></span>
+        <span id="hover-module-desc" class="hover-module-desc"></span>
+      </div>
+      <div class="module-hover-frame-wrap">
+        <div class="module-hover-loading hidden" id="hover-loading">Loading preview…</div>
+        <iframe id="module-hover-frame" title="Module preview" sandbox="allow-same-origin" tabindex="-1"></iframe>
+      </div>
+    </div>
   </div>
   <script src="/app.js"></script>
 </body>

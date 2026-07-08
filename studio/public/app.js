@@ -6,7 +6,12 @@ const state = {
   campaignId: null,
   previewWidth: 640,
   buildTimer: null,
+  hoverModuleId: null,
+  hoverTimer: null,
+  hoverAbort: null,
 };
+
+const previewCache = new Map();
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -98,6 +103,7 @@ async function initStudio() {
 }
 
 function renderLibrary(filter = '') {
+  hideModuleHover();
   const q = filter.toLowerCase();
   const container = $('#module-categories');
   container.innerHTML = '';
@@ -129,6 +135,8 @@ function renderLibrary(filter = '') {
         addModule(mod.id);
       };
       el.onclick = () => addModule(mod.id);
+      el.addEventListener('mouseenter', () => scheduleModuleHover(mod, el));
+      el.addEventListener('mouseleave', cancelModuleHover);
       group.appendChild(el);
     }
     container.appendChild(group);
@@ -136,6 +144,107 @@ function renderLibrary(filter = '') {
 }
 
 $('#module-search').addEventListener('input', (e) => renderLibrary(e.target.value));
+
+$('#module-categories').addEventListener('scroll', hideModuleHover, { passive: true });
+
+// ── Module hover preview ──────────────────────────────
+
+function scheduleModuleHover(mod, anchorEl) {
+  clearTimeout(state.hoverTimer);
+  state.hoverTimer = setTimeout(() => showModuleHover(mod, anchorEl), 280);
+}
+
+function cancelModuleHover() {
+  clearTimeout(state.hoverTimer);
+  hideModuleHover();
+}
+
+function hideModuleHover() {
+  if (state.hoverAbort) {
+    state.hoverAbort.abort();
+    state.hoverAbort = null;
+  }
+  state.hoverModuleId = null;
+  $$('.module-item.hover-active').forEach((el) => el.classList.remove('hover-active'));
+  const pop = $('#module-hover-preview');
+  pop.classList.add('hidden');
+  pop.setAttribute('aria-hidden', 'true');
+}
+
+function positionModuleHover(anchorEl) {
+  const pop = $('#module-hover-preview');
+  const rect = anchorEl.getBoundingClientRect();
+  const popW = 320;
+  const popH = 290;
+  const gap = 10;
+
+  let left = rect.right + gap;
+  if (left + popW > window.innerWidth - 8) {
+    left = rect.left - popW - gap;
+  }
+  left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+
+  let top = rect.top;
+  top = Math.max(8, Math.min(top, window.innerHeight - popH - 8));
+
+  pop.style.left = `${left}px`;
+  pop.style.top = `${top}px`;
+}
+
+async function fetchModulePreview(id) {
+  if (previewCache.has(id)) return previewCache.get(id);
+
+  state.hoverAbort = new AbortController();
+  const res = await fetch(`/api/modules/${id}/preview`, {
+    credentials: 'same-origin',
+    signal: state.hoverAbort.signal,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  previewCache.set(id, data.html);
+  return data.html;
+}
+
+async function showModuleHover(mod, anchorEl) {
+  if (state.hoverModuleId === mod.id) return;
+
+  if (state.hoverAbort) state.hoverAbort.abort();
+  state.hoverModuleId = mod.id;
+
+  $$('.module-item.hover-active').forEach((el) => el.classList.remove('hover-active'));
+  anchorEl.classList.add('hover-active');
+
+  const pop = $('#module-hover-preview');
+  const frame = $('#module-hover-frame');
+  const loading = $('#hover-loading');
+
+  $('#hover-module-id').textContent = mod.id;
+  $('#hover-module-desc').textContent = mod.description;
+  positionModuleHover(anchorEl);
+  pop.classList.remove('hidden');
+  pop.setAttribute('aria-hidden', 'false');
+
+  if (previewCache.has(mod.id)) {
+    loading.classList.add('hidden');
+    frame.srcdoc = previewCache.get(mod.id);
+    return;
+  }
+
+  loading.classList.remove('hidden');
+  frame.srcdoc = '';
+
+  try {
+    const html = await fetchModulePreview(mod.id);
+    if (state.hoverModuleId !== mod.id) return;
+    frame.srcdoc = html;
+    loading.classList.add('hidden');
+  } catch (ex) {
+    if (ex.name === 'AbortError') return;
+    if (state.hoverModuleId !== mod.id) return;
+    frame.srcdoc = `<p style="font-family:sans-serif;padding:16px;color:#c00;font-size:12px;">${ex.message}</p>`;
+    loading.classList.add('hidden');
+  }
+}
 
 // ── Composer ──────────────────────────────────────────
 

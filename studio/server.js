@@ -36,6 +36,15 @@ app.get('/api/modules', requireAuth, (req, res) => {
   res.json({ modules, categories });
 });
 
+app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
+  try {
+    const html = buildEmailHtml({ title: 'Module preview', modules: [req.params.id] });
+    res.json({ html, id: req.params.id });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 app.post('/api/build', requireAuth, (req, res) => {
   try {
     const { title = 'Email', modules = [] } = req.body || {};
