@@ -5,6 +5,7 @@ const state = {
   instances: [],
   overrides: {},
   editUid: null,
+  previewScope: 'full',
   campaignId: null,
   campaignStatus: 'draft',
   savedSnapshot: '',
@@ -300,6 +301,7 @@ async function initStudio() {
   renderLibrary();
   await loadCampaigns();
   updateStatusSelect();
+  updatePreviewScopeUI();
   clearDirty();
   scheduleBuild();
   showOnboardingIfNeeded();
@@ -465,9 +467,10 @@ function addModule(moduleId) {
   const uid = newUid();
   state.instances.push({ uid, moduleId });
   state.editUid = uid;
+  state.previewScope = 'module';
   renderComposer();
-  loadEditForm(uid);
-  switchPanel('edit');
+  updatePreviewScopeUI();
+  switchPanel('preview');
   scheduleBuild();
   markDirty();
 }
@@ -477,9 +480,17 @@ function removeModule(index) {
   delete state.overrides[removed.uid];
   if (state.editUid === removed.uid) {
     state.editUid = state.instances[0]?.uid || null;
-    if (state.editUid) loadEditForm(state.editUid);
-    else clearEditForm();
+    if (!state.editUid) {
+      state.previewScope = 'full';
+      clearEditForm();
+    } else {
+      const editTab = $('#edit-tab');
+      if (editTab && !editTab.classList.contains('hidden')) {
+        loadEditForm(state.editUid);
+      }
+    }
   }
+  updatePreviewScopeUI();
   renderComposer();
   scheduleBuild();
   markDirty();
@@ -496,6 +507,15 @@ function moveModule(index, dir) {
 }
 
 function selectInstance(uid) {
+  state.editUid = uid;
+  state.previewScope = 'module';
+  renderComposer();
+  updatePreviewScopeUI();
+  switchPanel('preview');
+  scheduleBuild();
+}
+
+function openEditPanel(uid) {
   state.editUid = uid;
   renderComposer();
   loadEditForm(uid);
@@ -531,6 +551,7 @@ function renderComposer() {
         <div class="composer-cat">${mod?.category || ''}</div>
       </div>
       <div class="composer-actions">
+        <button class="btn btn-ghost btn-sm" data-preview title="Preview">◎</button>
         <button class="btn btn-ghost btn-sm" data-edit title="Edit">✎</button>
         <button class="btn btn-ghost btn-sm" data-up>▲</button>
         <button class="btn btn-ghost btn-sm" data-down>▼</button>
@@ -538,7 +559,8 @@ function renderComposer() {
       </div>
     `;
 
-    el.querySelector('[data-edit]').onclick = (e) => { e.stopPropagation(); selectInstance(inst.uid); };
+    el.querySelector('[data-preview]').onclick = (e) => { e.stopPropagation(); selectInstance(inst.uid); };
+    el.querySelector('[data-edit]').onclick = (e) => { e.stopPropagation(); openEditPanel(inst.uid); };
     el.querySelector('[data-up]').onclick = (e) => { e.stopPropagation(); moveModule(i, -1); };
     el.querySelector('[data-down]').onclick = (e) => { e.stopPropagation(); moveModule(i, 1); };
     el.querySelector('[data-remove]').onclick = (e) => { e.stopPropagation(); removeModule(i); };
@@ -576,8 +598,47 @@ function switchPanel(name) {
   });
   $('#preview-tab').classList.toggle('hidden', name !== 'preview');
   $('#edit-tab').classList.toggle('hidden', name !== 'edit');
-  $('#preview-toggles').classList.toggle('hidden', name !== 'preview');
+  $('#preview-controls').classList.toggle('hidden', name !== 'preview');
+
+  if (name === 'edit' && state.editUid) {
+    loadEditForm(state.editUid);
+  }
+  if (name === 'preview') {
+    scheduleBuild();
+  }
 }
+
+function updatePreviewScopeUI() {
+  const hasSelection = Boolean(state.editUid);
+  const moduleBtn = $('#scope-module-btn');
+  moduleBtn.disabled = !hasSelection;
+  moduleBtn.title = hasSelection ? 'Preview selected module only' : 'Select a module first';
+
+  if (!hasSelection && state.previewScope === 'module') {
+    state.previewScope = 'full';
+  }
+
+  $$('.scope-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.scope === state.previewScope);
+  });
+
+  const ctx = $('#preview-context');
+  if (state.previewScope === 'module' && state.editUid) {
+    const inst = state.instances.find((i) => i.uid === state.editUid);
+    ctx.textContent = inst ? `Module: ${inst.moduleId}` : 'This module';
+  } else {
+    ctx.textContent = 'Full email';
+  }
+}
+
+$$('.scope-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (btn.disabled) return;
+    state.previewScope = btn.dataset.scope;
+    updatePreviewScopeUI();
+    scheduleBuild();
+  });
+});
 
 $$('.panel-tab').forEach((tab) => {
   tab.addEventListener('click', () => switchPanel(tab.dataset.panel));
@@ -653,6 +714,9 @@ async function loadEditForm(uid) {
         const preview = wrap.querySelector('.image-preview');
         if (preview) updateImagePreview(preview, input.value);
       }
+      if (state.previewScope === 'module' && state.editUid === uid) {
+        scheduleBuild();
+      }
     });
 
     wrap.appendChild(label);
@@ -681,6 +745,7 @@ $('#btn-reset-module').addEventListener('click', () => {
   loadEditForm(state.editUid);
   scheduleBuild();
   markDirty();
+  if (state.previewScope === 'module') scheduleBuild();
   toast('Module reset to defaults');
 });
 
@@ -697,20 +762,42 @@ async function buildPreview() {
   if (!state.instances.length) {
     loading.classList.add('hidden');
     frame.srcdoc = '<p style="font-family:sans-serif;padding:24px;color:#666;">Add modules to preview</p>';
+    updatePreviewScopeUI();
     return;
   }
+
+  const showModuleOnly = state.previewScope === 'module' && state.editUid;
+  const inst = showModuleOnly ? state.instances.find((i) => i.uid === state.editUid) : null;
+
+  if (showModuleOnly && !inst) {
+    state.previewScope = 'full';
+    updatePreviewScopeUI();
+  }
+
   loading.classList.remove('hidden');
   try {
-    const payload = buildPayload();
-    const { html } = await api('/api/build', {
-      method: 'POST',
-      body: JSON.stringify({
-        title: payload.title,
-        modules: payload.modules,
-        overrides: payload.indexOverrides,
-      }),
-    });
+    let html;
+    if (showModuleOnly && inst) {
+      const overrides = state.overrides[inst.uid] || {};
+      const qs = Object.keys(overrides).length
+        ? `?overrides=${encodeURIComponent(JSON.stringify(overrides))}`
+        : '';
+      const data = await api(`/api/modules/${inst.moduleId}/preview${qs}`);
+      html = data.html;
+    } else {
+      const payload = buildPayload();
+      const { html: fullHtml } = await api('/api/build', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: payload.title,
+          modules: payload.modules,
+          overrides: payload.indexOverrides,
+        }),
+      });
+      html = fullHtml;
+    }
     frame.srcdoc = html;
+    updatePreviewScopeUI();
   } catch (ex) {
     frame.srcdoc = `<p style="color:red;padding:24px;font-family:sans-serif;">${ex.message}</p>`;
   } finally {
@@ -800,11 +887,14 @@ $('#campaign-select').addEventListener('change', async (e) => {
     : campaign.modules.map((moduleId, i) => ({ uid: `legacy-${i}`, moduleId }));
   state.overrides = { ...(campaign.overrides || {}) };
   state.editUid = null;
+  state.previewScope = 'full';
   $('#email-title').value = campaign.title;
   $('#campaign-status').value = campaign.status || 'draft';
   updateStatusSelect();
+  updatePreviewScopeUI();
   renderComposer();
   clearEditForm();
+  switchPanel('preview');
   scheduleBuild();
   clearDirty();
   updateProgress();

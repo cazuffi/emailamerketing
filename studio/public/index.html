@@ -91,7 +91,7 @@
           <div class="panel-header">
             <div class="panel-heading">
               <h2>Your email</h2>
-              <p class="panel-subtitle">Drag to reorder · click to edit</p>
+              <p class="panel-subtitle">Drag to reorder · click to preview · ✎ to edit</p>
             </div>
             <span id="module-count" class="badge">0 modules</span>
           </div>
@@ -115,9 +115,15 @@
               <button type="button" class="panel-tab active" data-panel="preview">Preview</button>
               <button type="button" class="panel-tab" data-panel="edit">Edit</button>
             </div>
-            <div class="preview-toggles segmented" id="preview-toggles">
-              <button type="button" class="toggle-btn active" data-width="640">Desktop</button>
-              <button type="button" class="toggle-btn" data-width="375">Mobile</button>
+            <div class="preview-controls" id="preview-controls">
+              <div class="preview-scope segmented" id="preview-scope">
+                <button type="button" class="scope-btn active" data-scope="full">Full email</button>
+                <button type="button" class="scope-btn" data-scope="module" id="scope-module-btn" disabled title="Select a module first">This module</button>
+              </div>
+              <div class="preview-toggles segmented" id="preview-toggles">
+                <button type="button" class="toggle-btn active" data-width="640">Desktop</button>
+                <button type="button" class="toggle-btn" data-width="375">Mobile</button>
+              </div>
             </div>
           </div>
           <div id="preview-tab" class="panel-body">
@@ -127,6 +133,7 @@
                   <span class="device-dot"></span>
                   <span class="device-dot"></span>
                   <span class="device-dot"></span>
+                  <span class="preview-context" id="preview-context">Full email</span>
                   <span class="device-label" id="device-label">640px</span>
                 </div>
                 <div class="device-screen">
