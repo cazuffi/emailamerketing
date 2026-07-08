@@ -34,13 +34,30 @@ function openBrowser(url) {
   exec(cmd);
 }
 
+function resolveEmailPath(target) {
+  if (!target || target === 'catalog' || target === 'module-catalog') {
+    const catalog = path.join(ROOT, 'dist/templates/module-catalog.html');
+    if (fs.existsSync(catalog)) return catalog;
+  }
+
+  if (target === 'long-form' || target === 'long-form-promo') {
+    const longForm = path.join(ROOT, 'dist/templates/long-form-promo.html');
+    if (fs.existsSync(longForm)) return longForm;
+  }
+
+  const campaignPath = findCampaignEmail(target);
+  if (campaignPath) return campaignPath;
+
+  return null;
+}
+
 function main() {
-  const slug = process.argv[2];
-  const emailPath = findCampaignEmail(slug);
+  const target = process.argv[2];
+  const emailPath = resolveEmailPath(target);
 
   if (!emailPath || !fs.existsSync(emailPath)) {
-    console.error('Run npm run build first, or specify a campaign slug.');
-    console.error('Usage: npm run preview -- [campaign-slug]');
+    console.error('Run npm run build first.');
+    console.error('Usage: npm run preview -- [campaign-slug | catalog | long-form]');
     process.exit(1);
   }
 

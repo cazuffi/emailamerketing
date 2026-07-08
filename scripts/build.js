@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const { execSync } = require('child_process');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
@@ -40,6 +41,8 @@ function findSources(dir, filename) {
 }
 
 function main() {
+  execSync('node scripts/generate-catalog.js', { cwd: ROOT, stdio: 'inherit' });
+
   const jobs = [];
 
   for (const entry of fs.readdirSync(path.join(ROOT, 'templates'), { withFileTypes: true })) {

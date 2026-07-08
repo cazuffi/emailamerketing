@@ -12,12 +12,17 @@ campaigns/2026-07-my-campaign/
   subject-lines.md
 ```
 
-2. Point `source.html` at shared blocks or campaign-specific overrides:
+2. Point `source.html` at modules (recommended) or campaign-specific overrides:
 
 ```html
-<!-- @include blocks/header.html -->
-<!-- @include ../../components/blocks/hero.html -->
+<!-- @include ../../components/modules/header-standard.html -->
+<!-- @include ../../components/modules/hero-full.html -->
+<!-- @include ../../components/modules/body-bullets.html -->
+<!-- @include ../../components/modules/cta-primary-center.html -->
+<!-- @include ../../components/modules/footer.html -->
 ```
+
+Browse all 32 modules: `npm run preview -- catalog`. See [modules.md](modules.md).
 
 3. Build and preview:
 
