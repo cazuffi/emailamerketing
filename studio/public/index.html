@@ -73,13 +73,16 @@
         <div class="progress-step" data-step="export"><span>4</span> Export</div>
       </div>
 
-      <div class="workspace">
+      <div class="workspace" id="workspace">
         <!-- Module library -->
         <aside class="panel library-panel">
           <div class="panel-header panel-header-stack">
-            <div class="panel-heading">
-              <h2>Module library</h2>
-              <p class="panel-subtitle">Thumbnails · hover for detail · click to add</p>
+            <div class="panel-heading panel-heading-row">
+              <div>
+                <h2>Module library</h2>
+                <p class="panel-subtitle">Thumbnails · hover for detail · click to add</p>
+              </div>
+              <button type="button" id="btn-collapse-library" class="panel-collapse-btn" title="Collapse library (more preview space)">◀</button>
             </div>
             <input type="search" id="module-search" placeholder="Search modules…" class="search-input">
           </div>
@@ -127,8 +130,10 @@
             </div>
           </div>
           <div id="preview-tab" class="panel-body">
-            <p class="preview-hint muted">Click text to edit · Desktop preview is 640px wide (scroll if needed)</p>
-            <div class="preview-frame-wrap">
+            <p class="preview-hint muted">Click text to edit · Desktop preview scales to fit your screen</p>
+            <div class="preview-frame-wrap" id="preview-frame-wrap">
+              <div class="preview-scale-host" id="preview-scale-host">
+                <div class="preview-scale-inner" id="preview-scale-inner">
               <div id="device-frame" class="device-frame device-desktop">
                 <div class="device-chrome">
                   <span class="device-dot"></span>
@@ -140,6 +145,8 @@
                 <div class="device-screen">
                   <div id="preview-loading" class="preview-loading hidden">Updating preview…</div>
                   <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+                </div>
+              </div>
                 </div>
               </div>
             </div>
@@ -162,6 +169,7 @@
           </div>
         </aside>
       </div>
+      <button type="button" id="btn-expand-library" class="library-expand-tab hidden" title="Show module library">Library</button>
     </div>
 
     <!-- Admin modal -->
