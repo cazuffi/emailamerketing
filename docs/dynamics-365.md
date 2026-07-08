@@ -29,6 +29,10 @@ flowchart LR
 
 To register blocks and templates so your team can use them in the D365 designer, see **[d365-publish-guide.md](d365-publish-guide.md)**.
 
+Team quick reference: **[d365-team-cheatsheet.md](d365-team-cheatsheet.md)**
+
+Pre-publish validation: `npm run validate:d365` (after `npm run build:d365`)
+
 Quick summary:
 - **Content blocks** — `dist/d365/blocks/` → Marketing templates → Content blocks
 - **Email templates** — `dist/d365/templates/` → New email → paste HTML → Save as template

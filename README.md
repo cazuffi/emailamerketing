@@ -38,7 +38,7 @@ docs/                     D365 publish guide, brand guidelines, workflow
 2. Run `npm run build:d365`
 3. Publish to D365 per **[docs/d365-publish-guide.md](docs/d365-publish-guide.md)**:
    - **Content blocks** → team drags `WM_header`, `WM_body`, `WM_footer`, etc.
-   - **Email templates** → team starts from `WM_promo`, `WM_newsletter`, `WM_welcome`
+   - **Email templates** → team starts from `WM_promo`, `WM_newsletter`, `WM_welcome`, `WM_event`
 
 ### For dev drafting (this repo)
 
@@ -63,6 +63,9 @@ docs/                     D365 publish guide, brand guidelines, workflow
 | `wm-accent-band.html` | `WM_accent_band` | Orange highlight strip |
 | `wm-feature-block-left.html` | `WM_feature_block_left` | 60/40 text + image |
 | `wm-divider.html` | `WM_divider` | Orange rule |
+| `wm-feature-block-right.html` | `WM_feature_block_right` | 40/60 image + text |
+| `wm-two-up-cards.html` | `WM_two_up_cards` | 50/50 product cards |
+| `wm-event-details.html` | `WM_event_details` | Date, time, location, agenda |
 | `wm-footer.html` | `WM_footer` | **Required** on every email |
 
 Full catalog: `d365-manifest.json`
@@ -74,12 +77,14 @@ Full catalog: `d365-manifest.json`
 | `npm run build:d365` | Export blocks + templates to `dist/d365/` |
 | `npm run build` | Build D365 exports + compile all MJML |
 | `npm run build:mjml` | Compile MJML only (requires prior `build:d365`) |
-| `npm run new-draft -- <slug> [template]` | Scaffold a draft folder |
+| `npm run new-draft -- <slug> [template]` | Scaffold a draft folder (newsletter, promo, welcome, event) |
 | `npm run preview -- [path]` | Browser preview with auto-reload (optional) |
+| `npm run validate:d365` | Pre-publish checklist for D365 blocks and templates |
 
 ## Docs
 
 - **[docs/d365-publish-guide.md](docs/d365-publish-guide.md)** — register blocks and templates in D365
+- **[docs/d365-team-cheatsheet.md](docs/d365-team-cheatsheet.md)** — quick reference for marketers in D365
 - **[docs/dynamics-365.md](docs/dynamics-365.md)** — import, schedule, go-live workflow
 - **[docs/brand-guidelines.md](docs/brand-guidelines.md)** — Weidmüller colors, fonts, layout
 

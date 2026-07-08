@@ -8,7 +8,8 @@
     "build:d365": "node scripts/build-d365.js",
     "build:mjml": "node scripts/build.js",
     "preview": "node scripts/preview.js",
-    "new-draft": "node scripts/new-draft.js"
+    "new-draft": "node scripts/new-draft.js",
+    "validate:d365": "node scripts/validate-d365.js"
   },
   "devDependencies": {
     "chokidar": "^3.6.0",
