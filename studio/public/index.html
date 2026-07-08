@@ -10,18 +10,21 @@
   <div id="app">
     <!-- Login -->
     <div id="login-view" class="view hidden">
-      <div class="login-card">
-        <div class="login-brand">
-          <div class="brand-mark"></div>
-          <h1>Email Studio</h1>
-          <p>Build D365 emails from polished modules</p>
+      <div class="login-shell">
+        <div class="login-card">
+          <div class="login-brand">
+            <div class="brand-mark lg"></div>
+            <p class="login-eyebrow">Weidmüller</p>
+            <h1>Email Studio</h1>
+            <p>Compose on-brand D365 emails from polished modules</p>
+          </div>
+          <form id="login-form">
+            <label>Email<input type="email" id="login-email" required autocomplete="username" placeholder="you@company.com"></label>
+            <label>Password<input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••"></label>
+            <p id="login-error" class="error hidden"></p>
+            <button type="submit" class="btn btn-primary btn-full">Sign in</button>
+          </form>
         </div>
-        <form id="login-form">
-          <label>Email<input type="email" id="login-email" required autocomplete="username"></label>
-          <label>Password<input type="password" id="login-password" required autocomplete="current-password"></label>
-          <p id="login-error" class="error hidden"></p>
-          <button type="submit" class="btn btn-primary btn-full">Sign in</button>
-        </form>
       </div>
     </div>
 
@@ -30,18 +33,25 @@
       <header class="topbar">
         <div class="topbar-left">
           <div class="brand-mark sm"></div>
-          <span class="topbar-title">Email Studio</span>
+          <div class="topbar-brand">
+            <span class="topbar-title">Email Studio</span>
+            <span class="topbar-subtitle">D365 module composer</span>
+          </div>
         </div>
         <div class="topbar-center">
           <input type="text" id="email-title" class="title-input" placeholder="Email title" value="Untitled email">
           <select id="campaign-select" class="campaign-select">
-            <option value="">— Load campaign —</option>
+            <option value="">Load campaign…</option>
           </select>
         </div>
         <div class="topbar-right">
           <span id="user-name" class="user-badge"></span>
-          <button id="btn-save" class="btn btn-secondary">Save</button>
-          <button id="btn-export" class="btn btn-primary">Copy HTML</button>
+          <button id="btn-save" class="btn btn-secondary">
+            <span class="btn-icon">💾</span> Save
+          </button>
+          <button id="btn-export" class="btn btn-primary">
+            <span class="btn-icon">⎘</span> Copy HTML
+          </button>
           <button id="btn-logout" class="btn btn-ghost">Logout</button>
         </div>
       </header>
@@ -49,9 +59,12 @@
       <div class="workspace">
         <!-- Module library -->
         <aside class="panel library-panel">
-          <div class="panel-header">
-            <h2>Modules</h2>
-            <input type="search" id="module-search" placeholder="Search…" class="search-input">
+          <div class="panel-header panel-header-stack">
+            <div class="panel-heading">
+              <h2>Module library</h2>
+              <p class="panel-subtitle">Hover to preview · click to add</p>
+            </div>
+            <input type="search" id="module-search" placeholder="Search modules…" class="search-input">
           </div>
           <div id="module-categories" class="module-categories"></div>
         </aside>
@@ -59,45 +72,65 @@
         <!-- Composer -->
         <section class="panel composer-panel">
           <div class="panel-header">
-            <h2>Your email</h2>
+            <div class="panel-heading">
+              <h2>Your email</h2>
+              <p class="panel-subtitle">Drag to reorder · click to edit</p>
+            </div>
             <span id="module-count" class="badge">0 modules</span>
           </div>
           <div id="composer-list" class="composer-list">
             <div class="composer-empty" id="composer-empty">
-              <p>Click a module from the library to add it.</p>
-              <p class="muted">Click ✎ or a module row to edit text, images, and links.</p>
+              <div class="empty-icon">+</div>
+              <p>Add modules from the library</p>
+              <p class="muted">Your email builds here. Footer is included automatically.</p>
             </div>
           </div>
           <div class="composer-footer-locked">
-            <span class="lock-icon">🔒</span> footer <span class="muted">— always included for D365 compliance</span>
+            <span class="lock-pill">🔒 Footer locked</span>
+            <span class="muted">D365 compliance tokens always included</span>
           </div>
         </section>
 
         <!-- Preview & Edit -->
         <aside class="panel preview-panel">
           <div class="panel-header">
-            <div class="panel-tabs">
+            <div class="panel-tabs segmented">
               <button type="button" class="panel-tab active" data-panel="preview">Preview</button>
               <button type="button" class="panel-tab" data-panel="edit">Edit</button>
             </div>
-            <div class="preview-toggles" id="preview-toggles">
+            <div class="preview-toggles segmented" id="preview-toggles">
               <button type="button" class="toggle-btn active" data-width="640">Desktop</button>
               <button type="button" class="toggle-btn" data-width="375">Mobile</button>
             </div>
           </div>
           <div id="preview-tab" class="panel-body">
             <div class="preview-frame-wrap">
-              <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+              <div id="device-frame" class="device-frame device-desktop">
+                <div class="device-chrome">
+                  <span class="device-dot"></span>
+                  <span class="device-dot"></span>
+                  <span class="device-dot"></span>
+                  <span class="device-label" id="device-label">640px</span>
+                </div>
+                <div class="device-screen">
+                  <div id="preview-loading" class="preview-loading hidden">Updating preview…</div>
+                  <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+                </div>
+              </div>
             </div>
           </div>
           <div id="edit-tab" class="panel-body hidden">
             <div id="edit-empty" class="edit-empty">
-              <p>Select a module in <strong>Your email</strong> to edit copy, images, and links.</p>
+              <div class="empty-icon">✎</div>
+              <p>Select a module to edit headlines, images, and links.</p>
             </div>
             <div id="edit-form-wrap" class="edit-form-wrap hidden">
               <div class="edit-form-header">
-                <span id="edit-module-id" class="edit-module-id"></span>
-                <button type="button" id="btn-reset-module" class="btn btn-ghost btn-sm">Reset</button>
+                <div>
+                  <span class="edit-label">Editing</span>
+                  <span id="edit-module-id" class="edit-module-id"></span>
+                </div>
+                <button type="button" id="btn-reset-module" class="btn btn-ghost btn-sm">Reset defaults</button>
               </div>
               <form id="edit-form" class="edit-form"></form>
             </div>
@@ -106,7 +139,7 @@
       </div>
     </div>
 
-    <!-- Admin: invite coordinator modal -->
+    <!-- Admin modal -->
     <div id="admin-modal" class="modal hidden">
       <div class="modal-card">
         <h2>Team members</h2>
@@ -122,10 +155,8 @@
       </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast" class="toast hidden"></div>
 
-    <!-- Module hover preview -->
     <div id="module-hover-preview" class="module-hover-preview hidden" aria-hidden="true">
       <div class="module-hover-header">
         <span id="hover-module-id" class="hover-module-id"></span>

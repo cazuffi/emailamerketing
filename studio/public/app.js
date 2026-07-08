@@ -51,11 +51,14 @@ function show(view) {
   $('#studio-view').classList.toggle('hidden', view !== 'studio');
 }
 
-function toast(msg) {
+function toast(msg, type = '') {
   const el = $('#toast');
   el.textContent = msg;
-  el.classList.remove('hidden');
-  setTimeout(() => el.classList.add('hidden'), 2800);
+  el.className = `toast visible${type ? ` ${type}` : ''}`;
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    el.classList.remove('visible');
+  }, 2800);
 }
 
 // ── Auth ──────────────────────────────────────────────
@@ -188,6 +191,7 @@ function hideModuleHover() {
   $$('.module-item.hover-active').forEach((el) => el.classList.remove('hover-active'));
   const pop = $('#module-hover-preview');
   pop.classList.add('hidden');
+  pop.classList.remove('visible');
   pop.setAttribute('aria-hidden', 'true');
 }
 
@@ -242,6 +246,7 @@ async function showModuleHover(mod, anchorEl) {
   $('#hover-module-desc').textContent = mod.description;
   positionModuleHover(anchorEl);
   pop.classList.remove('hidden');
+  pop.classList.add('visible');
   pop.setAttribute('aria-hidden', 'false');
 
   if (previewCache.has(mod.id)) {
@@ -328,9 +333,10 @@ function renderComposer() {
     el.draggable = true;
     el.dataset.index = i;
     el.innerHTML = `
+      <span class="composer-index">${i + 1}</span>
       <span class="composer-drag">⠿</span>
       <div class="composer-info">
-        <div class="composer-id">${inst.moduleId}${hasEdits ? ' · edited' : ''}</div>
+        <div class="composer-id">${inst.moduleId}${hasEdits ? '<span class="composer-edited">edited</span>' : ''}</div>
         <div class="composer-cat">${mod?.category || ''}</div>
       </div>
       <div class="composer-actions">
@@ -484,10 +490,13 @@ function scheduleBuild() {
 
 async function buildPreview() {
   const frame = $('#preview-frame');
+  const loading = $('#preview-loading');
   if (!state.instances.length) {
+    loading.classList.add('hidden');
     frame.srcdoc = '<p style="font-family:sans-serif;padding:24px;color:#666;">Add modules to preview</p>';
     return;
   }
+  loading.classList.remove('hidden');
   try {
     const payload = buildPayload();
     const { html } = await api('/api/build', {
@@ -501,6 +510,8 @@ async function buildPreview() {
     frame.srcdoc = html;
   } catch (ex) {
     frame.srcdoc = `<p style="color:red;padding:24px;font-family:sans-serif;">${ex.message}</p>`;
+  } finally {
+    loading.classList.add('hidden');
   }
 }
 
@@ -512,7 +523,17 @@ $$('.toggle-btn').forEach((btn) => {
     btn.classList.add('active');
     const w = Number(btn.dataset.width);
     state.previewWidth = w;
-    $('#preview-frame').style.width = `${w}px`;
+    const frame = $('#device-frame');
+    const label = $('#device-label');
+    if (w <= 375) {
+      frame.classList.remove('device-desktop');
+      frame.classList.add('device-mobile');
+      label.textContent = '375px';
+    } else {
+      frame.classList.remove('device-mobile');
+      frame.classList.add('device-desktop');
+      label.textContent = '640px';
+    }
   });
 });
 
@@ -534,7 +555,7 @@ $('#btn-export').addEventListener('click', async () => {
       }),
     });
     await navigator.clipboard.writeText(html);
-    toast('HTML copied — paste into D365 → Design → HTML');
+    toast('HTML copied — paste into D365 → Design → HTML', 'success');
   } catch (ex) {
     toast(`Export failed: ${ex.message}`);
   }
@@ -545,7 +566,7 @@ $('#btn-export').addEventListener('click', async () => {
 async function loadCampaigns() {
   const { campaigns } = await api('/api/campaigns');
   const sel = $('#campaign-select');
-  sel.innerHTML = '<option value="">— Load campaign —</option>';
+  sel.innerHTML = '<option value="">Load campaign…</option>';
   for (const c of campaigns) {
     const opt = document.createElement('option');
     opt.value = c.id;
