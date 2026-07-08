@@ -118,9 +118,20 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Email Studio running at http://localhost:${PORT}`);
   if (process.env.NODE_ENV !== 'production') {
     console.log('Login: admin@weidmuller.local / changeme (or set ADMIN_EMAIL / ADMIN_PASSWORD)');
   }
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\nPort ${PORT} is already in use. Either:`);
+    console.error(`  1. Stop the other process:  npx kill-port ${PORT}`);
+    console.error(`     or:  lsof -ti:${PORT} | xargs kill -9`);
+    console.error(`  2. Use a different port:  PORT=3001 npm run studio\n`);
+    process.exit(1);
+  }
+  throw err;
 });
