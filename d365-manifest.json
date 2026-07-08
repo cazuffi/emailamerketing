@@ -67,6 +67,27 @@
       "editable": ["Divider"]
     },
     {
+      "id": "wm-feature-block-right",
+      "d365Name": "WM_feature_block_right",
+      "source": "blocks/wm-feature-block-right.html",
+      "description": "40/60 feature block — image left, text right",
+      "editable": ["Text", "Image", "Button"]
+    },
+    {
+      "id": "wm-two-up-cards",
+      "d365Name": "WM_two_up_cards",
+      "source": "blocks/wm-two-up-cards.html",
+      "description": "50/50 side-by-side product or benefit cards",
+      "editable": ["Text", "Image", "Button"]
+    },
+    {
+      "id": "wm-event-details",
+      "d365Name": "WM_event_details",
+      "source": "blocks/wm-event-details.html",
+      "description": "Event date, time, location, and agenda list",
+      "editable": ["Text", "Divider"]
+    },
+    {
       "id": "wm-footer",
       "d365Name": "WM_footer",
       "source": "blocks/wm-footer.html",
@@ -94,6 +115,12 @@
       "d365Name": "WM_welcome",
       "source": "wm-welcome.html",
       "description": "Welcome / onboarding — intro, stepped body sections, CTA"
+    },
+    {
+      "id": "wm-event",
+      "d365Name": "WM_event",
+      "source": "wm-event.html",
+      "description": "Event invitation — hero, intro, event details, CTA, accent band"
     }
   ]
 }

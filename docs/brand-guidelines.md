@@ -79,6 +79,9 @@ D365-native blocks live in `components/d365/blocks/`. Each file uses `data-edito
 | `wm-accent-band.html` | `WM_accent_band` | Orange highlight strip |
 | `wm-feature-block-left.html` | `WM_feature_block_left` | 60/40 text + image |
 | `wm-divider.html` | `WM_divider` | 2px orange rule |
+| `wm-feature-block-right.html` | `WM_feature_block_right` | 40/60 image + text |
+| `wm-two-up-cards.html` | `WM_two_up_cards` | 50/50 product cards |
+| `wm-event-details.html` | `WM_event_details` | Date, time, location, agenda |
 | `wm-footer.html` | `WM_footer` | Address band + compliance (required) |
 
 Publish to D365: **[docs/d365-publish-guide.md](d365-publish-guide.md)**
@@ -111,3 +114,15 @@ When drafting, replace these before importing to D365:
 ## Assets
 
 Logo and fonts are referenced from your D365 tenant (`assets-eur.mkt.dynamics.com`). Update URLs in `assets/brand/colors.json` if assets move.
+
+## Do / don't (brand guardrails)
+
+| Do | Don't |
+|----|-------|
+| Use `#ef7800` for H2, links, buttons, dividers | Use rounded buttons (`border-radius` must be 0) |
+| Use ARIALN / ARIALNB from D365 CDN | Add custom web fonts or non-brand typefaces |
+| Keep emails at 640px max width | Stretch layouts or use off-brand background colors |
+| End every email with `WM_footer` | Remove `{{CompanyAddress}}` or `{{PreferenceCenter}}` |
+| Run `npm run validate:d365` before publishing | Paste unvalidated HTML into D365 |
+
+See **[d365-team-cheatsheet.md](d365-team-cheatsheet.md)** for marketer-facing quick reference.

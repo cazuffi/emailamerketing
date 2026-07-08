@@ -59,11 +59,38 @@ function copyManifest() {
   console.log('✓ manifest → dist/d365/manifest.json');
 }
 
+function buildDraftEmails() {
+  const draftsDir = path.join(ROOT, 'drafts');
+  if (!fs.existsSync(draftsDir)) return;
+
+  for (const entry of fs.readdirSync(draftsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const sourcePath = path.join(draftsDir, entry.name, 'email.d365.html');
+    if (!fs.existsSync(sourcePath)) continue;
+
+    const source = fs.readFileSync(sourcePath, 'utf8');
+    const assembled = resolveIncludes(source, path.dirname(sourcePath));
+    const outputPath = path.join(draftsDir, entry.name, 'email.html');
+    fs.writeFileSync(outputPath, assembled);
+    console.log(`✓ draft ${entry.name}/email.d365.html → drafts/${entry.name}/email.html`);
+  }
+}
+
 function main() {
+  const draftsOnly = process.argv.includes('--drafts-only');
+
+  if (draftsOnly) {
+    console.log('Building D365 draft emails...\n');
+    buildDraftEmails();
+    console.log('\nDraft D365 build complete.');
+    return;
+  }
+
   console.log('Building D365 blocks and templates...\n');
   buildBlocks();
   buildTemplates();
   copyManifest();
+  buildDraftEmails();
   console.log('\nD365 build complete. Import from dist/d365/ — see docs/d365-publish-guide.md');
 }
 

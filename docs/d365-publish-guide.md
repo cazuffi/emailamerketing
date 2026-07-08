@@ -17,6 +17,21 @@ npm run build:d365
 
 Run `npm run build` to build both D365 exports and MJML drafts.
 
+## Pre-publish validation
+
+Before pasting into D365:
+
+```bash
+npm run build:d365
+npm run validate:d365
+```
+
+Checks file sizes (1 MB limit), compliance tokens, manifest consistency, and flags draft placeholders.
+
+## Team quick reference
+
+See **[d365-team-cheatsheet.md](d365-team-cheatsheet.md)** for which template or blocks to use per campaign type.
+
 ---
 
 ## Part 1 — Publish content blocks (reusable components)
@@ -46,7 +61,10 @@ Content blocks let your team **drag and drop** sections in the D365 email design
 | 6 | `wm-cta-button.html` | `WM_cta_button` | Primary button |
 | 7 | `wm-accent-band.html` | `WM_accent_band` | Orange strip |
 | 8 | `wm-feature-block-left.html` | `WM_feature_block_left` | 60/40 layout |
-| 9 | `wm-divider.html` | `WM_divider` | Orange rule |
+| 9 | `wm-feature-block-right.html` | `WM_feature_block_right` | 40/60 layout |
+| 10 | `wm-two-up-cards.html` | `WM_two_up_cards` | 50/50 product cards |
+| 11 | `wm-event-details.html` | `WM_event_details` | Event details + agenda |
+| 12 | `wm-divider.html` | `WM_divider` | Orange rule |
 
 ### Verify blocks are editable
 
@@ -83,6 +101,7 @@ Email templates let your team **start from a complete layout**.
 | `wm-newsletter.html` | `WM_newsletter` | Regular content updates |
 | `wm-promo.html` | `WM_promo` | Events, launches, promotions |
 | `wm-welcome.html` | `WM_welcome` | Onboarding / welcome series |
+| `wm-event.html` | `WM_event` | Event / webinar invitations |
 
 ---
 
@@ -92,7 +111,7 @@ Once published, your team can:
 
 ### Option A — Start from a template
 1. **Emails** → **+ New** → **From template**
-2. Select `WM_promo`, `WM_newsletter`, or `WM_welcome`
+2. Select `WM_promo`, `WM_newsletter`, `WM_welcome`, or `WM_event`
 3. Edit text/images in the designer
 4. Add to a Customer Journey → schedule → go live
 

@@ -17,10 +17,24 @@
 
 ## Assets to update before send
 
-- [ ] Replace hero image in `email.mjml` / D365 designer with RockStar® product shot
+- [ ] Replace hero image in D365 designer with RockStar® product shot
 - [ ] Replace feature block image with SNAP IN connector close-up
 - [ ] Confirm CTA links (currently placeholder: weidmuller.com)
 - [ ] Verify product page URL for tracking
+
+## Build for D365 (use this, not MJML)
+
+The MJML draft (`email.mjml`) is for quick prototyping only — it renders poorly when pasted into D365.
+
+**For D365 paste, always build the native HTML:**
+
+```bash
+npm run build
+```
+
+Then paste `drafts/2026-07-rockstar-snap-in-connectors/email.html` (built from `email.d365.html`).
+
+Edit campaign copy in `blocks/*.html` or `email.d365.html`, then rebuild.
 
 ## D365 checklist
 

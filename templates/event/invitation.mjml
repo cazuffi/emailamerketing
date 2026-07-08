@@ -1,0 +1,31 @@
+<mjml>
+  <mj-head>
+    <mj-title>Event Invitation</mj-title>
+    <mj-preview>You're invited — save the date for our upcoming event.</mj-preview>
+    <mj-include path="../../components/brand-head.mjml" />
+  </mj-head>
+  <mj-body background-color="#f4f4f4" width="640px">
+    <mj-include path="../../components/d365-wrapped/wm-header.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-hero.mjml" />
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text css-class="h1" padding="10px 10px 0 0">{{headline}}</mj-text>
+        <mj-text css-class="h2" padding="10px 10px 0 0">{{subheadline}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="10px 16px">
+      <mj-column>
+        <mj-text padding="0 10px 10px 0">Hi {{FirstName}},</mj-text>
+        <mj-text padding="0 10px 10px 0">{{body_copy}}</mj-text>
+        <mj-text padding="0 10px 10px 0">Kind regards</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="../../components/d365-wrapped/wm-event-details.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-cta-button.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-accent-band.mjml" />
+    <mj-include path="../../components/d365-wrapped/wm-footer.mjml" />
+  </mj-body>
+</mjml>
