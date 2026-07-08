@@ -1,6 +1,4 @@
 node_modules/
 dist/
-components/d365-wrapped/
 .DS_Store
 *.log
-.preview.html
