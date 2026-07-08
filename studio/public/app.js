@@ -6,12 +6,15 @@ const state = {
   overrides: {},
   editUid: null,
   campaignId: null,
+  campaignStatus: 'draft',
+  savedSnapshot: '',
   previewWidth: 640,
   buildTimer: null,
   hoverModuleId: null,
   hoverTimer: null,
   hoverAbort: null,
   fieldsCache: new Map(),
+  thumbObserver: null,
 };
 
 const previewCache = new Map();
@@ -26,6 +29,7 @@ function newUid() {
 function buildPayload() {
   return {
     title: $('#email-title').value,
+    status: $('#campaign-status').value,
     modules: state.instances.map((i) => i.moduleId),
     instances: state.instances,
     overrides: state.overrides,
@@ -33,6 +37,170 @@ function buildPayload() {
       state.instances.map((inst, idx) => [String(idx), state.overrides[inst.uid] || {}]),
     ),
   };
+}
+
+function getSnapshot() {
+  const p = buildPayload();
+  return JSON.stringify({
+    title: p.title,
+    status: p.status,
+    instances: p.instances,
+    overrides: p.overrides,
+  });
+}
+
+function markDirty() {
+  const dirty = getSnapshot() !== state.savedSnapshot;
+  $('#unsaved-dot').classList.toggle('hidden', !dirty);
+  updateProgress();
+}
+
+function clearDirty() {
+  state.savedSnapshot = getSnapshot();
+  $('#unsaved-dot').classList.add('hidden');
+}
+
+function updateProgress() {
+  const steps = ['compose', 'edit', 'preview', 'export'];
+  let active = 'compose';
+  const hasModules = state.instances.length > 0;
+  const hasEdits = Object.keys(state.overrides).some((k) => Object.keys(state.overrides[k] || {}).length > 0);
+
+  if (hasModules && hasEdits) active = 'edit';
+  if (hasModules && hasEdits && state.instances.length >= 2) active = 'preview';
+  if (hasModules && ($('#campaign-status').value === 'ready' || hasEdits)) active = 'export';
+
+  const activeIdx = steps.indexOf(active);
+  $$('.progress-step').forEach((el, i) => {
+    el.classList.toggle('active', steps[i] === active);
+    el.classList.toggle('done', i < activeIdx);
+  });
+}
+
+function updateStatusSelect() {
+  const sel = $('#campaign-status');
+  sel.dataset.status = sel.value;
+}
+
+function updateImagePreview(previewEl, url) {
+  const trimmed = (url || '').trim();
+  previewEl.innerHTML = '';
+  if (!trimmed) {
+    const empty = document.createElement('span');
+    empty.className = 'image-preview-empty';
+    empty.textContent = 'Enter a URL to preview';
+    previewEl.appendChild(empty);
+    return;
+  }
+  const img = document.createElement('img');
+  img.alt = 'Preview';
+  img.loading = 'lazy';
+  img.onerror = () => {
+    previewEl.innerHTML = '';
+    const err = document.createElement('span');
+    err.className = 'image-preview-empty';
+    err.textContent = 'Could not load image — check URL';
+    previewEl.appendChild(err);
+  };
+  img.src = trimmed;
+  previewEl.appendChild(img);
+}
+
+async function saveCampaign() {
+  const payload = buildPayload();
+  const title = payload.title.trim() || 'Untitled email';
+  const body = {
+    title,
+    status: payload.status,
+    modules: payload.modules,
+    instances: payload.instances,
+    overrides: payload.overrides,
+  };
+  if (state.campaignId) {
+    await api(`/api/campaigns/${state.campaignId}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+    toast('Campaign saved');
+  } else {
+    const { campaign } = await api('/api/campaigns', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    state.campaignId = campaign.id;
+    toast('Campaign created');
+  }
+  await loadCampaigns();
+  $('#campaign-select').value = state.campaignId;
+  clearDirty();
+}
+
+async function copyHtmlExport() {
+  if (!state.instances.length) {
+    toast('Add at least one module first');
+    return;
+  }
+  const payload = buildPayload();
+  const { html } = await api('/api/build', {
+    method: 'POST',
+    body: JSON.stringify({
+      title: payload.title,
+      modules: payload.modules,
+      overrides: payload.indexOverrides,
+    }),
+  });
+  await navigator.clipboard.writeText(html);
+  toast('HTML copied — paste into D365 → Design → HTML', 'success');
+}
+
+async function loadBrand() {
+  try {
+    const { logo } = await api('/api/brand');
+    $('#topbar-logo').src = logo;
+    $('#login-logo').src = logo;
+  } catch { /* fallback: hide broken img */ }
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('studio-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+}
+
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('studio-theme', next);
+}
+
+function showOnboardingIfNeeded() {
+  if (localStorage.getItem('studio-onboarded')) return;
+  $('#onboarding-modal').classList.remove('hidden');
+}
+
+function setupThumbnailObserver() {
+  if (state.thumbObserver) state.thumbObserver.disconnect();
+  state.thumbObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const thumb = entry.target;
+      const id = thumb.dataset.moduleId;
+      if (!id || thumb.dataset.loaded) return;
+      thumb.dataset.loaded = '1';
+      loadThumbnail(thumb, id);
+    });
+  }, { root: $('#module-categories'), rootMargin: '40px' });
+}
+
+async function loadThumbnail(thumbEl, moduleId) {
+  const iframe = thumbEl.querySelector('iframe');
+  const placeholder = thumbEl.querySelector('.module-thumb-placeholder');
+  try {
+    const html = await fetchModulePreview(moduleId);
+    if (iframe) iframe.srcdoc = html;
+    if (placeholder) placeholder.classList.add('hidden');
+  } catch {
+    if (placeholder) placeholder.textContent = 'Preview';
+  }
 }
 
 async function api(path, opts = {}) {
@@ -108,6 +276,13 @@ $('#btn-logout').addEventListener('click', async () => {
 // ── Studio init ───────────────────────────────────────
 
 async function initStudio() {
+  initTheme();
+  await loadBrand();
+
+  if (state.user.role === 'editor') {
+    document.body.classList.add('editor-mode');
+  }
+
   $('#user-name').textContent = state.user.name;
   if (state.user.role === 'admin' && !document.getElementById('btn-team')) {
     const btn = document.createElement('button');
@@ -121,9 +296,13 @@ async function initStudio() {
   const { modules, categories } = await api('/api/modules');
   state.modules = modules;
   state.categories = categories;
+  setupThumbnailObserver();
   renderLibrary();
   await loadCampaigns();
+  updateStatusSelect();
+  clearDirty();
   scheduleBuild();
+  showOnboardingIfNeeded();
 }
 
 function renderLibrary(filter = '') {
@@ -148,12 +327,21 @@ function renderLibrary(filter = '') {
       const el = document.createElement('div');
       el.className = 'module-item';
       el.innerHTML = `
-        <div class="module-item-info">
-          <div class="module-item-id">${mod.id}</div>
-          <div class="module-item-desc">${mod.description}</div>
+        <div class="module-item-body">
+          <div class="module-thumb" data-module-id="${mod.id}">
+            <div class="module-thumb-placeholder">…</div>
+            <iframe title="${mod.id} thumbnail" sandbox="allow-same-origin" loading="lazy"></iframe>
+          </div>
+          <div class="module-item-info">
+            <div class="module-item-id">${mod.id}</div>
+            <div class="module-item-desc">${mod.description}</div>
+          </div>
         </div>
         <button class="module-add-btn" title="Add ${mod.id}">+</button>
       `;
+      const thumb = el.querySelector('.module-thumb');
+      if (state.thumbObserver) state.thumbObserver.observe(thumb);
+
       el.querySelector('.module-add-btn').onclick = (e) => {
         e.stopPropagation();
         addModule(mod.id);
@@ -281,6 +469,7 @@ function addModule(moduleId) {
   loadEditForm(uid);
   switchPanel('edit');
   scheduleBuild();
+  markDirty();
 }
 
 function removeModule(index) {
@@ -293,6 +482,7 @@ function removeModule(index) {
   }
   renderComposer();
   scheduleBuild();
+  markDirty();
 }
 
 function moveModule(index, dir) {
@@ -302,6 +492,7 @@ function moveModule(index, dir) {
   state.instances.splice(next, 0, item);
   renderComposer();
   scheduleBuild();
+  markDirty();
 }
 
 function selectInstance(uid) {
@@ -370,6 +561,7 @@ function renderComposer() {
       state.instances.splice(to, 0, item);
       renderComposer();
       scheduleBuild();
+      markDirty();
     });
 
     list.appendChild(el);
@@ -456,6 +648,11 @@ async function loadEditForm(uid) {
       state.overrides[uid][field.key] = input.value;
       renderComposer();
       scheduleBuild();
+      markDirty();
+      if (field.type === 'image-src') {
+        const preview = wrap.querySelector('.image-preview');
+        if (preview) updateImagePreview(preview, input.value);
+      }
     });
 
     wrap.appendChild(label);
@@ -466,6 +663,11 @@ async function loadEditForm(uid) {
       hint.className = 'edit-field-hint';
       hint.textContent = 'Paste a D365 CDN image URL (assets-eur.mkt.dynamics.com)';
       wrap.appendChild(hint);
+
+      const preview = document.createElement('div');
+      preview.className = 'image-preview';
+      updateImagePreview(preview, value);
+      wrap.appendChild(preview);
     }
 
     form.appendChild(wrap);
@@ -478,6 +680,7 @@ $('#btn-reset-module').addEventListener('click', () => {
   renderComposer();
   loadEditForm(state.editUid);
   scheduleBuild();
+  markDirty();
   toast('Module reset to defaults');
 });
 
@@ -515,7 +718,34 @@ async function buildPreview() {
   }
 }
 
-$('#email-title').addEventListener('input', scheduleBuild);
+$('#email-title').addEventListener('input', () => {
+  scheduleBuild();
+  markDirty();
+});
+
+$('#campaign-status').addEventListener('change', () => {
+  updateStatusSelect();
+  markDirty();
+});
+
+$('#btn-theme').addEventListener('click', toggleTheme);
+
+$('#btn-onboarding-close').addEventListener('click', () => {
+  localStorage.setItem('studio-onboarded', '1');
+  $('#onboarding-modal').classList.add('hidden');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!$('#studio-view') || $('#studio-view').classList.contains('hidden')) return;
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    saveCampaign().catch((ex) => toast(`Save failed: ${ex.message}`));
+  }
+  if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+    e.preventDefault();
+    copyHtmlExport().catch((ex) => toast(`Export failed: ${ex.message}`));
+  }
+});
 
 $$('.toggle-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -539,26 +769,8 @@ $$('.toggle-btn').forEach((btn) => {
 
 // ── Export ────────────────────────────────────────────
 
-$('#btn-export').addEventListener('click', async () => {
-  if (!state.instances.length) {
-    toast('Add at least one module first');
-    return;
-  }
-  try {
-    const payload = buildPayload();
-    const { html } = await api('/api/build', {
-      method: 'POST',
-      body: JSON.stringify({
-        title: payload.title,
-        modules: payload.modules,
-        overrides: payload.indexOverrides,
-      }),
-    });
-    await navigator.clipboard.writeText(html);
-    toast('HTML copied — paste into D365 → Design → HTML', 'success');
-  } catch (ex) {
-    toast(`Export failed: ${ex.message}`);
-  }
+$('#btn-export').addEventListener('click', () => {
+  copyHtmlExport().catch((ex) => toast(`Export failed: ${ex.message}`));
 });
 
 // ── Campaigns ─────────────────────────────────────────
@@ -567,10 +779,13 @@ async function loadCampaigns() {
   const { campaigns } = await api('/api/campaigns');
   const sel = $('#campaign-select');
   sel.innerHTML = '<option value="">Load campaign…</option>';
+  const statusLabel = { draft: 'Draft', ready: 'Ready', sent: 'Sent' };
   for (const c of campaigns) {
     const opt = document.createElement('option');
     opt.value = c.id;
-    opt.textContent = `${c.title} (${c.instances?.length || c.modules.length} modules)`;
+    const count = c.instances?.length || c.modules.length;
+    const status = statusLabel[c.status] || 'Draft';
+    opt.textContent = `${c.title} · ${status} (${count} modules)`;
     sel.appendChild(opt);
   }
 }
@@ -586,41 +801,18 @@ $('#campaign-select').addEventListener('change', async (e) => {
   state.overrides = { ...(campaign.overrides || {}) };
   state.editUid = null;
   $('#email-title').value = campaign.title;
+  $('#campaign-status').value = campaign.status || 'draft';
+  updateStatusSelect();
   renderComposer();
   clearEditForm();
   scheduleBuild();
+  clearDirty();
+  updateProgress();
   toast(`Loaded "${campaign.title}"`);
 });
 
-$('#btn-save').addEventListener('click', async () => {
-  const payload = buildPayload();
-  const title = payload.title.trim() || 'Untitled email';
-  try {
-    const body = {
-      title,
-      modules: payload.modules,
-      instances: payload.instances,
-      overrides: payload.overrides,
-    };
-    if (state.campaignId) {
-      await api(`/api/campaigns/${state.campaignId}`, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-      });
-      toast('Campaign saved');
-    } else {
-      const { campaign } = await api('/api/campaigns', {
-        method: 'POST',
-        body: JSON.stringify(body),
-      });
-      state.campaignId = campaign.id;
-      toast('Campaign created');
-    }
-    await loadCampaigns();
-    $('#campaign-select').value = state.campaignId;
-  } catch (ex) {
-    toast(`Save failed: ${ex.message}`);
-  }
+$('#btn-save').addEventListener('click', () => {
+  saveCampaign().catch((ex) => toast(`Save failed: ${ex.message}`));
 });
 
 // ── Admin modal ───────────────────────────────────────

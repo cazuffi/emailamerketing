@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const session = require('express-session');
 const { loadManifest, buildEmailHtml } = require('../scripts/assemble');
@@ -30,6 +31,14 @@ app.use(session({
 }));
 
 mountAuthRoutes(app);
+
+app.get('/api/brand', requireAuth, (req, res) => {
+  const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '../brand/tokens.json'), 'utf8'));
+  res.json({
+    logo: tokens.images.logo,
+    primary: tokens.colors.primary,
+  });
+});
 
 app.get('/api/modules', requireAuth, (req, res) => {
   const { modules } = loadManifest();
@@ -84,14 +93,14 @@ app.get('/api/campaigns/:id', requireAuth, (req, res) => {
 });
 
 app.post('/api/campaigns', requireAuth, (req, res) => {
-  const { title, modules = [], instances, overrides = {} } = req.body || {};
+  const { title, modules = [], instances, overrides = {}, status = 'draft' } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Title required' });
-  const campaign = createCampaign({ title, modules, instances, overrides, userId: req.user.id });
+  const campaign = createCampaign({ title, modules, instances, overrides, status, userId: req.user.id });
   res.status(201).json({ campaign });
 });
 
 app.put('/api/campaigns/:id', requireAuth, (req, res) => {
-  const { title, modules = [], instances, overrides = {} } = req.body || {};
+  const { title, modules = [], instances, overrides = {}, status } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Title required' });
   const existing = getCampaign(Number(req.params.id));
   if (!existing) return res.status(404).json({ error: 'Not found' });
@@ -100,6 +109,7 @@ app.put('/api/campaigns/:id', requireAuth, (req, res) => {
     modules,
     instances,
     overrides,
+    status,
     userId: req.user.id,
   });
   res.json({ campaign });

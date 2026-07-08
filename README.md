@@ -37,7 +37,9 @@ npm install
 npm run studio
 ```
 
-Open http://localhost:3000 — pick modules, reorder, preview, **Copy HTML** for D365.
+Open http://localhost:3000 — pick modules, reorder, edit copy, preview, save campaigns, **Copy HTML** for D365.
+
+Features: module thumbnails, hover previews, inline editing, campaign status (draft/ready/sent), unsaved indicator, keyboard shortcuts (`Ctrl+S`, `Ctrl+Shift+C`), dark mode, and coordinator-friendly editor mode.
 
 Deploy to Render, Railway, or Docker. See **[docs/studio-deploy.md](docs/studio-deploy.md)**.
 

@@ -36,6 +36,7 @@ function initSchema(database) {
       modules TEXT NOT NULL DEFAULT '[]',
       instances TEXT NOT NULL DEFAULT '[]',
       overrides TEXT NOT NULL DEFAULT '{}',
+      status TEXT NOT NULL DEFAULT 'draft',
       created_by INTEGER NOT NULL REFERENCES users(id),
       updated_by INTEGER NOT NULL REFERENCES users(id),
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -53,6 +54,9 @@ function migrateSchema(database) {
   }
   if (!cols.includes('overrides')) {
     database.exec(`ALTER TABLE campaigns ADD COLUMN overrides TEXT NOT NULL DEFAULT '{}'`);
+  }
+  if (!cols.includes('status')) {
+    database.exec(`ALTER TABLE campaigns ADD COLUMN status TEXT NOT NULL DEFAULT 'draft'`);
   }
 }
 
@@ -122,7 +126,7 @@ function parseCampaignRow(row) {
 
 function listCampaigns() {
   return getDb().prepare(`
-    SELECT c.id, c.title, c.modules, c.instances, c.overrides, c.created_at, c.updated_at,
+    SELECT c.id, c.title, c.modules, c.instances, c.overrides, c.status, c.created_at, c.updated_at,
            u.name AS updated_by_name
     FROM campaigns c
     JOIN users u ON u.id = c.updated_by
@@ -140,35 +144,39 @@ function getCampaign(id) {
   return parseCampaignRow(row);
 }
 
-function createCampaign({ title, modules, instances, overrides, userId }) {
+function createCampaign({ title, modules, instances, overrides, status = 'draft', userId }) {
   const inst = instances || modules.map((moduleId, i) => ({ uid: `inst-${Date.now()}-${i}`, moduleId }));
   const mods = inst.map((i) => i.moduleId);
   const result = getDb().prepare(`
-    INSERT INTO campaigns (title, modules, instances, overrides, created_by, updated_by)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO campaigns (title, modules, instances, overrides, status, created_by, updated_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(
     title,
     JSON.stringify(mods),
     JSON.stringify(inst),
     JSON.stringify(overrides || {}),
+    status,
     userId,
     userId,
   );
   return getCampaign(result.lastInsertRowid);
 }
 
-function updateCampaign(id, { title, modules, instances, overrides, userId }) {
+function updateCampaign(id, { title, modules, instances, overrides, status, userId }) {
   const inst = instances || modules.map((moduleId, i) => ({ uid: `inst-${Date.now()}-${i}`, moduleId }));
   const mods = inst.map((i) => i.moduleId);
+  const existing = getCampaign(id);
+  const nextStatus = status || existing?.status || 'draft';
   getDb().prepare(`
     UPDATE campaigns
-    SET title = ?, modules = ?, instances = ?, overrides = ?, updated_by = ?, updated_at = datetime('now')
+    SET title = ?, modules = ?, instances = ?, overrides = ?, status = ?, updated_by = ?, updated_at = datetime('now')
     WHERE id = ?
   `).run(
     title,
     JSON.stringify(mods),
     JSON.stringify(inst),
     JSON.stringify(overrides || {}),
+    nextStatus,
     userId,
     id,
   );
