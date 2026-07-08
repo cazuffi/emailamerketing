@@ -118,6 +118,7 @@ function eachTextField($, $block, startCount, fn) {
 function collapseOrphanSpacers($) {
   $('p.text-spacer').each((_, el) => {
     const $spacer = $(el);
+    if ($spacer.attr('data-studio-spacer')) return;
     const $prev = $spacer.prev('p');
     const $next = $spacer.next('p');
     const prevHidden = $prev.length && isElementHidden($prev);
@@ -137,12 +138,42 @@ function collapseEmptyFaqPairs($) {
   });
 }
 
-function applyTextOverride($el, value) {
+function emptyModeKey(fieldKey) {
+  return `${fieldKey}_empty`;
+}
+
+function listModesKey(fieldKey) {
+  return `${fieldKey}_modes`;
+}
+
+function getEmptyMode(overrides, fieldKey) {
+  return overrides[emptyModeKey(fieldKey)] === 'spacer' ? 'spacer' : 'hide';
+}
+
+function applyAsLineBreak($el) {
+  showForEmail($el);
+  if ($el.attr('data-studio-style') !== undefined) {
+    const original = $el.attr('data-studio-style');
+    if (original) $el.attr('style', original);
+    else $el.removeAttr('style');
+    $el.removeAttr('data-studio-style');
+  }
+  $el.attr('class', 'text-spacer');
+  $el.attr('data-studio-spacer', '1');
+  $el.html('&nbsp;');
+}
+
+function applyTextOverride($el, value, emptyMode = 'hide') {
   if (isEmptyOverride(value)) {
-    hideForEmail($el);
+    if (emptyMode === 'spacer') {
+      applyAsLineBreak($el);
+    } else {
+      hideForEmail($el);
+    }
     return;
   }
   showForEmail($el);
+  $el.removeAttr('data-studio-spacer');
   const $span = $el.find('span').first();
   if ($span.length === 1 && $el.children().length === 1) {
     $span.text(value);
@@ -224,7 +255,7 @@ function applyStudioFields($, $block, overrides) {
     const $el = $(el);
     const key = $el.attr('data-studio-field');
     if (!key || !Object.prototype.hasOwnProperty.call(overrides, key)) return;
-    applyTextOverride($el, overrides[key]);
+    applyTextOverride($el, overrides[key], getEmptyMode(overrides, key));
   });
 
   $block.find('[data-studio-repeat]').each((_, el) => {
@@ -237,16 +268,24 @@ function applyStudioFields($, $block, overrides) {
 
     const raw = overrides[key];
     const items = Array.isArray(raw) ? raw : [raw];
+    const modes = Array.isArray(overrides[listModesKey(key)]) ? overrides[listModesKey(key)] : [];
     const itemSel = $repeat.attr('data-studio-item') || 'p';
     const $template = $repeat.children(itemSel).first();
 
     if (!$template.length) return;
 
     $repeat.empty();
-    for (const text of items) {
-      if (isEmptyOverride(text)) continue;
+    for (let i = 0; i < items.length; i += 1) {
+      const text = items[i];
+      const mode = modes[i] === 'spacer' ? 'spacer' : 'hide';
+      if (isEmptyOverride(text)) {
+        if (mode === 'spacer') {
+          $repeat.append('<p class="text-spacer" data-studio-spacer="1">&nbsp;</p>');
+        }
+        continue;
+      }
       const $item = $template.clone();
-      applyTextOverride($item, text);
+      applyTextOverride($item, text, 'hide');
       $repeat.append($item);
     }
 
@@ -374,7 +413,7 @@ function applyOverrides(moduleId, overrides = {}) {
         if (isSpacer) return;
         const key = `text_${index}`;
         if (Object.prototype.hasOwnProperty.call(normalized, key)) {
-          applyTextOverride($el, normalized[key]);
+          applyTextOverride($el, normalized[key], getEmptyMode(normalized, key));
         }
       });
     }

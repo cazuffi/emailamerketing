@@ -572,6 +572,42 @@ body {
 .edit-list-remove { align-self: flex-start; }
 .edit-list-add { margin-top: 8px; }
 
+.empty-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.empty-mode-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.empty-mode-control {
+  display: inline-flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+.empty-mode-btn {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.empty-mode-btn.active {
+  background: var(--surface);
+  color: var(--orange-dark);
+  box-shadow: var(--shadow-sm);
+}
+
 /* Preview device frame */
 .preview-controls {
   display: flex;

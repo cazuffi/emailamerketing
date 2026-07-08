@@ -729,8 +729,9 @@ async function loadEditForm(uid) {
     if (field.hideWhenEmpty) {
       const hint = document.createElement('div');
       hint.className = 'edit-field-hint';
-      hint.textContent = 'Leave empty to hide this block';
+      hint.textContent = 'Leave empty to hide or insert a line break';
       wrap.appendChild(hint);
+      wrap.appendChild(renderEmptyModeControl(uid, field.key, current));
     }
 
     if (field.type === 'image-src') {
@@ -749,6 +750,94 @@ async function loadEditForm(uid) {
   }
 }
 
+function emptyModeKey(fieldKey) {
+  return `${fieldKey}_empty`;
+}
+
+function listModesKey(fieldKey) {
+  return `${fieldKey}_modes`;
+}
+
+function syncFieldOverrides(uid) {
+  renderComposer();
+  scheduleBuild();
+  markDirty();
+  if (state.previewScope === 'module' && state.editUid === uid) {
+    scheduleBuild();
+  }
+}
+
+function renderEmptyModeControl(uid, fieldKey, current) {
+  const row = document.createElement('div');
+  row.className = 'empty-mode-row';
+
+  const label = document.createElement('span');
+  label.className = 'empty-mode-label';
+  label.textContent = 'If empty:';
+
+  const control = document.createElement('div');
+  control.className = 'empty-mode-control segmented';
+
+  const currentMode = current[emptyModeKey(fieldKey)] === 'spacer' ? 'spacer' : 'hide';
+  [
+    { mode: 'hide', label: 'Hide' },
+    { mode: 'spacer', label: 'Line break' },
+  ].forEach(({ mode, label: text }) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `empty-mode-btn${currentMode === mode ? ' active' : ''}`;
+    btn.textContent = text;
+    btn.dataset.mode = mode;
+    btn.addEventListener('click', () => {
+      if (!state.overrides[uid]) state.overrides[uid] = {};
+      state.overrides[uid][emptyModeKey(fieldKey)] = mode;
+      control.querySelectorAll('.empty-mode-btn').forEach((b) => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+      syncFieldOverrides(uid);
+    });
+    control.appendChild(btn);
+  });
+
+  row.appendChild(label);
+  row.appendChild(control);
+  return row;
+}
+
+function renderListItemEmptyMode(uid, currentMode, onChange) {
+  const row = document.createElement('div');
+  row.className = 'empty-mode-row';
+
+  const label = document.createElement('span');
+  label.className = 'empty-mode-label';
+  label.textContent = 'If empty:';
+
+  const control = document.createElement('div');
+  control.className = 'empty-mode-control segmented';
+
+  [
+    { mode: 'hide', label: 'Hide' },
+    { mode: 'spacer', label: 'Line break' },
+  ].forEach(({ mode, label: text }) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `empty-mode-btn${currentMode === mode ? ' active' : ''}`;
+    btn.textContent = text;
+    btn.dataset.mode = mode;
+    btn.addEventListener('click', () => {
+      onChange(mode);
+      control.querySelectorAll('.empty-mode-btn').forEach((b) => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+    });
+    control.appendChild(btn);
+  });
+
+  row.appendChild(label);
+  row.appendChild(control);
+  return row;
+}
+
 function renderTextListField(uid, field, current) {
   const wrap = document.createElement('div');
   wrap.className = 'edit-field edit-field-list';
@@ -763,22 +852,25 @@ function renderTextListField(uid, field, current) {
 
   const hint = document.createElement('div');
   hint.className = 'edit-field-hint';
-  hint.textContent = 'Add or remove items · leave empty to hide';
+  hint.textContent = 'Add or remove items · empty items can hide or become a line break';
   wrap.appendChild(hint);
 
   const items = Array.isArray(current[field.key])
     ? [...current[field.key]]
     : [...field.value];
 
+  const modesKey = listModesKey(field.key);
+  const itemModes = Array.isArray(current[modesKey])
+    ? [...current[modesKey]]
+    : items.map(() => 'hide');
+  while (itemModes.length < items.length) itemModes.push('hide');
+  while (itemModes.length > items.length) itemModes.pop();
+
   function syncList() {
     if (!state.overrides[uid]) state.overrides[uid] = {};
     state.overrides[uid][field.key] = [...items];
-    renderComposer();
-    scheduleBuild();
-    markDirty();
-    if (state.previewScope === 'module' && state.editUid === uid) {
-      scheduleBuild();
-    }
+    state.overrides[uid][modesKey] = [...itemModes];
+    syncFieldOverrides(uid);
   }
 
   function renderItems() {
@@ -807,12 +899,23 @@ function renderTextListField(uid, field, current) {
       removeBtn.addEventListener('click', () => {
         if (items.length <= (field.minItems || 1)) return;
         items.splice(index, 1);
+        itemModes.splice(index, 1);
         renderItems();
         syncList();
       });
 
+      const emptyMode = renderListItemEmptyMode(
+        uid,
+        itemModes[index] === 'spacer' ? 'spacer' : 'hide',
+        (mode) => {
+          itemModes[index] = mode;
+          syncList();
+        },
+      );
+
       row.appendChild(rowLabel);
       row.appendChild(textarea);
+      row.appendChild(emptyMode);
       row.appendChild(removeBtn);
       listEl.appendChild(row);
     });
@@ -828,6 +931,7 @@ function renderTextListField(uid, field, current) {
       return;
     }
     items.push('');
+    itemModes.push('hide');
     renderItems();
     syncList();
     const lastTextarea = listEl.querySelector('.edit-list-item:last-child textarea');
