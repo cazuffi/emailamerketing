@@ -34,12 +34,26 @@ function initSchema(database) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       modules TEXT NOT NULL DEFAULT '[]',
+      instances TEXT NOT NULL DEFAULT '[]',
+      overrides TEXT NOT NULL DEFAULT '{}',
       created_by INTEGER NOT NULL REFERENCES users(id),
       updated_by INTEGER NOT NULL REFERENCES users(id),
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  migrateSchema(database);
+}
+
+function migrateSchema(database) {
+  const cols = database.prepare('PRAGMA table_info(campaigns)').all().map((c) => c.name);
+  if (!cols.includes('instances')) {
+    database.exec(`ALTER TABLE campaigns ADD COLUMN instances TEXT NOT NULL DEFAULT '[]'`);
+  }
+  if (!cols.includes('overrides')) {
+    database.exec(`ALTER TABLE campaigns ADD COLUMN overrides TEXT NOT NULL DEFAULT '{}'`);
+  }
 }
 
 function seedAdmin(database) {
@@ -85,17 +99,35 @@ function verifyPassword(user, password) {
   return bcrypt.compareSync(password, user.password_hash);
 }
 
+function parseCampaignRow(row) {
+  if (!row) return null;
+  const modules = JSON.parse(row.modules || '[]');
+  let instances = JSON.parse(row.instances || '[]');
+  const overrides = JSON.parse(row.overrides || '{}');
+
+  if (!instances.length && modules.length) {
+    instances = modules.map((moduleId, i) => ({
+      uid: `legacy-${i}`,
+      moduleId,
+    }));
+  }
+
+  return {
+    ...row,
+    modules,
+    instances,
+    overrides,
+  };
+}
+
 function listCampaigns() {
   return getDb().prepare(`
-    SELECT c.id, c.title, c.modules, c.created_at, c.updated_at,
+    SELECT c.id, c.title, c.modules, c.instances, c.overrides, c.created_at, c.updated_at,
            u.name AS updated_by_name
     FROM campaigns c
     JOIN users u ON u.id = c.updated_by
     ORDER BY c.updated_at DESC
-  `).all().map((row) => ({
-    ...row,
-    modules: JSON.parse(row.modules),
-  }));
+  `).all().map(parseCampaignRow);
 }
 
 function getCampaign(id) {
@@ -105,24 +137,41 @@ function getCampaign(id) {
     JOIN users u ON u.id = c.updated_by
     WHERE c.id = ?
   `).get(id);
-  if (!row) return null;
-  return { ...row, modules: JSON.parse(row.modules) };
+  return parseCampaignRow(row);
 }
 
-function createCampaign({ title, modules, userId }) {
+function createCampaign({ title, modules, instances, overrides, userId }) {
+  const inst = instances || modules.map((moduleId, i) => ({ uid: `inst-${Date.now()}-${i}`, moduleId }));
+  const mods = inst.map((i) => i.moduleId);
   const result = getDb().prepare(`
-    INSERT INTO campaigns (title, modules, created_by, updated_by)
-    VALUES (?, ?, ?, ?)
-  `).run(title, JSON.stringify(modules), userId, userId);
+    INSERT INTO campaigns (title, modules, instances, overrides, created_by, updated_by)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(
+    title,
+    JSON.stringify(mods),
+    JSON.stringify(inst),
+    JSON.stringify(overrides || {}),
+    userId,
+    userId,
+  );
   return getCampaign(result.lastInsertRowid);
 }
 
-function updateCampaign(id, { title, modules, userId }) {
+function updateCampaign(id, { title, modules, instances, overrides, userId }) {
+  const inst = instances || modules.map((moduleId, i) => ({ uid: `inst-${Date.now()}-${i}`, moduleId }));
+  const mods = inst.map((i) => i.moduleId);
   getDb().prepare(`
     UPDATE campaigns
-    SET title = ?, modules = ?, updated_by = ?, updated_at = datetime('now')
+    SET title = ?, modules = ?, instances = ?, overrides = ?, updated_by = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).run(title, JSON.stringify(modules), userId, id);
+  `).run(
+    title,
+    JSON.stringify(mods),
+    JSON.stringify(inst),
+    JSON.stringify(overrides || {}),
+    userId,
+    id,
+  );
   return getCampaign(id);
 }
 

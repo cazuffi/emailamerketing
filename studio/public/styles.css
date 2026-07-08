@@ -258,6 +258,10 @@ body {
 }
 .composer-item.dragging { opacity: 0.5; }
 .composer-item.drag-over { border-color: var(--orange); }
+.composer-item.selected {
+  border-color: var(--orange);
+  background: var(--orange-light);
+}
 .composer-drag { cursor: grab; color: var(--muted); font-size: 14px; user-select: none; }
 .composer-info { flex: 1; min-width: 0; }
 .composer-id { font-size: 13px; font-weight: 600; }
@@ -270,6 +274,99 @@ body {
   color: var(--muted);
   background: var(--bg);
   flex-shrink: 0;
+}
+
+/* Preview & Edit panel */
+.panel-tabs { display: flex; gap: 4px; }
+.panel-tab {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.panel-tab.active { background: var(--orange-light); color: var(--orange); }
+.panel-tab:hover:not(.active) { background: var(--bg); color: var(--text); }
+
+.panel-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+
+.edit-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.edit-form-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.edit-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.edit-module-id {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.edit-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.edit-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.edit-field input,
+.edit-field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--font);
+  line-height: 1.4;
+}
+.edit-field input:focus,
+.edit-field textarea:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(239, 120, 0, 0.12);
+}
+.edit-field textarea { resize: vertical; min-height: 72px; }
+.edit-field-hint {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
 }
 
 /* Preview */

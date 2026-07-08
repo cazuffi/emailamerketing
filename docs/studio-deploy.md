@@ -67,13 +67,14 @@ The app serves the UI and API from a single Node process — no separate fronten
 ## Workflow for your coordinator
 
 1. Sign in at the hosted URL
-2. Browse modules in the left panel — click **+** to add
-3. Reorder with drag-and-drop or ▲▼ buttons
-4. Preview updates live (desktop / mobile toggle)
-5. **Save** to store the campaign for later
-6. **Copy HTML** → paste into D365 → Design → HTML
-7. Finish image swaps and links in D365 Designer
-8. **Preview and Test** in D365 before send
+2. Browse modules in the left panel — hover to preview, click **+** to add
+3. Click **✎** or a module row to open the **Edit** tab
+4. Change headlines, paragraphs, image URLs, button labels, and links
+5. Reorder with drag-and-drop or ▲▼ buttons
+6. Check **Preview** tab (desktop / mobile toggle)
+7. **Save** to store the campaign for later
+8. **Copy HTML** → paste into D365 → Design → HTML
+9. Optional touch-ups in D365 Designer, then **Preview and Test** before send
 
 ## What the app guarantees
 

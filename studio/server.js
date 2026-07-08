@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const { loadManifest, buildEmailHtml } = require('../scripts/assemble');
+const { extractFields } = require('../scripts/module-fields');
 const { requireAuth, mountAuthRoutes } = require('./auth');
 const {
   listCampaigns,
@@ -38,8 +39,22 @@ app.get('/api/modules', requireAuth, (req, res) => {
 
 app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
   try {
-    const html = buildEmailHtml({ title: 'Module preview', modules: [req.params.id] });
+    const overrides = req.query.overrides ? JSON.parse(req.query.overrides) : {};
+    const html = buildEmailHtml({
+      title: 'Module preview',
+      modules: [req.params.id],
+      overrides: { 0: overrides },
+    });
     res.json({ html, id: req.params.id });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/modules/:id/fields', requireAuth, (req, res) => {
+  try {
+    const fields = extractFields(req.params.id);
+    res.json({ id: req.params.id, fields });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -47,11 +62,11 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
 
 app.post('/api/build', requireAuth, (req, res) => {
   try {
-    const { title = 'Email', modules = [] } = req.body || {};
+    const { title = 'Email', modules = [], overrides = {} } = req.body || {};
     if (!Array.isArray(modules)) {
       return res.status(400).json({ error: 'modules must be an array' });
     }
-    const html = buildEmailHtml({ title, modules });
+    const html = buildEmailHtml({ title, modules, overrides });
     res.json({ html });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -69,20 +84,22 @@ app.get('/api/campaigns/:id', requireAuth, (req, res) => {
 });
 
 app.post('/api/campaigns', requireAuth, (req, res) => {
-  const { title, modules = [] } = req.body || {};
+  const { title, modules = [], instances, overrides = {} } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Title required' });
-  const campaign = createCampaign({ title, modules, userId: req.user.id });
+  const campaign = createCampaign({ title, modules, instances, overrides, userId: req.user.id });
   res.status(201).json({ campaign });
 });
 
 app.put('/api/campaigns/:id', requireAuth, (req, res) => {
-  const { title, modules = [] } = req.body || {};
+  const { title, modules = [], instances, overrides = {} } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Title required' });
   const existing = getCampaign(Number(req.params.id));
   if (!existing) return res.status(404).json({ error: 'Not found' });
   const campaign = updateCampaign(Number(req.params.id), {
     title,
     modules,
+    instances,
+    overrides,
     userId: req.user.id,
   });
   res.json({ campaign });

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { applyOverrides } = require('./module-fields');
 
 const ROOT = path.join(__dirname, '..');
 const STUDIO_BASE = path.join(ROOT, 'campaigns/_studio');
@@ -37,7 +38,11 @@ function validateModuleIds(moduleIds) {
   return moduleIds.filter((id) => id !== 'footer');
 }
 
-function buildSourceHtml({ title = 'Email', modules = [] } = {}) {
+function getModuleHtml(moduleId, instanceOverrides = {}) {
+  return applyOverrides(moduleId, instanceOverrides);
+}
+
+function buildSourceHtml({ title = 'Email', modules = [], overrides = {} } = {}) {
   const safeModules = validateModuleIds(modules);
   let source = fs.readFileSync(SHELL_PATH, 'utf8');
 
@@ -47,11 +52,14 @@ function buildSourceHtml({ title = 'Email', modules = [] } = {}) {
     .replace(/>/g, '&gt;');
   source = source.replace(/<title>.*?<\/title>/, `<title>${escapedTitle}</title>`);
 
-  const includeLines = safeModules
-    .map((id) => `<!-- @include ../../components/modules/${id}.html -->`)
+  const moduleBlocks = safeModules
+    .map((id, index) => {
+      const inst = overrides[String(index)] || overrides[index] || {};
+      return getModuleHtml(id, inst);
+    })
     .join('\n');
 
-  source = source.replace('<!-- MODULES:END -->', `${includeLines}\n<!-- MODULES:END -->`);
+  source = source.replace('<!-- MODULES:END -->', `${moduleBlocks}\n<!-- MODULES:END -->`);
   return source;
 }
 
@@ -75,6 +83,7 @@ module.exports = {
   assembleFromSource,
   loadManifest,
   validateModuleIds,
+  getModuleHtml,
   buildSourceHtml,
   buildEmailHtml,
   buildFile,

@@ -65,7 +65,7 @@
           <div id="composer-list" class="composer-list">
             <div class="composer-empty" id="composer-empty">
               <p>Click a module from the library to add it.</p>
-              <p class="muted">Footer is included automatically.</p>
+              <p class="muted">Click ✎ or a module row to edit text, images, and links.</p>
             </div>
           </div>
           <div class="composer-footer-locked">
@@ -73,17 +73,34 @@
           </div>
         </section>
 
-        <!-- Preview -->
+        <!-- Preview & Edit -->
         <aside class="panel preview-panel">
           <div class="panel-header">
-            <h2>Preview</h2>
-            <div class="preview-toggles">
-              <button class="toggle-btn active" data-width="640">Desktop</button>
-              <button class="toggle-btn" data-width="375">Mobile</button>
+            <div class="panel-tabs">
+              <button type="button" class="panel-tab active" data-panel="preview">Preview</button>
+              <button type="button" class="panel-tab" data-panel="edit">Edit</button>
+            </div>
+            <div class="preview-toggles" id="preview-toggles">
+              <button type="button" class="toggle-btn active" data-width="640">Desktop</button>
+              <button type="button" class="toggle-btn" data-width="375">Mobile</button>
             </div>
           </div>
-          <div class="preview-frame-wrap">
-            <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+          <div id="preview-tab" class="panel-body">
+            <div class="preview-frame-wrap">
+              <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+            </div>
+          </div>
+          <div id="edit-tab" class="panel-body hidden">
+            <div id="edit-empty" class="edit-empty">
+              <p>Select a module in <strong>Your email</strong> to edit copy, images, and links.</p>
+            </div>
+            <div id="edit-form-wrap" class="edit-form-wrap hidden">
+              <div class="edit-form-header">
+                <span id="edit-module-id" class="edit-module-id"></span>
+                <button type="button" id="btn-reset-module" class="btn btn-ghost btn-sm">Reset</button>
+              </div>
+              <form id="edit-form" class="edit-form"></form>
+            </div>
           </div>
         </aside>
       </div>
