@@ -8,7 +8,14 @@
     "preview": "node scripts/preview.js",
     "new": "node scripts/new-campaign.js",
     "add": "node scripts/add-modules.js",
-    "list": "node scripts/list-modules.js"
+    "list": "node scripts/list-modules.js",
+    "studio": "node studio/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
   },
   "devDependencies": {
     "chokidar": "^3.6.0"

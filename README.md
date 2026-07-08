@@ -28,6 +28,19 @@ npm run preview -- my-promo
 
 `npm run list` — all module IDs in terminal.
 
+## Hosted team app (Option C)
+
+Visual composer for you and your coordinator — no terminal required.
+
+```bash
+npm install
+npm run studio
+```
+
+Open http://localhost:3000 — pick modules, reorder, preview, **Copy HTML** for D365.
+
+Deploy to Render, Railway, or Docker. See **[docs/studio-deploy.md](docs/studio-deploy.md)**.
+
 ## Weekly workflow
 
 1. Edit campaign copy in `campaigns/<folder>/source.html` (or `blocks/` within that folder)

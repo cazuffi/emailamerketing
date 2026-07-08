@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Studio — Weidmüller</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Login -->
+    <div id="login-view" class="view hidden">
+      <div class="login-card">
+        <div class="login-brand">
+          <div class="brand-mark"></div>
+          <h1>Email Studio</h1>
+          <p>Build D365 emails from polished modules</p>
+        </div>
+        <form id="login-form">
+          <label>Email<input type="email" id="login-email" required autocomplete="username"></label>
+          <label>Password<input type="password" id="login-password" required autocomplete="current-password"></label>
+          <p id="login-error" class="error hidden"></p>
+          <button type="submit" class="btn btn-primary btn-full">Sign in</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Main studio -->
+    <div id="studio-view" class="view hidden">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="brand-mark sm"></div>
+          <span class="topbar-title">Email Studio</span>
+        </div>
+        <div class="topbar-center">
+          <input type="text" id="email-title" class="title-input" placeholder="Email title" value="Untitled email">
+          <select id="campaign-select" class="campaign-select">
+            <option value="">— Load campaign —</option>
+          </select>
+        </div>
+        <div class="topbar-right">
+          <span id="user-name" class="user-badge"></span>
+          <button id="btn-save" class="btn btn-secondary">Save</button>
+          <button id="btn-export" class="btn btn-primary">Copy HTML</button>
+          <button id="btn-logout" class="btn btn-ghost">Logout</button>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <!-- Module library -->
+        <aside class="panel library-panel">
+          <div class="panel-header">
+            <h2>Modules</h2>
+            <input type="search" id="module-search" placeholder="Search…" class="search-input">
+          </div>
+          <div id="module-categories" class="module-categories"></div>
+        </aside>
+
+        <!-- Composer -->
+        <section class="panel composer-panel">
+          <div class="panel-header">
+            <h2>Your email</h2>
+            <span id="module-count" class="badge">0 modules</span>
+          </div>
+          <div id="composer-list" class="composer-list">
+            <div class="composer-empty" id="composer-empty">
+              <p>Click a module from the library to add it.</p>
+              <p class="muted">Footer is included automatically.</p>
+            </div>
+          </div>
+          <div class="composer-footer-locked">
+            <span class="lock-icon">🔒</span> footer <span class="muted">— always included for D365 compliance</span>
+          </div>
+        </section>
+
+        <!-- Preview -->
+        <aside class="panel preview-panel">
+          <div class="panel-header">
+            <h2>Preview</h2>
+            <div class="preview-toggles">
+              <button class="toggle-btn active" data-width="640">Desktop</button>
+              <button class="toggle-btn" data-width="375">Mobile</button>
+            </div>
+          </div>
+          <div class="preview-frame-wrap">
+            <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin"></iframe>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Admin: invite coordinator modal -->
+    <div id="admin-modal" class="modal hidden">
+      <div class="modal-card">
+        <h2>Team members</h2>
+        <p class="muted">Add your coordinator or other editors.</p>
+        <div id="users-list" class="users-list"></div>
+        <form id="invite-form" class="invite-form">
+          <input type="text" id="invite-name" placeholder="Name" required>
+          <input type="email" id="invite-email" placeholder="Email" required>
+          <input type="password" id="invite-password" placeholder="Temp password (8+ chars)" required minlength="8">
+          <button type="submit" class="btn btn-primary">Add user</button>
+        </form>
+        <button id="btn-close-admin" class="btn btn-ghost btn-full">Close</button>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

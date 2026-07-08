@@ -3,28 +3,7 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
-
-const ROOT = path.join(__dirname, '..');
-
-function resolveIncludes(content, baseDir, depth = 0) {
-  if (depth > 20) throw new Error('Include depth exceeded');
-  return content.replace(/<!--\s*@include\s+([^\s]+)\s*-->/g, (_, includePath) => {
-    const fullPath = path.resolve(baseDir, includePath);
-    if (!fs.existsSync(fullPath)) {
-      throw new Error(`Include not found: ${includePath} (resolved: ${fullPath})`);
-    }
-    const included = fs.readFileSync(fullPath, 'utf8');
-    return resolveIncludes(included, path.dirname(fullPath), depth + 1);
-  });
-}
-
-function buildFile(sourcePath, outputPath) {
-  const source = fs.readFileSync(sourcePath, 'utf8');
-  const assembled = resolveIncludes(source, path.dirname(sourcePath));
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, assembled);
-  return path.relative(ROOT, outputPath);
-}
+const { ROOT, buildFile } = require('./assemble');
 
 function findSources(dir, filename) {
   if (!fs.existsSync(dir)) return [];
@@ -55,6 +34,7 @@ function main() {
   }
 
   for (const source of findSources(path.join(ROOT, 'campaigns'), 'source.html')) {
+    if (source.includes('_studio')) continue;
     const campaignDir = path.dirname(source);
     jobs.push({ source, output: path.join(campaignDir, 'email.html') });
   }

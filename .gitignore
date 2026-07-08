@@ -3,3 +3,5 @@ dist/
 .DS_Store
 *.log
 .preview.html
+studio/data/
+.env
