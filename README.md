@@ -1,16 +1,48 @@
-# Email Marketing
+# Email Marketing Studio
 
-Fresh start. This repo was reset to build a new approach from scratch.
+D365-native HTML emails — edit in GitHub, preview in browser, paste into Insight Hub.
 
-## Context
+**No MJML.** HTML matches what Dynamics 365 expects.
 
-- **Platform:** Dynamics 365 Customer Insights — Journeys (Insight Hub)
-- **Goal:** Brand-compliant emails with reusable templates and components in D365
+## Quick start
 
-## Next steps
+```bash
+npm install
+npm run build
+npm run preview -- sales-ignitor
+```
 
-Decide what to build first:
+Open the preview URL, edit `campaigns/*/source.html`, save — browser refreshes after rebuild.
 
-1. **D365-only workflow** — build HTML blocks/templates directly for paste into Insight Hub (no MJML)
-2. **Hybrid workflow** — repo as source of truth, export to D365 content blocks
-3. **Something else** — describe your needs and we'll design it
+## Weekly workflow
+
+1. Edit campaign copy in `campaigns/<folder>/source.html` (or `blocks/` within that folder)
+2. `npm run build` → creates `email.html`
+3. `npm run preview` → check desktop layout in browser
+4. Copy `email.html` → D365 **Design → HTML** → paste
+5. D365 **Preview and Test** → final mobile + font check
+6. Schedule in Customer Journey
+
+See **[docs/workflow.md](docs/workflow.md)** for the full guide.
+
+## Structure
+
+```
+brand/              Colors, fonts, tokens from HQ
+components/
+  _base/            D365 head, styles, layout wrapper
+  blocks/           Reusable sections (header, hero, body, footer…)
+templates/          Starting points for new campaigns
+campaigns/          One folder per send
+  YYYY-MM-slug/
+    source.html     Edit this
+    email.html      Paste this into D365 (generated)
+    notes.md        Campaign checklist
+scripts/
+  build.js          Assembles source → email.html
+  preview.js        Local preview with auto-rebuild
+```
+
+## Current campaign
+
+**Sales Ignitor — RockStar® SNAP IN:** `campaigns/2026-07-sales-ignitor-rockstar/`
