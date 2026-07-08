@@ -645,6 +645,20 @@ body {
   white-space: nowrap;
 }
 .preview-toggles { display: flex; }
+.preview-hint {
+  font-size: 11px;
+  padding: 8px 12px 0;
+  margin: 0;
+  flex-shrink: 0;
+}
+.edit-field-highlight {
+  border-color: var(--orange) !important;
+  box-shadow: 0 0 0 3px var(--orange-glow);
+}
+.edit-list-item-highlight {
+  border-color: var(--orange) !important;
+  box-shadow: 0 0 0 3px var(--orange-glow);
+}
 .toggle-btn {
   font-size: 11px;
   font-weight: 600;

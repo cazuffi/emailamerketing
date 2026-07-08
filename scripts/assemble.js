@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { applyOverrides } = require('./module-fields');
+const { applyOverrides, PREVIEW_INTERACTION_STYLE } = require('./module-fields');
 
 const ROOT = path.join(__dirname, '..');
 const STUDIO_BASE = path.join(ROOT, 'campaigns/_studio');
@@ -38,11 +38,17 @@ function validateModuleIds(moduleIds) {
   return moduleIds.filter((id) => id !== 'footer');
 }
 
-function getModuleHtml(moduleId, instanceOverrides = {}) {
-  return applyOverrides(moduleId, instanceOverrides);
+function getModuleHtml(moduleId, instanceOverrides = {}, options = {}) {
+  return applyOverrides(moduleId, instanceOverrides, options);
 }
 
-function buildSourceHtml({ title = 'Email', modules = [], overrides = {} } = {}) {
+function buildSourceHtml({
+  title = 'Email',
+  modules = [],
+  overrides = {},
+  annotate = false,
+  instanceMeta = [],
+} = {}) {
   const safeModules = validateModuleIds(modules);
   let source = fs.readFileSync(SHELL_PATH, 'utf8');
 
@@ -52,10 +58,18 @@ function buildSourceHtml({ title = 'Email', modules = [], overrides = {} } = {})
     .replace(/>/g, '&gt;');
   source = source.replace(/<title>.*?<\/title>/, `<title>${escapedTitle}</title>`);
 
+  if (annotate && !source.includes('studio-preview-style')) {
+    source = source.replace('</head>', `${PREVIEW_INTERACTION_STYLE}</head>`);
+  }
+
   const moduleBlocks = safeModules
     .map((id, index) => {
       const inst = overrides[String(index)] || overrides[index] || {};
-      return getModuleHtml(id, inst);
+      const html = getModuleHtml(id, inst, { annotate });
+      if (!annotate) return html;
+      const meta = instanceMeta[index] || {};
+      const uid = meta.uid || '';
+      return `<div data-studio-module data-studio-index="${index}" data-studio-uid="${uid}" data-studio-module-id="${id}">${html}</div>`;
     })
     .join('\n');
 

@@ -6,6 +6,7 @@ const state = {
   overrides: {},
   editUid: null,
   previewScope: 'full',
+  previewActiveField: null,
   campaignId: null,
   campaignStatus: 'draft',
   savedSnapshot: '',
@@ -886,6 +887,8 @@ function renderTextListField(uid, field, current) {
       const textarea = document.createElement('textarea');
       textarea.rows = 3;
       textarea.value = val;
+      textarea.dataset.key = field.key;
+      textarea.dataset.listIndex = String(index);
       textarea.addEventListener('input', () => {
         items[index] = textarea.value;
         syncList();
@@ -984,10 +987,12 @@ async function buildPreview() {
     let html;
     if (showModuleOnly && inst) {
       const overrides = state.overrides[inst.uid] || {};
-      const qs = Object.keys(overrides).length
-        ? `?overrides=${encodeURIComponent(JSON.stringify(overrides))}`
-        : '';
-      const data = await api(`/api/modules/${inst.moduleId}/preview${qs}`);
+      const instanceIndex = state.instances.findIndex((i) => i.uid === inst.uid);
+      const params = new URLSearchParams({ annotate: '1', instanceUid: inst.uid, instanceIndex: String(instanceIndex) });
+      if (Object.keys(overrides).length) {
+        params.set('overrides', JSON.stringify(overrides));
+      }
+      const data = await api(`/api/modules/${inst.moduleId}/preview?${params}`);
       html = data.html;
     } else {
       const payload = buildPayload();
@@ -997,16 +1002,127 @@ async function buildPreview() {
           title: payload.title,
           modules: payload.modules,
           overrides: payload.indexOverrides,
+          annotate: true,
+          instanceMeta: state.instances.map((i) => ({ uid: i.uid, moduleId: i.moduleId })),
         }),
       });
       html = fullHtml;
     }
     frame.srcdoc = html;
+    setupPreviewInteraction(frame);
+    if (state.previewActiveField) {
+      highlightPreviewField(state.previewActiveField.key, state.previewActiveField.listIndex);
+    }
     updatePreviewScopeUI();
   } catch (ex) {
     frame.srcdoc = `<p style="color:red;padding:24px;font-family:sans-serif;">${ex.message}</p>`;
   } finally {
     loading.classList.add('hidden');
+  }
+}
+
+function setupPreviewInteraction(frame) {
+  frame.onload = () => {
+    const doc = frame.contentDocument;
+    if (!doc || doc.body?.dataset.studioClickBound) return;
+    if (doc.body) doc.body.dataset.studioClickBound = '1';
+
+    doc.addEventListener('click', (e) => {
+      const fieldEl = e.target.closest('[data-studio-edit]');
+      const modEl = e.target.closest('[data-studio-module]');
+
+      if (!fieldEl && !modEl) return;
+      e.preventDefault();
+
+      const index = modEl ? Number(modEl.dataset.studioIndex) : -1;
+      const uid = modEl?.dataset.studioUid
+        || (index >= 0 ? state.instances[index]?.uid : null)
+        || state.editUid;
+
+      if (!uid) return;
+
+      if (fieldEl) {
+        const fieldKey = fieldEl.dataset.studioEdit;
+        const listIndex = fieldEl.dataset.studioListIndex;
+        openEditFromPreview(uid, fieldKey, listIndex !== undefined ? Number(listIndex) : undefined);
+      } else {
+        state.previewActiveField = null;
+        state.editUid = uid;
+        renderComposer();
+        switchPanel('edit');
+        loadEditForm(uid);
+        highlightPreviewModule(uid);
+      }
+    });
+  };
+}
+
+async function openEditFromPreview(uid, fieldKey, listIndex) {
+  state.previewActiveField = { key: fieldKey, listIndex };
+  state.editUid = uid;
+  renderComposer();
+  switchPanel('edit');
+  await loadEditForm(uid);
+  focusEditField(fieldKey, listIndex);
+  highlightPreviewField(fieldKey, listIndex);
+  highlightPreviewModule(uid);
+}
+
+function highlightPreviewModule(uid) {
+  const doc = $('#preview-frame').contentDocument;
+  if (!doc) return;
+  doc.querySelectorAll('[data-studio-module].studio-module-active').forEach((el) => {
+    el.classList.remove('studio-module-active');
+  });
+  const index = state.instances.findIndex((i) => i.uid === uid);
+  const mod = doc.querySelector(`[data-studio-module][data-studio-uid="${uid}"]`)
+    || doc.querySelector(`[data-studio-module][data-studio-index="${index}"]`);
+  mod?.classList.add('studio-module-active');
+}
+
+function highlightPreviewField(fieldKey, listIndex) {
+  const doc = $('#preview-frame').contentDocument;
+  if (!doc || !fieldKey) return;
+  doc.querySelectorAll('[data-studio-edit].studio-edit-active').forEach((el) => {
+    el.classList.remove('studio-edit-active');
+  });
+  let el;
+  if (listIndex !== undefined && !Number.isNaN(listIndex)) {
+    el = doc.querySelector(`[data-studio-edit="${fieldKey}"][data-studio-list-index="${listIndex}"]`);
+  }
+  if (!el) {
+    el = doc.querySelector(`[data-studio-edit="${fieldKey}"]`);
+  }
+  el?.classList.add('studio-edit-active');
+}
+
+function focusEditField(fieldKey, listIndex) {
+  const form = $('#edit-form');
+  if (!form || !fieldKey) return;
+
+  form.querySelectorAll('.edit-field-highlight, .edit-list-item-highlight').forEach((el) => {
+    el.classList.remove('edit-field-highlight', 'edit-list-item-highlight');
+  });
+
+  if (fieldKey.startsWith('list_')) {
+    const rows = form.querySelectorAll('.edit-list-item');
+    const idx = listIndex !== undefined ? listIndex : 0;
+    const row = rows[idx];
+    if (row) {
+      row.classList.add('edit-list-item-highlight');
+      row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      const textarea = row.querySelector('textarea');
+      textarea?.focus();
+    }
+    return;
+  }
+
+  const input = form.querySelector(`[data-key="${fieldKey}"]`) || document.getElementById(`field-${fieldKey}`);
+  if (input) {
+    const wrap = input.closest('.edit-field');
+    wrap?.classList.add('edit-field-highlight');
+    wrap?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    input.focus();
   }
 }
 

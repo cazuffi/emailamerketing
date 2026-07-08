@@ -49,10 +49,15 @@ app.get('/api/modules', requireAuth, (req, res) => {
 app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
   try {
     const overrides = req.query.overrides ? JSON.parse(req.query.overrides) : {};
+    const annotate = req.query.annotate === '1';
+    const instanceUid = req.query.instanceUid || '';
+    const instanceIndex = Number(req.query.instanceIndex || 0);
     const html = buildEmailHtml({
       title: 'Module preview',
       modules: [req.params.id],
       overrides: { 0: overrides },
+      annotate,
+      instanceMeta: [{ uid: instanceUid, index: instanceIndex }],
     });
     res.json({ html, id: req.params.id });
   } catch (err) {
@@ -71,11 +76,17 @@ app.get('/api/modules/:id/fields', requireAuth, (req, res) => {
 
 app.post('/api/build', requireAuth, (req, res) => {
   try {
-    const { title = 'Email', modules = [], overrides = {} } = req.body || {};
+    const {
+      title = 'Email',
+      modules = [],
+      overrides = {},
+      annotate = false,
+      instanceMeta = [],
+    } = req.body || {};
     if (!Array.isArray(modules)) {
       return res.status(400).json({ error: 'modules must be an array' });
     }
-    const html = buildEmailHtml({ title, modules, overrides });
+    const html = buildEmailHtml({ title, modules, overrides, annotate, instanceMeta });
     res.json({ html });
   } catch (err) {
     res.status(400).json({ error: err.message });

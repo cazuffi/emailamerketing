@@ -388,14 +388,97 @@ function extractFields(moduleId) {
   return fields;
 }
 
-function applyOverrides(moduleId, overrides = {}) {
+function tagPreviewFields($) {
+  $('[data-studio-field]').each((_, el) => {
+    const $el = $(el);
+    if (isElementHidden($el)) return;
+    const key = $el.attr('data-studio-field');
+    if (key) $el.attr('data-studio-edit', key);
+  });
+
+  $('[data-studio-repeat]').each((_, el) => {
+    const $repeat = $(el);
+    const name = $repeat.attr('data-studio-repeat');
+    if (!name) return;
+    const key = `list_${name}`;
+    const itemSel = $repeat.attr('data-studio-item') || 'p';
+    let listIndex = 0;
+    $repeat.children(itemSel).each((__, child) => {
+      const $child = $(child);
+      if (isElementHidden($child)) return;
+      $child.attr('data-studio-edit', key);
+      $child.attr('data-studio-list-index', String(listIndex));
+      listIndex += 1;
+    });
+  });
+
+  let textCount = 0;
+  let imageCount = 0;
+  let buttonCount = 0;
+  let linkCount = 0;
+
+  $('[data-editorblocktype]').each((_, block) => {
+    const $block = $(block);
+    const blockType = ($block.attr('data-editorblocktype') || '').toLowerCase();
+
+    if (blockType === 'text') {
+      textCount = eachTextField($, $block, textCount, ($el, index, isSpacer) => {
+        if (isSpacer || isElementHidden($el)) return;
+        $el.attr('data-studio-edit', `text_${index}`);
+      });
+    }
+
+    if (blockType === 'image') {
+      const $img = $block.find('img').first();
+      if ($img.length && !isElementHidden($img)) {
+        $img.attr('data-studio-edit', `image_${imageCount}_src`);
+        imageCount += 1;
+      }
+    }
+
+    if (blockType === 'button') {
+      const $link = $block.find('a').first();
+      if ($link.length && !isElementHidden($link)) {
+        $link.attr('data-studio-edit', `button_${buttonCount}_label`);
+        buttonCount += 1;
+      }
+    }
+  });
+
+  $('a.text-link-cta, a.social-link').each((_, el) => {
+    const $el = $(el);
+    if (isElementHidden($el)) return;
+    $el.attr('data-studio-edit', `link_${linkCount}_label`);
+    linkCount += 1;
+  });
+}
+
+const PREVIEW_INTERACTION_STYLE = `<style id="studio-preview-style">
+[data-studio-edit] { cursor: pointer; border-radius: 2px; transition: outline 0.12s ease, background 0.12s ease; }
+[data-studio-edit]:hover { outline: 2px solid rgba(239,120,0,0.5); outline-offset: 2px; }
+[data-studio-edit].studio-edit-active { outline: 2px solid #ef7800; outline-offset: 2px; background: rgba(239,120,0,0.1); }
+[data-studio-module] { border-radius: 4px; transition: outline 0.12s ease; }
+[data-studio-module].studio-module-active { outline: 2px dashed rgba(239,120,0,0.4); outline-offset: 6px; }
+</style>`;
+
+function applyOverrides(moduleId, overrides = {}, options = {}) {
+  const { annotate = false } = options;
   const normalized = normalizeOverrides(moduleId, overrides);
-  if (!normalized || !Object.keys(normalized).length) {
+  const hasOverrides = normalized && Object.keys(normalized).length;
+
+  if (!hasOverrides && !annotate) {
     return loadResolvedModuleHtml(moduleId);
   }
 
   const html = loadResolvedModuleHtml(moduleId);
   const $ = cheerio.load(html, { xml: false }, false);
+
+  if (!hasOverrides) {
+    collapseOrphanSpacers($);
+    collapseEmptyFaqPairs($);
+    if (annotate) tagPreviewFields($);
+    return $.root().html() || html;
+  }
 
   let textCount = 0;
   let imageCount = 0;
@@ -465,6 +548,8 @@ function applyOverrides(moduleId, overrides = {}) {
   collapseOrphanSpacers($);
   collapseEmptyFaqPairs($);
 
+  if (annotate) tagPreviewFields($);
+
   const result = $.root().html();
   return result || html;
 }
@@ -474,4 +559,5 @@ module.exports = {
   applyOverrides,
   loadResolvedModuleHtml,
   normalizeOverrides,
+  PREVIEW_INTERACTION_STYLE,
 };
