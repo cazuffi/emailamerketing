@@ -682,7 +682,7 @@ body {
   background-color: #e4e5e8;
   padding: 24px 16px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
 }
 
@@ -693,10 +693,18 @@ body {
   border: 1px solid var(--border-strong);
   overflow: hidden;
   transition: width var(--transition), border-radius var(--transition);
+  flex-shrink: 0;
 }
-.device-desktop { width: 100%; max-width: 680px; }
+/* 641px viewport avoids email @media (max-width: 640px) stacking in preview */
+.device-desktop {
+  width: 641px;
+  min-width: 641px;
+  max-width: none;
+}
 .device-mobile {
   width: 375px;
+  min-width: 375px;
+  max-width: none;
   border-radius: 28px;
   border-width: 3px;
 }
@@ -728,8 +736,17 @@ body {
   position: relative;
   background: #fff;
   min-height: 420px;
+  overflow: hidden;
 }
-.device-mobile .device-screen { min-height: 560px; }
+.device-desktop .device-screen {
+  width: 641px;
+  min-width: 641px;
+}
+.device-mobile .device-screen {
+  width: 375px;
+  min-width: 375px;
+  min-height: 560px;
+}
 
 .preview-loading {
   position: absolute;
@@ -763,6 +780,15 @@ body {
   min-height: 420px;
   height: 100%;
   display: block;
+}
+.device-desktop #preview-frame {
+  width: 641px;
+  min-width: 641px;
+}
+.device-mobile #preview-frame {
+  width: 375px;
+  min-width: 375px;
+  min-height: 560px;
 }
 
 /* Modal */
