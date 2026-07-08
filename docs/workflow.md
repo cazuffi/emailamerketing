@@ -1,6 +1,35 @@
 # Workflow
 
-## Create a new weekly email
+## Easiest way: shell + pick modules (recommended)
+
+This keeps D365 head, CSS, fonts, wrapper, and footer intact — you only add the sections you want.
+
+```bash
+# 1. Browse modules in browser
+npm run preview -- catalog
+
+# 2. Create a blank campaign with the shell already built in
+npm run new -- july-promo
+
+# 3. Pull in modules you like (by ID from catalog)
+npm run add -- july-promo hero-split icon-grid-four cta-primary-center
+
+# 4. Build the full email.html (safe to paste into D365)
+npm run build
+npm run preview -- july-promo
+```
+
+Paste `campaigns/2026-07-july-promo/email.html` into D365 → **Design → HTML**.
+
+List all module IDs in terminal: `npm run list`
+
+**Never paste a raw module into blank D365 HTML** — always paste the built `email.html`. The shell (head, styles, 640px wrapper, footer) is assembled automatically.
+
+See also: [docs/modules.md](modules.md)
+
+---
+
+## Create a new weekly email (manual)
 
 1. Copy the promo template structure into a new campaign folder:
 
@@ -22,7 +51,19 @@ campaigns/2026-07-my-campaign/
 <!-- @include ../../components/modules/footer.html -->
 ```
 
-Browse all 32 modules: `npm run preview -- catalog`. See [modules.md](modules.md).
+Browse all 58 modules: `npm run preview -- catalog`. See [modules.md](modules.md).
+
+### Quick commands
+
+| Command | What it does |
+|---------|--------------|
+| `npm run new -- my-promo` | Create campaign with D365 shell ready |
+| `npm run add -- my-promo hero-split` | Add module(s) into the shell |
+| `npm run list` | Print all module IDs in terminal |
+| `npm run build` | Assemble `email.html` (paste this into D365) |
+| `npm run preview -- my-promo` | Preview in browser |
+
+## Create a new weekly email (manual)
 
 3. Build and preview:
 

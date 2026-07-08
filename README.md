@@ -14,6 +14,20 @@ npm run preview -- sales-ignitor
 
 Open the preview URL, edit `campaigns/*/source.html`, save — browser refreshes after rebuild.
 
+## Pick modules without breaking the shell
+
+```bash
+npm run preview -- catalog          # browse 58 modules
+npm run new -- my-promo             # creates shell (head, CSS, wrapper, footer)
+npm run add -- my-promo hero-split icon-grid-four cta-primary-center
+npm run build                       # → email.html (paste this into D365)
+npm run preview -- my-promo
+```
+
+**Paste `email.html` into D365 — not individual modules.** The build assembles the full shell so layout, fonts, and footer stay intact.
+
+`npm run list` — all module IDs in terminal.
+
 ## Weekly workflow
 
 1. Edit campaign copy in `campaigns/<folder>/source.html` (or `blocks/` within that folder)

@@ -5,7 +5,10 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.js",
-    "preview": "node scripts/preview.js"
+    "preview": "node scripts/preview.js",
+    "new": "node scripts/new-campaign.js",
+    "add": "node scripts/add-modules.js",
+    "list": "node scripts/list-modules.js"
   },
   "devDependencies": {
     "chokidar": "^3.6.0"

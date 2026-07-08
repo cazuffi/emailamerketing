@@ -46,7 +46,7 @@ function main() {
   const jobs = [];
 
   for (const entry of fs.readdirSync(path.join(ROOT, 'templates'), { withFileTypes: true })) {
-    if (entry.isFile() && entry.name.endsWith('.html')) {
+    if (entry.isFile() && entry.name.endsWith('.html') && !entry.name.startsWith('_')) {
       jobs.push({
         source: path.join(ROOT, 'templates', entry.name),
         output: path.join(ROOT, 'dist/templates', entry.name),
