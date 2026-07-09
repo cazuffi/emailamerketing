@@ -169,6 +169,12 @@ img {
   .tbContainer.multi > tbody > tr > .columnContainer,
   .tbContainer.multi > tbody > tr > td.stack-column { display: block !important; width: 100% !important; max-width: 100% !important; }
   p, li { font-size: 15px !important; line-height: 1.6 !important; }
+  .disclaimer-text { font-size: 10px !important; line-height: 1.5 !important; }
+  .preheader-text { font-size: 11px !important; }
+  .caption-text { font-size: 11px !important; }
+  .stat-label { font-size: 11px !important; }
+  .specs-label { font-size: 11px !important; }
+  .faq-answer { font-size: 15px !important; }
   .orange-footer .footer-band-address p { font-size: 13px !important; line-height: 1.6 !important; }
   h1 { font-size: 20px !important; }
   h2 { font-size: 18px !important; }

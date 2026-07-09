@@ -508,6 +508,16 @@ const PREVIEW_INTERACTION_STYLE = `<style id="studio-preview-style">
 [data-studio-module].studio-module-active { outline: 2px dashed rgba(239,120,0,0.4); outline-offset: 6px; }
 </style>`;
 
+function syncButtonBlockHtml(html, href, label) {
+  const safeHref = String(href || '#').replace(/"/g, '&quot;');
+  const safeLabel = String(label || 'Button label');
+  let out = html;
+  out = out.replace(/(<a[^>]*class="[^"]*button[^"]*"[^>]*href=")[^"]*(")/gi, `$1${safeHref}$2`);
+  out = out.replace(/(<v:roundrect[^>]*href=")[^"]*(")/gi, `$1${safeHref}$2`);
+  out = out.replace(/(<center[^>]*style="[^"]*">)([^<]*)(<\/center>)/gi, `$1${safeLabel}$3`);
+  return out;
+}
+
 function applyOverrides(moduleId, overrides = {}, options = {}) {
   const { annotate = false } = options;
   const normalized = normalizeOverrides(moduleId, overrides);
@@ -568,12 +578,18 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
       if ($link.length) {
         const labelKey = `button_${buttonCount}_label`;
         const hrefKey = `button_${buttonCount}_href`;
+        let label = $link.text();
+        let href = $link.attr('href') || '#';
         if (Object.prototype.hasOwnProperty.call(normalized, labelKey)) {
-          $link.text(normalized[labelKey]);
+          label = normalized[labelKey];
+          $link.text(label);
         }
         if (Object.prototype.hasOwnProperty.call(normalized, hrefKey)) {
-          $link.attr('href', normalized[hrefKey]);
+          href = normalized[hrefKey];
+          $link.attr('href', href);
         }
+        const synced = syncButtonBlockHtml($block.html() || '', href, label);
+        $block.html(synced);
         buttonCount += 1;
       }
     }

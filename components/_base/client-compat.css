@@ -1,0 +1,103 @@
+/* Cross-client compatibility — Outlook, Gmail, Apple Mail */
+
+/* Outlook table spacing reset */
+table {
+  border-collapse: collapse;
+  mso-table-lspace: 0pt;
+  mso-table-rspace: 0pt;
+}
+
+td {
+  mso-line-height-rule: exactly;
+}
+
+/* Intentional small copy — preserve size in all clients */
+.text-small,
+.preheader-text,
+.caption-text,
+.stat-label,
+.specs-label,
+.faq-answer,
+.disclaimer-text,
+.text-legal,
+.footer-legal p,
+.footer-band-address p {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+}
+
+.disclaimer-text {
+  font-size: 10px !important;
+  line-height: 1.5 !important;
+  color: #999999 !important;
+}
+
+.preheader-text {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+  color: #666666 !important;
+}
+
+.caption-text {
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  color: #666666 !important;
+}
+
+.stat-label {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+}
+
+.specs-label {
+  font-size: 11px !important;
+}
+
+.faq-answer {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #333333 !important;
+}
+
+/* Outlook: keep bold when custom fonts are unavailable */
+h1, h3, b, strong, .text-bold {
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+}
+
+/* Outlook/Gmail: images as block to remove gaps */
+.imageWrapper img {
+  display: block;
+  border: 0;
+  outline: none;
+  text-decoration: none;
+  -ms-interpolation-mode: bicubic;
+}
+
+/* Bulletproof button helpers */
+.buttonCell,
+.button-outline-cell {
+  mso-padding-alt: 0;
+}
+
+a.button-primary,
+a.button-outline-link {
+  font-weight: bold;
+  mso-ansi-font-weight: bold;
+}
+
+/* Gmail iOS right-gutter fix */
+u + .body .gmail-blend-screen { background: #000000; mix-blend-mode: screen; }
+u + .body .gmail-blend-difference { background: #000000; mix-blend-mode: difference; }
+
+@media only screen and (max-width: 640px) {
+  .disclaimer-text { font-size: 10px !important; }
+  .preheader-text { font-size: 11px !important; }
+  .caption-text { font-size: 11px !important; }
+  .stat-label { font-size: 11px !important; }
+  .specs-label { font-size: 11px !important; }
+  .faq-answer { font-size: 15px !important; }
+  .footer-band-address p,
+  .footer-legal p { font-size: 13px !important; }
+  .footer-legal p,
+  .footer-legal a { font-size: 11px !important; }
+}

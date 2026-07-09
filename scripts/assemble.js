@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { applyOverrides, PREVIEW_INTERACTION_STYLE } = require('./module-fields');
+const { hardenEmailHtml } = require('./harden-email');
 
 const ROOT = path.join(__dirname, '..');
 const STUDIO_BASE = path.join(ROOT, 'campaigns/_studio');
@@ -79,7 +80,8 @@ function buildSourceHtml({
 
 function buildEmailHtml(options = {}) {
   const source = buildSourceHtml(options);
-  return assembleFromSource(source, STUDIO_BASE);
+  const assembled = assembleFromSource(source, STUDIO_BASE);
+  return hardenEmailHtml(assembled);
 }
 
 function buildFile(sourcePath, outputPath) {
