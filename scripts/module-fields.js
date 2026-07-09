@@ -163,6 +163,48 @@ function applyAsLineBreak($el) {
   $el.html('&nbsp;');
 }
 
+function escapeHtml(text) {
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function formatInlineText(value) {
+  const escaped = escapeHtml(normalizeTextValue(value));
+  if (!/\*\*(.+?)\*\*/.test(escaped)) return escaped;
+  return escaped.replace(
+    /\*\*(.+?)\*\*/g,
+    '<strong style="font-weight:bold;font-family:ARIALNB,Arial,sans-serif;"><span style="font-family:ARIALNB,Arial,sans-serif;font-weight:bold;">$1</span></strong>',
+  );
+}
+
+function hardenBoldForEmail($) {
+  $('h1, h3').each((_, el) => {
+    const $el = $(el);
+    const style = $el.attr('style') || '';
+    if (!/font-weight\s*:/i.test(style)) {
+      $el.attr('style', style ? `${style};font-weight:bold` : 'font-weight:bold');
+    }
+  });
+
+  $('span, p').each((_, el) => {
+    const $el = $(el);
+    const style = $el.attr('style') || '';
+    if (!/ARIALNB/i.test(style)) return;
+    if ($el.closest('.buttonWrapper, .buttonTable, .button-outline-table, a.buttonClass, a.button-outline-link').length) return;
+    if ($el.is('.stat-number, .step-number, .badge-new, .download-icon, .icon-circle, .play-badge')) return;
+    if (!/font-weight\s*:\s*bold/i.test(style)) {
+      $el.attr('style', style ? `${style};font-weight:bold` : 'font-weight:bold');
+    }
+    if (!$el.find('strong, b').length && $el.children().length === 0) {
+      const text = $el.text();
+      $el.html(`<strong style="font-weight:bold;">${escapeHtml(text)}</strong>`);
+    }
+  });
+}
+
 function applyTextOverride($el, value, emptyMode = 'hide') {
   if (isEmptyOverride(value)) {
     if (emptyMode === 'spacer') {
@@ -174,6 +216,11 @@ function applyTextOverride($el, value, emptyMode = 'hide') {
   }
   showForEmail($el);
   $el.removeAttr('data-studio-spacer');
+  const formatted = formatInlineText(value);
+  if (formatted.includes('<strong')) {
+    $el.html(formatted);
+    return;
+  }
   const $span = $el.find('span').first();
   if ($span.length === 1 && $el.children().length === 1) {
     $span.text(value);
@@ -547,6 +594,7 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
 
   collapseOrphanSpacers($);
   collapseEmptyFaqPairs($);
+  hardenBoldForEmail($);
 
   if (annotate) tagPreviewFields($);
 

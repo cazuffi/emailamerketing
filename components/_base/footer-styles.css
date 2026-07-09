@@ -3,7 +3,8 @@
 
 .footer-legal {
   background-color: #f4f4f4;
-  text-align: center;
+  text-align: center !important;
+  width: 100%;
 }
 
 .footer-legal p,
@@ -14,7 +15,12 @@
   line-height: 1.6 !important;
   color: #666666 !important;
   text-align: center !important;
-  margin: 0 0 6px 0 !important;
+  margin: 0 auto 6px auto !important;
+}
+
+.contentBlockWrapper {
+  width: 100% !important;
+  text-align: center !important;
 }
 
 .footer-legal p:last-child {
@@ -49,5 +55,10 @@
   .footer-legal a {
     font-size: 11px !important;
     line-height: 1.6 !important;
+    text-align: center !important;
+  }
+  .contentBlockWrapper {
+    text-align: center !important;
+    width: 100% !important;
   }
 }
