@@ -1,6 +1,11 @@
 /**
  * Preview-only transforms — never applied to exported HTML.
  */
+const fs = require('fs');
+const path = require('path');
+
+const OUTLOOK_FALLBACKS_PATH = path.join(__dirname, '../components/_base/outlook-fallbacks.css');
+
 const SAMPLE_MERGE_TAGS = {
   '{{FirstName}}': 'Alex',
   '{{LastName}}': 'Smith',
@@ -8,19 +13,13 @@ const SAMPLE_MERGE_TAGS = {
   '{{PreferenceCenter}}': '#',
 };
 
-const PREVIEW_OUTLOOK_SIM_STYLE = `<style id="studio-outlook-sim">
-/* Approximate Outlook desktop (Word engine) — no custom web fonts */
-body, table, td, th, p, a, li, span, div {
-  font-family: Arial, Helvetica, sans-serif !important;
+function getOutlookFallbackCss() {
+  return fs.readFileSync(OUTLOOK_FALLBACKS_PATH, 'utf8');
 }
-h1, h3, b, strong, .text-bold {
-  font-weight: bold !important;
-  font-family: Arial, Helvetica, sans-serif !important;
+
+function buildOutlookSimStyle() {
+  return `<style id="studio-outlook-sim">\n${getOutlookFallbackCss()}\n</style>`;
 }
-h2 {
-  font-family: Arial, Helvetica, sans-serif !important;
-}
-</style>`;
 
 function applyPreviewSampleData(html) {
   let out = html;
@@ -32,16 +31,17 @@ function applyPreviewSampleData(html) {
 
 function applyOutlookSimStyle(html) {
   if (!html || html.includes('studio-outlook-sim')) return html;
+  const block = buildOutlookSimStyle();
   // Assembled D365 HTML is often a fragment (no <head>); inject after main </style>.
   if (html.includes('</head>')) {
-    return html.replace('</head>', `${PREVIEW_OUTLOOK_SIM_STYLE}</head>`);
+    return html.replace('</head>', `${block}</head>`);
   }
   const styleClose = html.indexOf('</style>');
   if (styleClose !== -1) {
     const insertAt = styleClose + '</style>'.length;
-    return `${html.slice(0, insertAt)}${PREVIEW_OUTLOOK_SIM_STYLE}${html.slice(insertAt)}`;
+    return `${html.slice(0, insertAt)}${block}${html.slice(insertAt)}`;
   }
-  return `${PREVIEW_OUTLOOK_SIM_STYLE}${html}`;
+  return `${block}${html}`;
 }
 
 function preparePreviewHtml(html, { sampleData = false, outlookSim = false } = {}) {
@@ -55,5 +55,6 @@ module.exports = {
   applyPreviewSampleData,
   applyOutlookSimStyle,
   preparePreviewHtml,
-  PREVIEW_OUTLOOK_SIM_STYLE,
+  getOutlookFallbackCss,
+  buildOutlookSimStyle,
 };

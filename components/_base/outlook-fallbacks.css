@@ -1,0 +1,110 @@
+/* Outlook desktop — Arial substitutes when @font-face (ARIALN*) cannot load */
+
+body, table, td, th, p, a, li, span, div {
+  font-family: Arial, Helvetica, sans-serif !important;
+  mso-generic-font-family: swiss;
+  mso-font-alt: Arial;
+}
+
+p {
+  font-size: 15px !important;
+  line-height: 22px !important;
+  mso-line-height-rule: exactly;
+}
+
+a {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 15px !important;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 22px !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  line-height: 28px !important;
+  letter-spacing: -0.2px;
+  mso-line-height-rule: exactly;
+}
+
+h2 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 20px !important;
+  font-weight: normal !important;
+  line-height: 27px !important;
+  letter-spacing: 0.1px;
+  mso-line-height-rule: exactly;
+}
+
+h3 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  line-height: 21px !important;
+  mso-line-height-rule: exactly;
+}
+
+b, strong, .text-bold {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+}
+
+[style*="ARIALN"], [style*="ARIALNB"], [style*="ARIALNI"], [style*="ARIALNBI"] {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.stat-number, .step-number, .pricing-price {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  font-size: 30px !important;
+  line-height: 34px !important;
+  mso-line-height-rule: exactly;
+}
+
+.stat-label, .caption-text, .preheader-text, .disclaimer-text, .faq-answer {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.faq-question, .quote-author, .text-link-cta, .event-label, .agenda-time,
+.check-mark, .play-badge, .specs-label, .footer-band-title, .pricing-price {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+}
+
+.quote-text {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-style: italic !important;
+  mso-ansi-font-style: italic;
+  line-height: 22px !important;
+  mso-line-height-rule: exactly;
+}
+
+a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  font-size: 14px !important;
+  letter-spacing: 0.15px;
+  mso-line-height-rule: exactly;
+}
+
+.footer-band-title {
+  font-size: 21px !important;
+  line-height: 27px !important;
+  mso-line-height-rule: exactly;
+}
+
+.footer-band-address p, .footer-legal p, .footer-legal a {
+  font-family: Arial, Helvetica, sans-serif !important;
+  line-height: 20px !important;
+  mso-line-height-rule: exactly;
+}
+
+.accent-band h1 {
+  line-height: 28px !important;
+  mso-line-height-rule: exactly;
+}

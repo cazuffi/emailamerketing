@@ -89,10 +89,21 @@ function hardenTables($) {
 
 function hardenTypography($) {
   $('h1, h3').each((_, el) => {
-    ensureStyle($(el), 'font-weight:bold;mso-ansi-font-weight:bold');
+    ensureStyle($(el), 'font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly');
+  });
+  $('h2').each((_, el) => {
+    ensureStyle($(el), 'mso-line-height-rule:exactly');
+  });
+  $('p').each((_, el) => {
+    ensureStyle($(el), 'mso-line-height-rule:exactly');
   });
   $('b, strong').each((_, el) => {
-    ensureStyle($(el), 'font-weight:bold;mso-ansi-font-weight:bold;font-family:ARIALNB,Arial,Verdana,sans-serif');
+    ensureStyle($(el), 'font-weight:bold;mso-ansi-font-weight:bold;font-family:ARIALNB,Arial,Helvetica,sans-serif');
+  });
+  $('[style*="ARIALNB"]').each((_, el) => {
+    const $el = $(el);
+    if ($el.closest('a.button-primary, a.button-outline-link, .buttonCell, .button-outline-cell').length) return;
+    ensureStyle($el, 'font-weight:bold;mso-ansi-font-weight:bold');
   });
 }
 
