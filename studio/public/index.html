@@ -123,6 +123,14 @@
                 <button type="button" class="scope-btn active" data-scope="full">Full email</button>
                 <button type="button" class="scope-btn" data-scope="module" id="scope-module-btn" disabled title="Select a module first">This module</button>
               </div>
+              <div class="preview-mode segmented" id="preview-mode">
+                <button type="button" class="scope-btn active" data-preview-mode="edit" title="Click text to jump to Edit">Edit</button>
+                <button type="button" class="scope-btn" data-preview-mode="send" title="Same HTML as Copy HTML — matches D365 send">Send</button>
+              </div>
+              <label class="preview-outlook-toggle hidden" id="preview-outlook-wrap" title="Approximate Outlook desktop fonts (Arial, no custom web fonts)">
+                <input type="checkbox" id="preview-outlook-sim">
+                <span>Outlook</span>
+              </label>
               <div class="preview-toggles segmented" id="preview-toggles">
                 <button type="button" class="toggle-btn active" data-width="640">Desktop</button>
                 <button type="button" class="toggle-btn" data-width="375">Mobile</button>
@@ -130,7 +138,7 @@
             </div>
           </div>
           <div id="preview-tab" class="panel-body">
-            <p class="preview-hint muted">Click text to edit · Desktop preview scales to fit your screen</p>
+            <p class="preview-hint muted" id="preview-hint">Edit preview — click text to edit · Desktop scales to fit</p>
             <div class="preview-frame-wrap" id="preview-frame-wrap">
               <div class="preview-scale-host" id="preview-scale-host">
                 <div class="preview-scale-inner" id="preview-scale-inner">
@@ -196,7 +204,7 @@
         <ol class="onboarding-steps">
           <li><strong>Compose</strong> — add modules from the library</li>
           <li><strong>Edit</strong> — click a module to change text, images, links</li>
-          <li><strong>Preview</strong> — check desktop and mobile layout</li>
+          <li><strong>Preview</strong> — use <strong>Send</strong> mode for the same HTML as Copy HTML (1:1 size); <strong>Edit</strong> mode for click-to-edit</li>
           <li><strong>Export</strong> — copy HTML and paste into D365</li>
         </ol>
         <p class="muted">Keyboard: <kbd>Ctrl+S</kbd> save · <kbd>Ctrl+Shift+C</kbd> copy HTML</p>

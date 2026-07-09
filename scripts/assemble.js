@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { applyOverrides, PREVIEW_INTERACTION_STYLE } = require('./module-fields');
 const { hardenEmailHtml } = require('./harden-email');
+const { preparePreviewHtml } = require('./preview-sample');
 
 const ROOT = path.join(__dirname, '..');
 const STUDIO_BASE = path.join(ROOT, 'campaigns/_studio');
@@ -81,7 +82,14 @@ function buildSourceHtml({
 function buildEmailHtml(options = {}) {
   const source = buildSourceHtml(options);
   const assembled = assembleFromSource(source, STUDIO_BASE);
-  return hardenEmailHtml(assembled);
+  const hardened = hardenEmailHtml(assembled);
+  if (options.previewSample || options.previewOutlookSim) {
+    return preparePreviewHtml(hardened, {
+      sampleData: !!options.previewSample,
+      outlookSim: !!options.previewOutlookSim,
+    });
+  }
+  return hardened;
 }
 
 function buildFile(sourcePath, outputPath) {

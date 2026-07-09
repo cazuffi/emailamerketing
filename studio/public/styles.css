@@ -725,7 +725,27 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.preview-toggles { display: flex; }
+.preview-outlook-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.preview-outlook-toggle input {
+  accent-color: var(--orange);
+  margin: 0;
+}
+.preview-outlook-toggle.hidden { display: none !important; }
+.preview-frame-wrap.send-preview-mode {
+  overflow: auto;
+  justify-content: flex-start;
+}
+.preview-mode { display: flex; }
 .preview-hint {
   font-size: 11px;
   padding: 8px 12px 0;

@@ -6,6 +6,8 @@ const state = {
   overrides: {},
   editUid: null,
   previewScope: 'full',
+  previewMode: 'edit',
+  previewOutlookSim: false,
   previewActiveField: null,
   campaignId: null,
   campaignStatus: 'draft',
@@ -307,6 +309,7 @@ async function initStudio() {
   scheduleBuild();
   showOnboardingIfNeeded();
   initLibraryCollapse();
+  updatePreviewModeUI();
   schedulePreviewScale();
 }
 
@@ -620,7 +623,7 @@ function updatePreviewScopeUI() {
     state.previewScope = 'full';
   }
 
-  $$('.scope-btn').forEach((btn) => {
+  $$('#preview-scope .scope-btn').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.scope === state.previewScope);
   });
 
@@ -633,13 +636,26 @@ function updatePreviewScopeUI() {
   }
 }
 
-$$('.scope-btn').forEach((btn) => {
+$$('#preview-scope .scope-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     if (btn.disabled) return;
     state.previewScope = btn.dataset.scope;
     updatePreviewScopeUI();
     scheduleBuild();
   });
+});
+
+$$('[data-preview-mode]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    state.previewMode = btn.dataset.previewMode;
+    updatePreviewModeUI();
+    scheduleBuild();
+  });
+});
+
+$('#preview-outlook-sim')?.addEventListener('change', (e) => {
+  state.previewOutlookSim = e.target.checked;
+  if (state.previewMode === 'send') scheduleBuild();
 });
 
 $$('.panel-tab').forEach((tab) => {
@@ -969,6 +985,21 @@ function getPreviewNativeWidth() {
   return frame?.classList.contains('device-mobile') ? MOBILE_PREVIEW_WIDTH : DESKTOP_PREVIEW_WIDTH;
 }
 
+function updatePreviewModeUI() {
+  const isSend = state.previewMode === 'send';
+  $$('#preview-mode .scope-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.previewMode === state.previewMode);
+  });
+  $('#preview-outlook-wrap')?.classList.toggle('hidden', !isSend);
+  $('#preview-frame-wrap')?.classList.toggle('send-preview-mode', isSend);
+  const hint = $('#preview-hint');
+  if (hint) {
+    hint.textContent = isSend
+      ? 'Send preview — same HTML as Copy HTML · 1:1 size · D365 test send is still the final check'
+      : 'Edit preview — click text to edit · Desktop scales to fit your screen';
+  }
+}
+
 function updatePreviewScale() {
   const wrap = $('#preview-frame-wrap');
   const host = $('#preview-scale-host');
@@ -978,10 +1009,23 @@ function updatePreviewScale() {
   if (!wrap || !host || !inner || !frame) return;
 
   const nativeWidth = getPreviewNativeWidth();
+  const faithful = state.previewMode === 'send';
+
+  inner.style.width = `${nativeWidth}px`;
+  if (faithful) {
+    inner.style.transform = '';
+    host.style.height = '';
+    if (label) {
+      const parts = [nativeWidth === MOBILE_PREVIEW_WIDTH ? '375px' : '640px', '1:1'];
+      if (state.previewOutlookSim) parts.push('Outlook');
+      label.textContent = `Send · ${parts.join(' · ')}`;
+    }
+    return;
+  }
+
   const available = Math.max(200, wrap.clientWidth - 24);
   const scale = Math.min(1, available / nativeWidth);
 
-  inner.style.width = `${nativeWidth}px`;
   if (scale < 0.999) {
     inner.style.transform = `scale(${scale})`;
     host.style.height = `${frame.offsetHeight * scale}px`;
@@ -1048,11 +1092,21 @@ async function buildPreview() {
 
   loading.classList.remove('hidden');
   try {
+    const isSendPreview = state.previewMode === 'send';
+    const annotate = !isSendPreview;
     let html;
     if (showModuleOnly && inst) {
       const overrides = state.overrides[inst.uid] || {};
       const instanceIndex = state.instances.findIndex((i) => i.uid === inst.uid);
-      const params = new URLSearchParams({ annotate: '1', instanceUid: inst.uid, instanceIndex: String(instanceIndex) });
+      const params = new URLSearchParams({
+        annotate: annotate ? '1' : '0',
+        instanceUid: inst.uid,
+        instanceIndex: String(instanceIndex),
+      });
+      if (isSendPreview) {
+        params.set('previewSample', '1');
+        if (state.previewOutlookSim) params.set('previewOutlookSim', '1');
+      }
       if (Object.keys(overrides).length) {
         params.set('overrides', JSON.stringify(overrides));
       }
@@ -1066,7 +1120,9 @@ async function buildPreview() {
           title: payload.title,
           modules: payload.modules,
           overrides: payload.indexOverrides,
-          annotate: true,
+          annotate,
+          previewSample: isSendPreview,
+          previewOutlookSim: isSendPreview && state.previewOutlookSim,
           instanceMeta: state.instances.map((i) => ({ uid: i.uid, moduleId: i.moduleId })),
         }),
       });
@@ -1089,6 +1145,7 @@ async function buildPreview() {
 function setupPreviewInteraction(frame) {
   frame.onload = () => {
     schedulePreviewScale();
+    if (state.previewMode === 'send') return;
     const doc = frame.contentDocument;
     if (!doc || doc.body?.dataset.studioClickBound) return;
     if (doc.body) doc.body.dataset.studioClickBound = '1';
