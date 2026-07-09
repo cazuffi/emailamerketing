@@ -75,6 +75,14 @@ function hardenImages($) {
     ensureStyle($img, 'display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic');
     if (!$img.attr('alt')) $img.attr('alt', '');
   });
+  $('img.header-logo-img, .header-logo-cell img').each((_, el) => {
+    const $img = $(el);
+    const w = Number($img.attr('width')) || 200;
+    ensureStyle($img, `width:${w}px;max-width:${w}px;height:auto`);
+    if (!$img.attr('height')) {
+      $img.attr('height', String(Math.round((29 / 213) * w)));
+    }
+  });
 }
 
 function hardenTables($) {
