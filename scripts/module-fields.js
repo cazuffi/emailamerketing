@@ -372,6 +372,29 @@ function applyModuleSettings($, normalized) {
   }
 }
 
+function finishSpecsTableRows($, $tbody) {
+  $tbody.children('tr').removeClass('specs-row-last');
+  const $rows = $tbody.children('tr');
+  if (!$rows.length) return;
+
+  $rows.each((index, row) => {
+    const $row = $(row);
+    const isLast = index === $rows.length - 1;
+    const $label = $row.find('.specs-label').first();
+    const $value = $row.find('.specs-value').first();
+    if (!$label.length || !$value.length) return;
+
+    if (isLast) {
+      $row.addClass('specs-row-last');
+      $label.attr('style', mergeInlineStyle($label.attr('style'), 'border-bottom', '0'));
+      $value.attr('style', mergeInlineStyle($value.attr('style'), 'border-bottom', '0'));
+    } else {
+      $label.attr('style', mergeInlineStyle($label.attr('style'), 'border-bottom', '1px solid #e0e0e0'));
+      $value.attr('style', mergeInlineStyle($value.attr('style'), 'border-bottom', '1px solid #e0e0e0'));
+    }
+  });
+}
+
 function applySpecsRows($, normalized) {
   if (!Object.prototype.hasOwnProperty.call(normalized, 'list_specs')) return;
 
@@ -401,6 +424,8 @@ function applySpecsRows($, normalized) {
       $fallback.find('.specs-value').first().text('');
       $tbody.append($fallback);
     }
+
+    finishSpecsTableRows($, $tbody);
   });
 }
 
