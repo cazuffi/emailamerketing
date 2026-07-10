@@ -11,9 +11,19 @@
 <meta type="xrm/designer/setting" name="layout-editable" value="marketing-designer-layout-editable">
 <meta type="xrm/designer/setting" name="layout-max-width" value="640px" datatype="text" label="Layout max width">
 <meta type="xrm/designer/setting" name="font-family" value="Arial, Verdana, sans-serif" datatype="font" label="Font Family">
-<meta type="xrm/designer/setting" name="body-text-size" value="14px" datatype="text" label="Body Font Size">
+<meta type="xrm/designer/setting" name="body-text-size" value="15px" datatype="text" label="Body Font Size">
 <meta type="xrm/designer/setting" name="body-text-color" value="#000" datatype="color" label="Body Text Color">
 <meta type="xrm/designer/setting" name="outer-background" value="#f4f4f4" datatype="color" label="Email Background">
+<!--[if mso]>
+<noscript>
+<xml>
+<o:OfficeDocumentSettings>
+<o:AllowPNG/>
+<o:PixelsPerInch>96</o:PixelsPerInch>
+</o:OfficeDocumentSettings>
+</xml>
+</noscript>
+<![endif]-->
 <style>
 @font-face { font-family: ARIALN; font-display: swap; src: url("https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/69b33865-88ad-f011-bbd2-000d3aa91324"); }
 @font-face { font-family: ARIALNB; font-display: swap; src: url("https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/fonts/76b33865-88ad-f011-bbd2-000d3aa91324"); }
@@ -22,7 +32,7 @@
 
 body {
   font-family: Arial, Verdana, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   color: #000;
   background-color: #f4f4f4;
   margin: 0;
@@ -31,11 +41,17 @@ body {
   -ms-text-size-adjust: 100%;
 }
 
-h1 { color: #000; font-size: 22px; font-weight: normal; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0 0 8px 0; line-height: 1.3; }
+h1 { color: #000; font-size: 22px; font-weight: bold; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0 0 8px 0; line-height: 1.3; }
 h2 { color: #ef7800; font-size: 20px; font-weight: normal; font-family: ARIALN, Arial, Verdana, sans-serif; margin: 0; line-height: 1.35; }
-h3 { color: #000; font-size: 14px; font-weight: normal; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0 0 8px 0; line-height: 1.4; }
-p { font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 12px; color: #000; line-height: 1.6; margin: 0; }
-a { font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 14px; color: #ef7800; text-decoration: underline; }
+h3 { color: #000; font-size: 15px; font-weight: bold; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0 0 8px 0; line-height: 1.4; }
+h4 { color: #000; font-size: 13px; font-weight: bold; font-family: ARIALNB, Arial, Verdana, sans-serif; margin: 0 0 6px 0; line-height: 1.4; letter-spacing: 0.02em; }
+p { font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 15px; color: #000; line-height: 1.6; margin: 0; }
+a { font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 15px; color: #ef7800; text-decoration: underline; }
+
+b, strong, .text-bold {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-weight: bold;
+}
 
 .text-spacer { line-height: 16px; font-size: 16px; mso-line-height-rule: exactly; }
 .bullet-item { margin: 0 0 6px 0; padding-left: 2px; }
@@ -45,8 +61,6 @@ a.buttonClass,
   font-family: ARIALNB, Arial, Verdana, sans-serif;
   font-size: 14px;
   font-weight: normal;
-  color: #ffffff !important;
-  background-color: #ef7800;
   border-radius: 0;
   text-decoration: none !important;
   text-align: center;
@@ -56,6 +70,72 @@ a.buttonClass,
   padding: 14px 28px;
   mso-padding-alt: 0;
   box-sizing: border-box;
+}
+
+a.buttonClass.button-primary,
+.buttonCell .buttonClass.button-primary,
+.button-primary.buttonClass {
+  color: #ffffff !important;
+  background-color: #ef7800 !important;
+}
+
+.button-outline-table {
+  border-collapse: separate;
+  border: 0;
+}
+.button-outline-cell {
+  background-color: #ffffff !important;
+  border-radius: 0;
+  text-align: center;
+  vertical-align: middle;
+  border: 2px solid #ef7800;
+  box-sizing: border-box;
+}
+a.button-outline-link,
+.button-outline-link {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  color: #ef7800 !important;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-radius: 0;
+  text-decoration: none !important;
+  text-align: center;
+  display: block;
+  line-height: 1.4;
+  mso-line-height-rule: exactly;
+  padding: 14px 28px;
+  mso-padding-alt: 0;
+  box-sizing: border-box;
+  border: 0;
+}
+
+/* Dual CTA — equal-width, equal-height button boxes side by side */
+.cta-dual-section .buttonTable,
+.cta-dual-section .button-outline-table {
+  width: 100%;
+}
+.cta-dual-section .buttonCell,
+.cta-dual-section .button-outline-cell {
+  width: 100%;
+  border: 2px solid #ef7800 !important;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.cta-dual-section .buttonCell {
+  background-color: #ef7800 !important;
+}
+.cta-dual-section .button-outline-cell {
+  background-color: #ffffff !important;
+}
+.cta-dual-section a.buttonClass.button-primary,
+.cta-dual-section a.button-outline-link {
+  padding: 14px 28px !important;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.4;
+  min-height: 48px;
 }
 
 .buttonWrapper { margin: 4px 0 0 0; }
@@ -94,6 +174,60 @@ img {
 
 .columnContainer { box-sizing: border-box; }
 
+/* Header logos — lock display size; avoid upscale blur from width:100% */
+.header-logo-cell .imageWrapper img,
+img.header-logo-img {
+  width: 200px;
+  max-width: 200px;
+  height: auto;
+  -ms-interpolation-mode: bicubic;
+}
+img.header-logo-img--compact {
+  width: 180px;
+  max-width: 180px;
+}
+
+.header-tagline {
+  margin: 0;
+  text-align: right;
+}
+
+.header-standard-section .header-logo-cell {
+  vertical-align: middle !important;
+}
+
+.header-standard-section .header-tagline-cell {
+  vertical-align: middle !important;
+  text-align: right !important;
+}
+
+.header-standard-section .header-tagline-cell .inner {
+  text-align: right !important;
+}
+
+.header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
+  text-align: right;
+  width: 100%;
+}
+
+.orange-footer .footer-band-content,
+.orange-footer [data-editorblocktype="Text"],
+.orange-footer .footer-band-title,
+.orange-footer .footer-band-address p,
+.orange-footer .footer-band-contact p {
+  text-align: center !important;
+}
+
+@media only screen and (min-width: 641px) {
+  .header-standard-section .header-tagline-cell,
+  .header-standard-section .header-tagline-cell .inner,
+  .header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
+  .header-standard-section .header-tagline,
+  .header-standard-section .header-tagline-cell p {
+    text-align: right !important;
+  }
+}
+
 .accent-band h1 { color: #ffffff !important; margin: 0 0 10px 0 !important; }
 .accent-band p { margin: 0 !important; }
 
@@ -106,19 +240,103 @@ img {
   .mobile-padding { padding: 16px 20px !important; }
   .mobile-padding-sm { padding: 12px 20px !important; }
   .stack-column { display: block !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
-  .stack-column-gap { padding-top: 12px !important; }
+  .stack-column,
+  .stack-column-gap,
+  .columnContainer {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .stack-column-gap { padding-top: 16px !important; }
   .col-pad-right, .col-pad-left { padding-left: 0 !important; padding-right: 0 !important; }
+  td.stack-column[align="right"],
+  td[align="right"].stack-column,
+  .mobile-center-on-stack { text-align: center !important; }
+  .buttonWrapper[align="right"],
+  .buttonTable[align="right"] {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .step-arrow-cell {
+    display: none !important;
+    width: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+  }
+  .header-logo-cell,
+  .header-logo-cell .imageWrapper {
+    text-align: center !important;
+  }
+  .header-logo-cell img,
+  img.header-logo-img {
+    width: 200px !important;
+    max-width: 200px !important;
+    height: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  img.header-logo-img--compact {
+    width: 180px !important;
+    max-width: 180px !important;
+  }
+  .header-standard-section .stack-column-gap {
+    padding-top: 10px !important;
+  }
+  .header-standard-section .header-tagline-cell {
+    text-align: center !important;
+  }
+  .header-tagline-cell {
+    text-align: center !important;
+  }
+  .header-standard-section .header-tagline,
+  .header-tagline {
+    text-align: center !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+  }
+  .cta-dual-section .cta-dual-primary,
+  .cta-dual-section .cta-dual-outline {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .cta-dual-section .stack-column-gap {
+    padding-top: 12px !important;
+  }
+  .cta-dual-section a.buttonClass.button-primary,
+  .cta-dual-section a.button-outline-link {
+    padding: 15px 20px !important;
+    min-height: 48px !important;
+  }
+  .cta-dual-section .buttonCell,
+  .cta-dual-section .button-outline-cell {
+    border: 2px solid #ef7800 !important;
+    min-height: 48px !important;
+  }
+  .hero-split-cell { padding: 20px !important; }
   .containerWrapper, .tbContainer { width: 100% !important; }
   .tbContainer.multi > tbody > tr > .columnContainer,
   .tbContainer.multi > tbody > tr > td.stack-column { display: block !important; width: 100% !important; max-width: 100% !important; }
-  p, li, span { font-size: 14px !important; line-height: 1.6 !important; }
+  p, li { font-size: 15px !important; line-height: 1.6 !important; }
+  .disclaimer-text { font-size: 10px !important; line-height: 1.5 !important; }
+  .preheader-text { font-size: 11px !important; }
+  .caption-text { font-size: 11px !important; }
+  .stat-label { font-size: 11px !important; }
+  .specs-label { font-size: 11px !important; }
+  .faq-answer { font-size: 15px !important; }
+  .orange-footer .footer-band-address p { font-size: 13px !important; line-height: 1.6 !important; }
   h1 { font-size: 20px !important; }
   h2 { font-size: 18px !important; }
   h3 { font-size: 15px !important; }
+  h4 { font-size: 13px !important; }
   .mobile-text-left { text-align: left !important; }
   .mobile-center img { margin-left: auto !important; margin-right: auto !important; }
-  a.buttonClass,
-  .buttonClass {
+  a.buttonClass.button-primary,
+  .button-primary.buttonClass {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -126,10 +344,35 @@ img {
     text-align: center !important;
     padding: 16px 20px !important;
   }
-  .buttonTable { width: 100% !important; }
-  .buttonCell { display: block !important; width: 100% !important; }
+  a.button-outline-link,
+  .button-outline-link {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    padding: 14px 20px !important;
+    color: #ef7800 !important;
+    background-color: #ffffff !important;
+    border: 0 !important;
+  }
+  .buttonTable,
+  .button-outline-table {
+    width: 100% !important;
+    border: 0 !important;
+  }
+  .buttonCell,
+  .button-outline-cell {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .button-outline-cell {
+    border: 2px solid #ef7800 !important;
+    background-color: #ffffff !important;
+  }
   .buttonWrapper { text-align: center !important; width: 100% !important; }
-  .imageWrapper img { width: 100% !important; max-width: 100% !important; height: auto !important; }
+  .imageWrapper img:not(.header-logo-img) { width: 100% !important; max-width: 100% !important; height: auto !important; }
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
 }
 
@@ -137,14 +380,45 @@ img {
   .section-pad, .mobile-padding { padding: 14px 16px !important; }
   h1 { font-size: 18px !important; }
   h2 { font-size: 16px !important; }
+  h4 { font-size: 13px !important; }
 }
 
-.footer-band-address { text-align: right; }
-.footer-band-address p { color: #f4f4f4 !important; font-size: 13px !important; line-height: 1.5 !important; }
+.footer-band-inner {
+  margin: 0 auto;
+}
+.footer-band-content {
+  text-align: center;
+}
+.orange-footer .footer-band-title {
+  color: #ffffff !important;
+  text-align: center !important;
+  margin-bottom: 16px !important;
+}
+.footer-band-address,
+.footer-band-contact {
+  text-align: center;
+}
+.footer-band-address p,
+.footer-band-contact p {
+  color: #f4f4f4 !important;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+.footer-band-address p {
+  margin: 0 0 10px 0 !important;
+}
+.footer-band-contact p {
+  margin: 0 !important;
+}
 
 .footer-legal {
   background-color: #f4f4f4;
-  text-align: center;
+  text-align: center !important;
+  width: 100%;
 }
 
 .footer-legal p,
@@ -155,7 +429,12 @@ img {
   line-height: 1.6 !important;
   color: #666666 !important;
   text-align: center !important;
-  margin: 0 0 6px 0 !important;
+  margin: 0 auto 6px auto !important;
+}
+
+.contentBlockWrapper {
+  width: 100% !important;
+  text-align: center !important;
 }
 
 .footer-legal p:last-child {
@@ -175,21 +454,30 @@ img {
 }
 
 @media only screen and (max-width: 640px) {
-  .footer-band-address { text-align: left !important; }
-  .footer-band-address p { text-align: left !important; }
-  .footer-legal td.stack-column,
-  .orange-footer td.stack-column {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
+  .orange-footer .footer-band-title {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    margin-bottom: 14px !important;
   }
-  .orange-footer td.stack-column-gap { padding-top: 12px !important; }
+  .footer-band-address p,
+  .footer-band-contact p {
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+  }
+  .orange-footer .section-pad-accent {
+    overflow: visible !important;
+    padding: 24px 16px !important;
+  }
   .footer-legal p,
   .footer-legal span,
   .footer-legal a {
     font-size: 11px !important;
     line-height: 1.6 !important;
+    text-align: center !important;
+  }
+  .contentBlockWrapper {
+    text-align: center !important;
+    width: 100% !important;
   }
 }
 
@@ -266,11 +554,46 @@ img {
   text-decoration: underline !important;
 }
 
+.cta-text-link-cell.align-left,
+.cta-text-link-wrap.align-left { text-align: left !important; }
+.cta-text-link-cell.align-center,
+.cta-text-link-wrap.align-center { text-align: center !important; }
+.cta-text-link-cell.align-right,
+.cta-text-link-wrap.align-right { text-align: right !important; }
+
+.headline-lead {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #000000;
+  margin-top: 8px;
+}
+
+.headline-block-center,
+.headline-block-center h2,
+.headline-block-center h3,
+.headline-block-center h4,
+.headline-block-center .headline-lead {
+  text-align: center !important;
+}
+
 .mod-intro-centered { text-align: center; }
 .mod-intro-centered h1,
 .mod-intro-centered h2 { text-align: center; }
 
 .three-up-cell { vertical-align: top; text-align: center; padding: 0 8px; }
+
+.case-study-cell { vertical-align: top; text-align: left; padding: 0 8px; }
+.case-study-label {
+  font-family: ARIALNB, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ef7800;
+  margin: 0;
+}
+
+.product-tile .imageWrapper { text-align: center; }
 
 .comparison-col {
   background-color: #f9f9f9;
@@ -283,6 +606,19 @@ img {
   padding: 16px;
   vertical-align: top;
   border-top: 3px solid #ef7800;
+}
+
+.image-split-copy {
+  vertical-align: middle;
+}
+
+.image-hero-copy h2 {
+  margin-bottom: 10px;
+}
+
+.image-large-copy-section .imageWrapper img {
+  width: 100%;
+  max-width: 100%;
 }
 
 .article-thumb { vertical-align: top; width: 120px; }
@@ -327,10 +663,23 @@ img {
   margin: 0 0 8px 0;
 }
 
-.section-rule {
-  border-top: 2px solid #ef7800;
+.section-rule-table { margin: 0 auto 12px auto; }
+.section-rule-cell {
   width: 48px;
-  margin: 0 auto 12px auto;
+  height: 2px;
+  background-color: #ef7800;
+}
+
+.divider-line-cell {
+  height: 2px;
+  background-color: #ef7800;
+}
+
+.divider-dots-table { margin: 0 auto; }
+.divider-dot-cell {
+  width: 6px;
+  height: 6px;
+  background-color: #ef7800;
 }
 
 .callout-box {
@@ -387,7 +736,7 @@ img {
 
 .faq-answer {
   font-family: ARIALN, Arial, Verdana, sans-serif;
-  font-size: 12px;
+  font-size: 15px;
   color: #333333;
   margin: 0 0 16px 0;
   line-height: 1.6;
@@ -396,16 +745,48 @@ img {
 .specs-label {
   font-family: ARIALNB, Arial, Verdana, sans-serif;
   font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
   color: #666666;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background-color: #f4f4f4;
+  vertical-align: top;
 }
 
 .specs-value {
   font-family: ARIALN, Arial, Verdana, sans-serif;
-  font-size: 12px;
+  font-size: 15px;
+  line-height: 1.5;
   color: #000000;
-  padding: 8px 12px;
+  padding: 10px 14px;
+  vertical-align: top;
+}
+
+.specs-table-section .specs-table {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.specs-table-section .specs-table-heading {
+  margin-bottom: 14px;
+}
+
+.specs-table-section .specs-row .specs-label {
+  border-left: 3px solid #ef7800;
+  border-bottom: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+}
+
+.specs-table-section .specs-row .specs-value {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.specs-table-section .specs-row-last .specs-label,
+.specs-table-section .specs-row-last .specs-value {
+  border-bottom: 0;
 }
 
 .pricing-tier {
@@ -480,35 +861,411 @@ img {
 
 .four-up-cell { vertical-align: top; text-align: center; padding: 0 4px 16px 4px; width: 25%; }
 
-.divider-dots span {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background-color: #ef7800;
-  margin: 0 4px;
-  border-radius: 50%;
-}
+.divider-dot-gap { width: 8px; }
 
 @media only screen and (max-width: 640px) {
   .stat-number { font-size: 28px !important; }
-  .three-up-cell { display: block !important; width: 100% !important; padding: 0 0 16px 0 !important; }
-  .four-up-cell { display: block !important; width: 100% !important; padding: 0 0 16px 0 !important; }
-  .icon-grid-cell { display: block !important; width: 100% !important; padding: 0 0 20px 0 !important; }
-  .article-thumb { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
-  .article-body { display: block !important; width: 100% !important; padding-left: 0 !important; }
+  .stat-label { font-size: 12px !important; text-align: center !important; }
+
+  .three-up-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 20px 0 !important;
+    text-align: center !important;
+  }
+  .three-up-cell:last-child { padding-bottom: 0 !important; }
+  .three-up-cell h3,
+  .three-up-cell p { text-align: center !important; }
+  .product-tile .imageWrapper { text-align: center !important; }
+
+  .case-study-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 18px 0 !important;
+    text-align: left !important;
+  }
+  .case-study-cell:last-child { padding-bottom: 0 !important; }
+  .case-study-cell p { text-align: left !important; }
+
+  .four-up-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 18px 0 !important;
+    text-align: center !important;
+  }
+  .four-up-cell:last-child { padding-bottom: 0 !important; }
+  .four-up-cell h3,
+  .four-up-cell p { text-align: center !important; }
+
+  .icon-grid-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 24px 0 !important;
+    text-align: center !important;
+  }
+  .icon-grid-cell:last-child { padding-bottom: 0 !important; }
+  .icon-grid-cell h3,
+  .icon-grid-cell p { text-align: center !important; }
+
+  .article-thumb {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 12px 0 !important;
+    text-align: center !important;
+  }
+  .article-body {
+    display: block !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+  }
+
   .comparison-col,
-  .comparison-col-highlight { display: block !important; width: 100% !important; margin-bottom: 12px !important; }
+  .comparison-col-highlight {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 12px !important;
+    box-sizing: border-box !important;
+    padding: 18px 20px !important;
+  }
+  .comparison-col .bullet-item,
+  .comparison-col-highlight .bullet-item {
+    padding-left: 6px !important;
+    margin-bottom: 8px !important;
+  }
+  .comparison-col:last-child,
+  .comparison-col-highlight:last-child { margin-bottom: 0 !important; }
+
   .pricing-tier,
-  .pricing-tier-featured { display: block !important; width: 100% !important; margin-bottom: 12px !important; }
-  .team-photo { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
-  .team-info { display: block !important; width: 100% !important; padding-left: 0 !important; }
-  .logo-strip-cell { display: inline-block !important; width: 48% !important; padding: 8px 4px !important; }
+  .pricing-tier-featured {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 16px !important;
+    box-sizing: border-box !important;
+  }
+  .pricing-tier-featured { border-top: 3px solid #ef7800 !important; }
+  .pricing-tier:last-child,
+  .pricing-tier-featured:last-child { margin-bottom: 0 !important; }
+
+  .team-photo {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 12px 0 !important;
+    text-align: center !important;
+  }
+  .team-info {
+    display: block !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+  }
+
+  .logo-strip-cell {
+    display: inline-block !important;
+    width: 48% !important;
+    padding: 8px 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .specs-table-section .specs-table {
+    border: 0 !important;
+    background-color: transparent !important;
+  }
+
+  .specs-table-section .specs-row .specs-label,
+  .specs-table-section .specs-row .specs-value {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .specs-table-section .specs-row .specs-label {
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    border-left: 3px solid #ef7800 !important;
+    padding: 12px 14px 6px 14px !important;
+  }
+
+  .specs-table-section .specs-row .specs-value {
+    border-bottom: 1px solid #e0e0e0 !important;
+    padding: 0 14px 16px 14px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .specs-table-section .specs-row-last .specs-value {
+    border-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .specs-label,
+  .specs-value {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .specs-value { padding-top: 0 !important; padding-bottom: 12px !important; }
+
+  .download-resource-icon { text-align: center !important; padding-bottom: 8px !important; }
+  .download-resource-body { text-align: center !important; }
+  .download-resource-cta { text-align: center !important; }
+
+  .cta-band-grey .stack-column,
+  .accent-band .stack-column { text-align: center !important; }
+  .accent-band h1,
+  .accent-band p,
+  .accent-band span { text-align: center !important; }
+
+  .feature-stack-text,
+  .feature-stack-media { text-align: left !important; }
+  .feature-stack-media .imageWrapper { text-align: center !important; }
+
+  .image-split-copy,
+  .image-split-media { text-align: left !important; }
+  .image-split-media .imageWrapper { text-align: center !important; }
+  .image-hero-copy { padding: 20px 20px 18px 20px !important; }
+
+  .card-stack { text-align: left !important; }
+  .card-stack .imageWrapper { text-align: center !important; }
+
   .mod-intro-centered h1,
-  .mod-intro-centered h2 { text-align: left !important; }
-  .quote-centered { text-align: left !important; }
+  .mod-intro-centered h2,
+  .mod-intro-centered p { text-align: center !important; }
+  .quote-centered { text-align: center !important; }
+  .quote-centered .quote-text,
+  .quote-centered .quote-author { text-align: center !important; }
+}
+
+/* Cross-client compatibility — Outlook, Gmail, Apple Mail */
+
+/* Outlook table spacing reset */
+table {
+  border-collapse: collapse;
+  mso-table-lspace: 0pt;
+  mso-table-rspace: 0pt;
+}
+
+td {
+  mso-line-height-rule: exactly;
+}
+
+/* Intentional small copy — preserve size in all clients */
+.text-small,
+.preheader-text,
+.caption-text,
+.stat-label,
+.specs-label,
+.faq-answer,
+.disclaimer-text,
+.text-legal,
+.footer-legal p,
+.footer-band-address p {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+}
+
+.disclaimer-text {
+  font-size: 10px !important;
+  line-height: 1.5 !important;
+  color: #999999 !important;
+}
+
+.preheader-text {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+  color: #666666 !important;
+}
+
+.caption-text {
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  color: #666666 !important;
+}
+
+.stat-label {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+}
+
+.specs-label {
+  font-size: 11px !important;
+}
+
+.faq-answer {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #333333 !important;
+}
+
+/* Outlook: keep bold when custom fonts are unavailable */
+h1, h3, b, strong, .text-bold {
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+}
+
+/* Outlook/Gmail: images as block to remove gaps */
+.imageWrapper img {
+  display: block;
+  border: 0;
+  outline: none;
+  text-decoration: none;
+  -ms-interpolation-mode: bicubic;
+}
+
+/* Bulletproof button helpers */
+.buttonCell,
+.button-outline-cell {
+  mso-padding-alt: 0;
+}
+
+a.button-primary,
+a.button-outline-link {
+  font-weight: bold;
+  mso-ansi-font-weight: bold;
+}
+
+/* Gmail iOS right-gutter fix */
+u + .body .gmail-blend-screen { background: #000000; mix-blend-mode: screen; }
+u + .body .gmail-blend-difference { background: #000000; mix-blend-mode: difference; }
+
+@media only screen and (max-width: 640px) {
+  .disclaimer-text { font-size: 10px !important; }
+  .preheader-text { font-size: 11px !important; }
+  .caption-text { font-size: 11px !important; }
+  .stat-label { font-size: 11px !important; }
+  .specs-label { font-size: 11px !important; }
+  .faq-answer { font-size: 15px !important; }
+  .footer-band-address p,
+  .footer-legal p { font-size: 13px !important; }
+  .footer-legal p,
+  .footer-legal a { font-size: 11px !important; }
 }
 
 </style>
+<!--[if mso]>
+<style type="text/css">
+/* Outlook desktop — Arial substitutes when @font-face (ARIALN*) cannot load */
+
+body, table, td, th, p, a, li, span, div {
+  font-family: Arial, Helvetica, sans-serif !important;
+  mso-generic-font-family: swiss;
+  mso-font-alt: Arial;
+}
+
+p {
+  font-size: 15px !important;
+  line-height: 22px !important;
+  mso-line-height-rule: exactly;
+}
+
+a {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 15px !important;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 22px !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  line-height: 28px !important;
+  letter-spacing: -0.2px;
+  mso-line-height-rule: exactly;
+}
+
+h2 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 20px !important;
+  font-weight: normal !important;
+  line-height: 27px !important;
+  letter-spacing: 0.1px;
+  mso-line-height-rule: exactly;
+}
+
+h3 {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  line-height: 21px !important;
+  mso-line-height-rule: exactly;
+}
+
+b, strong, .text-bold {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+}
+
+[style*="ARIALN"], [style*="ARIALNB"], [style*="ARIALNI"], [style*="ARIALNBI"] {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.stat-number, .step-number, .pricing-price {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  font-size: 30px !important;
+  line-height: 34px !important;
+  mso-line-height-rule: exactly;
+}
+
+.stat-label, .caption-text, .preheader-text, .disclaimer-text, .faq-answer {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.faq-question, .quote-author, .text-link-cta, .event-label, .agenda-time,
+.check-mark, .play-badge, .specs-label, .footer-band-title, .pricing-price {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+}
+
+.quote-text {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-style: italic !important;
+  mso-ansi-font-style: italic;
+  line-height: 22px !important;
+  mso-line-height-rule: exactly;
+}
+
+a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: bold !important;
+  mso-ansi-font-weight: bold;
+  font-size: 14px !important;
+  letter-spacing: 0.15px;
+  mso-line-height-rule: exactly;
+}
+
+.footer-band-title {
+  font-size: 21px !important;
+  line-height: 27px !important;
+  mso-line-height-rule: exactly;
+}
+
+.footer-band-address p, .footer-legal p, .footer-legal a {
+  font-family: Arial, Helvetica, sans-serif !important;
+  line-height: 20px !important;
+  mso-line-height-rule: exactly;
+}
+
+.accent-band h1 {
+  line-height: 28px !important;
+  mso-line-height-rule: exactly;
+}
+
+</style>
+<![endif]-->
 
 </head>
 <body dir="ltr">
@@ -526,37 +1283,45 @@ img {
 </td></tr></tbody></table>
 </div>
 
-<div data-section="true" class="emptyContainer wrap-section">
-<table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;" role="presentation"><tbody><tr>
-<td class="section-pad-tight" style="padding:16px 24px;" role="presentation">
-<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr>
-<td class="stack-column" width="50%" valign="middle" style="vertical-align:middle;width:50%;">
-<div data-editorblocktype="Image"><div align="left" class="imageWrapper"><img src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/fe07e416-099a-f011-b4cb-7c1e52725572?ts=638943992386672616" width="200" style="max-width:200px;width:100%;height:auto;display:block;" alt="Weidmuller"></div></div>
-</td>
-<td class="stack-column stack-column-gap" width="50%" valign="middle" align="right" style="vertical-align:middle;width:50%;text-align:right;">
-<div data-editorblocktype="Text"><p class="mobile-text-left" style="margin:0;text-align:right;font-family:ARIALN,Arial,sans-serif;font-size:15px;line-height:1.4;"><span>Newsletter</span>&nbsp;<span style="color:#ef7800;">|</span>&nbsp;<span>Tagline here</span></p></div>
-</td>
-</tr></table>
-</td></tr></tbody></table>
+<div data-section="true" class="emptyContainer columns-equal-class wrap-section header-standard-section" style="margin:0;border-radius:0;">
+<table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;display:block;" role="presentation"><tbody><tr>
+<th class="mobile-padding" style="padding:10px;font-weight:normal;" role="presentation">
+<table style="width:100%;border-collapse:collapse;" class="containerWrapper tbContainer multi" cellpadding="0" cellspacing="0" role="presentation"><tbody><tr>
+<th data-container="true" class="columnContainer stack-column col-pad-right header-logo-cell" data-container-width="50.00" style="vertical-align:middle;width:50%;font-weight:normal;" role="presentation">
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tbody><tr>
+<th class="inner mobile-center" style="padding:0;font-weight:normal;" role="presentation">
+<div data-editorblocktype="Image" style="margin:10px 10px 10px 15px;"><div align="left" class="imageWrapper"><img class="header-logo-img" src="https://assets-eur.mkt.dynamics.com/e38f9c8b-b24d-f011-a209-6045bdde367f/digitalassets/images/78775cff-f27b-f111-ab0e-7ced8d2f2823?ts=639192387132860848" width="200" height="23" alt="Weidmuller" style="display:block;border:0;outline:none;text-decoration:none;width:200px;max-width:200px;height:auto;-ms-interpolation-mode:bicubic;">
+</div></div>
+</th></tr></tbody></table>
+</th>
+<th data-container="true" class="columnContainer stack-column stack-column-gap col-pad-left header-tagline-cell" data-container-width="50.00" style="vertical-align:middle;width:50%;text-align:right;font-weight:normal;" role="presentation" align="right">
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tbody><tr>
+<th class="inner" align="right" style="padding:10px;text-align:right;font-weight:normal;" role="presentation">
+<div data-editorblocktype="Text" align="right" style="margin:10px 0 0 10px;text-align:right;width:100%;">
+<p class="header-tagline" align="right" style="margin:0;text-align:right;width:100%;font-family:ARIALN,Arial,sans-serif;font-size:15px;line-height:1.4;"><span>Newsletter</span>&nbsp;<span style="color:#ef7800;">|</span>&nbsp;<span>Tagline here</span></p>
+</div>
+</th></tr></tbody></table>
+</th>
+</tr></tbody></table>
+</th></tr></tbody></table>
 </div>
 
 <div data-section="true" class="emptyContainer wrap-section">
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;" role="presentation"><tbody><tr>
 <td style="padding:0;" role="presentation">
-<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr>
-<td class="stack-column" width="50%" valign="middle" style="vertical-align:middle;width:50%;padding:24px 20px 24px 24px;background-color:#ffffff;">
+<table class="tbContainer multi" width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr>
+<td class="stack-column hero-split-cell columnContainer" width="50%" valign="middle" style="vertical-align:middle;width:50%;padding:24px 20px 24px 24px;background-color:#ffffff;">
 <div data-editorblocktype="Text"><h1 style="margin:0 0 8px 0;">Split hero headline</h1></div>
 <div data-editorblocktype="Text" style="margin:0 0 16px 0;"><p>Lead copy beside the image. Strong for product launches and event invites.</p></div>
-<div data-editorblocktype="Button" class="buttonWrapper"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="buttonTable">
-<tr>
-<td class="buttonCell" align="center" bgcolor="#ef7800" style="background-color: #ef7800; border-radius: 0;">
-<a class="buttonClass" href="#" style="display: block; padding: 14px 28px; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 14px; line-height: 1.4; color: #ffffff; text-decoration: none; text-align: center; mso-line-height-rule: exactly;">Button label</a>
+<div data-editorblocktype="Button" class="buttonWrapper"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="buttonTable" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+<tbody><tr>
+<td class="buttonCell" align="center" bgcolor="#ef7800" style="background-color:#ef7800;border:1px solid #ef7800;border-radius:0;mso-padding-alt:0;">
+<a class="buttonClass button-primary" href="#" style="display:block;padding:14px 28px;font-family:ARIALNB,Arial,Verdana,sans-serif;font-size:14px;font-weight:bold;line-height:1.4;color:#ffffff;background-color:#ef7800;text-decoration:none;text-align:center;mso-line-height-rule:exactly;border:0;mso-padding-alt:0;mso-ansi-font-weight:bold;">Button label</a>
 </td>
-</tr>
-</table>
+</tr></tbody></table>
 </div>
 </td>
-<td class="stack-column" width="50%" valign="top" style="vertical-align:top;width:50%;padding:0;">
+<td class="stack-column stack-column-gap hero-split-cell columnContainer" width="50%" valign="top" style="vertical-align:top;width:50%;padding:0;">
 <div data-editorblocktype="Image"><div align="Center" class="imageWrapper"><img src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/e2f16047-099a-f011-b4cb-7c1e52725572?ts=638943993134534305" width="320" style="max-width:100%;width:100%;height:auto;display:block;" alt="Hero"></div></div>
 </td>
 </tr></table>
@@ -566,27 +1331,27 @@ img {
 <div data-section="true" class="emptyContainer wrap-section">
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;" role="presentation"><tbody><tr>
 <td class="section-pad" style="padding:20px 24px;" role="presentation">
-<table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr>
-<td class="icon-grid-cell stack-column" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;">
+<table class="tbContainer multi" width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr>
+<td class="icon-grid-cell stack-column columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;">1</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;">Speed</h3></div>
-<div data-editorblocktype="Text"><p style="text-align:center;font-size:11px;">Faster installation on the panel</p></div>
+<div data-editorblocktype="Text"><p style="text-align:center;">Faster installation on the panel</p></div>
 </td>
-<td class="icon-grid-cell stack-column stack-column-gap" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;">
+<td class="icon-grid-cell stack-column stack-column-gap columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;">2</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;">Safety</h3></div>
-<div data-editorblocktype="Text"><p style="text-align:center;font-size:11px;">Reliable connections every time</p></div>
+<div data-editorblocktype="Text"><p style="text-align:center;">Reliable connections every time</p></div>
 </td>
 </tr><tr>
-<td class="icon-grid-cell stack-column" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;">
+<td class="icon-grid-cell stack-column columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;">3</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;">Flexibility</h3></div>
-<div data-editorblocktype="Text"><p style="text-align:center;font-size:11px;">Modular design adapts to your needs</p></div>
+<div data-editorblocktype="Text"><p style="text-align:center;">Modular design adapts to your needs</p></div>
 </td>
-<td class="icon-grid-cell stack-column stack-column-gap" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;">
+<td class="icon-grid-cell stack-column stack-column-gap columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;">4</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;">Support</h3></div>
-<div data-editorblocktype="Text"><p style="text-align:center;font-size:11px;">Expert guidance when you need it</p></div>
+<div data-editorblocktype="Text"><p style="text-align:center;">Expert guidance when you need it</p></div>
 </td>
 </tr></table>
 </td></tr></tbody></table>
@@ -596,10 +1361,13 @@ img {
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;" role="presentation"><tbody><tr>
 <td class="section-pad-tight" align="center" style="padding:16px 24px;text-align:center;" role="presentation">
 <div data-editorblocktype="Button" align="center" class="buttonWrapper" style="text-align:center;">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="buttonTable" align="center" style="margin:0 auto;">
-<tr><td class="buttonCell" align="center" bgcolor="#ef7800" style="background-color:#ef7800;">
-<a class="buttonClass" href="#" style="display:block;padding:14px 28px;font-family:ARIALNB,Arial,sans-serif;font-size:14px;line-height:1.4;color:#ffffff;text-decoration:none;text-align:center;">Get started</a>
-</td></tr></table>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="buttonTable" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+<tbody><tr>
+<td class="buttonCell" align="center" bgcolor="#ef7800" style="background-color:#ef7800;border:1px solid #ef7800;border-radius:0;mso-padding-alt:0;">
+<a class="buttonClass button-primary" href="#" style="display:block;padding:14px 28px;font-family:ARIALNB,Arial,Verdana,sans-serif;font-size:14px;font-weight:bold;line-height:1.4;color:#ffffff;background-color:#ef7800;text-decoration:none;text-align:center;mso-line-height-rule:exactly;border:0;mso-padding-alt:0;mso-ansi-font-weight:bold;">Button label</a>
+</td>
+</tr></tbody></table>
+
 </div>
 </td></tr></tbody></table>
 </div>
@@ -611,23 +1379,22 @@ img {
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width: 100%; max-width: 640px; background-color: #ef7800;" role="presentation">
 <tbody>
 <tr>
-<td class="section-pad-accent" align="left" style="padding: 24px 32px; background-color: #ef7800;" role="presentation">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
-<tr>
-<td class="stack-column" width="40%" valign="middle" style="vertical-align: middle; width: 40%; padding: 0 16px 0 0;">
-<div data-editorblocktype="Text">
-<h2 style="color: #ffffff; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 22px; font-weight: normal; margin: 0; line-height: 1.25;">Weidmuller USA</h2>
+<td class="section-pad-accent" align="center" style="padding: 28px 32px; background-color: #ef7800; text-align: center; width: 100%;" role="presentation">
+<table class="tbContainer footer-band-inner" cellpadding="0" cellspacing="0" border="0" align="center" width="100%" role="presentation" style="margin: 0 auto; width: 100%;">
+<tbody><tr>
+<td class="footer-band-content" align="center" style="text-align: center; padding: 0; width: 100%;" role="presentation">
+<div data-editorblocktype="Text" align="center" style="text-align: center; width: 100%;">
+<h2 class="footer-band-title" align="center" style="color: #ffffff; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 22px; font-weight: bold; margin: 0 0 16px 0; line-height: 1.25; text-align: center; width: 100%;">Weidmuller USA</h2>
 </div>
-</td>
-<td class="stack-column stack-column-gap footer-band-address" width="60%" valign="middle" align="right" style="vertical-align: middle; width: 60%; text-align: right; padding: 0;">
-<div data-editorblocktype="Text">
-<p style="margin: 0 0 4px 0; text-align: right; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.5;">Weidmuller Inc.&nbsp;&nbsp;|&nbsp;&nbsp;821 Southlake Blvd.</p>
-<p style="margin: 0; text-align: right; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.5;">Richmond, VA&nbsp;&nbsp;|&nbsp;&nbsp;23236</p>
-<p style="margin: 8px 0 0 0; text-align: right; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.5;">Tel: 804 794 2877&nbsp;&nbsp;|&nbsp;&nbsp;Tech: 800 894 9343</p>
+<div data-editorblocktype="Text" class="footer-band-address" align="center" style="text-align: center; width: 100%;">
+<p align="center" style="margin: 0 0 10px 0; text-align: center; width: 100%; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;">Weidmuller Inc.<br>821 Southlake Blvd.<br>Richmond, VA 23236</p>
+</div>
+<div data-editorblocktype="Text" class="footer-band-contact" align="center" style="text-align: center; width: 100%;">
+<p align="center" style="margin: 0; text-align: center; width: 100%; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;">Tel: 804 794 2877<br>Tech: 800 894 9343</p>
 </div>
 </td>
 </tr>
-</table>
+</tbody></table>
 </td>
 </tr>
 </tbody>
@@ -638,22 +1405,22 @@ img {
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width: 100%; max-width: 640px; background-color: #f4f4f4;" role="presentation">
 <tbody>
 <tr>
-<td align="center" style="padding: 20px 24px; background-color: #f4f4f4; text-align: center;" role="presentation">
-<table cellpadding="0" cellspacing="0" border="0" align="center" class="footer-legal-center" role="presentation" style="margin: 0 auto;">
-<tr>
-<td align="center" class="footer-legal" style="text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; color: #666666; line-height: 1.6;">
+<td align="center" style="padding: 20px 24px; background-color: #f4f4f4; text-align: center; width: 100%;" role="presentation">
+<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%" class="footer-legal-center" role="presentation" style="margin: 0 auto; width: 100%;">
+<tbody><tr>
+<td align="center" class="footer-legal" style="text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; color: #666666; line-height: 1.6; width: 100%;">
 <div data-protected="true" data-editorblocktype="Content" data-lookup-id="21f619dc-9f5e-f111-a826-7ced8d2d3171" data-lookup-name="WM_footer">
-<div class="contentBlockWrapper" align="center">
-<p align="center" style="margin: 0 0 6px 0; padding: 0; text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; line-height: 1.6; color: #666666;">© 2026 Microsoft Dynamics. All rights reserved.</p>
-<p align="center" style="margin: 0 0 6px 0; padding: 0; text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; line-height: 1.6; color: #666666;">{{CompanyAddress}}</p>
-<p align="center" style="margin: 0; padding: 0; text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; line-height: 1.6;">
-<a href="{{PreferenceCenter}}#_msdynmkt_linkid=391961c0-1841-47a1-b474-b4ce26d506e2" style="font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; color: #ef7800; text-decoration: underline;">Unsubscribe</a>
+<div class="contentBlockWrapper" align="center" style="width: 100%; text-align: center;">
+<p align="center" style="margin: 0 0 6px 0; padding: 0; text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; line-height: 1.6; color: #666666; width: 100%;">© 2026 Microsoft Dynamics. All rights reserved.</p>
+<p align="center" style="margin: 0 0 6px 0; padding: 0; text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; line-height: 1.6; color: #666666; width: 100%;">{{CompanyAddress}}</p>
+<p align="center" style="margin: 0; padding: 0; text-align: center; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; line-height: 1.6; width: 100%;">
+<a href="{{PreferenceCenter}}#_msdynmkt_linkid=391961c0-1841-47a1-b474-b4ce26d506e2" align="center" style="display: inline-block; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 11px; color: #ef7800; text-decoration: underline; text-align: center;">Unsubscribe</a>
 </p>
 </div>
 </div>
 </td>
 </tr>
-</table>
+</tbody></table>
 </td>
 </tr>
 </tbody>

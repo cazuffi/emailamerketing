@@ -92,12 +92,23 @@ a.button-outline-link,
 .cta-dual-section .buttonCell,
 .cta-dual-section .button-outline-cell {
   width: 100%;
+  border: 2px solid #ef7800 !important;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.cta-dual-section .buttonCell {
+  background-color: #ef7800 !important;
+}
+.cta-dual-section .button-outline-cell {
+  background-color: #ffffff !important;
 }
 .cta-dual-section a.buttonClass.button-primary,
 .cta-dual-section a.button-outline-link {
-  padding: 14px 28px;
+  padding: 14px 28px !important;
   width: 100%;
   box-sizing: border-box;
+  line-height: 1.4;
+  min-height: 48px;
 }
 
 .buttonWrapper { margin: 4px 0 0 0; }
@@ -152,6 +163,19 @@ img.header-logo-img--compact {
 .header-tagline {
   margin: 0;
   text-align: right;
+}
+
+.header-standard-section .header-logo-cell {
+  vertical-align: middle !important;
+}
+
+.header-standard-section .header-tagline-cell {
+  vertical-align: middle !important;
+  text-align: right !important;
+}
+
+.header-standard-section .header-tagline-cell .inner {
+  text-align: right !important;
 }
 
 .header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
@@ -236,9 +260,13 @@ img.header-logo-img--compact {
   .header-standard-section .stack-column-gap {
     padding-top: 10px !important;
   }
+  .header-standard-section .header-tagline-cell {
+    text-align: center !important;
+  }
   .header-tagline-cell {
     text-align: center !important;
   }
+  .header-standard-section .header-tagline,
   .header-tagline {
     text-align: center !important;
     font-size: 13px !important;
@@ -251,6 +279,16 @@ img.header-logo-img--compact {
   }
   .cta-dual-section .stack-column-gap {
     padding-top: 12px !important;
+  }
+  .cta-dual-section a.buttonClass.button-primary,
+  .cta-dual-section a.button-outline-link {
+    padding: 15px 20px !important;
+    min-height: 48px !important;
+  }
+  .cta-dual-section .buttonCell,
+  .cta-dual-section .button-outline-cell {
+    border: 2px solid #ef7800 !important;
+    min-height: 48px !important;
   }
   .hero-split-cell { padding: 20px !important; }
   .containerWrapper, .tbContainer { width: 100% !important; }

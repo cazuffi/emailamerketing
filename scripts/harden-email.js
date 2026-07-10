@@ -34,6 +34,14 @@ function ensureStyle($el, fragment) {
   if (next !== style) $el.attr('style', next);
 }
 
+function setStyleProp($el, prop, value) {
+  const style = $el.attr('style') || '';
+  const re = new RegExp(`${prop}\\s*:[^;]*;?`, 'gi');
+  const stripped = style.replace(re, '').trim().replace(/;+\s*$/, '');
+  const next = stripped ? `${stripped};${prop}:${value}` : `${prop}:${value}`;
+  $el.attr('style', next);
+}
+
 function hardenButtons($) {
   $('a.button-primary, a.buttonClass.button-primary, a.button-outline-link').each((_, el) => {
     const $a = $(el);
@@ -77,10 +85,22 @@ function hardenButtons($) {
       const $table = $(table);
       ensureStyle($table, 'width:100%');
       $table.find('.buttonCell, .button-outline-cell').each((___, cell) => {
-        ensureStyle($(cell), 'width:100%');
+        const $cell = $(cell);
+        setStyleProp($cell, 'width', '100%');
+        setStyleProp($cell, 'border', '2px solid #ef7800');
+        setStyleProp($cell, 'box-sizing', 'border-box');
+        if ($cell.hasClass('buttonCell')) {
+          setStyleProp($cell, 'background-color', '#ef7800');
+        } else {
+          setStyleProp($cell, 'background-color', '#ffffff');
+        }
       });
       $table.find('a.buttonClass, a.button-outline-link').each((___, link) => {
-        ensureStyle($(link), 'display:block;width:100%;padding:14px 28px;box-sizing:border-box');
+        const $link = $(link);
+        setStyleProp($link, 'display', 'block');
+        setStyleProp($link, 'width', '100%');
+        setStyleProp($link, 'padding', '14px 28px');
+        setStyleProp($link, 'box-sizing', 'border-box');
       });
     });
   });
@@ -249,7 +269,23 @@ function hardenHeaderAlignment($) {
   $('.header-tagline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('align', 'right');
-    ensureStyle($cell, 'text-align:right');
+    ensureStyle($cell, 'text-align:right;vertical-align:middle');
+  });
+
+  $('.header-standard-section .header-tagline-cell .inner').each((_, el) => {
+    const $inner = $(el);
+    $inner.attr('align', 'right');
+    ensureStyle($inner, 'padding:10px;text-align:right');
+  });
+
+  $('.header-standard-section [data-editorblocktype="Image"]').each((_, el) => {
+    ensureStyle($(el), 'margin:10px 10px 10px 15px');
+  });
+
+  $('.header-standard-section .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
+    const $block = $(el);
+    $block.attr('align', 'right');
+    ensureStyle($block, 'margin:10px 0 0 10px;text-align:right;width:100%');
   });
 
   $('.header-tagline-cell [data-editorblocktype="Text"], .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
