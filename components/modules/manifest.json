@@ -56,7 +56,7 @@
     { "id": "three-up-products", "file": "three-up-products.html", "category": "Feature", "description": "Three product tiles with image + title" },
     { "id": "case-study-mini", "file": "case-study-mini.html", "category": "Feature", "description": "Challenge → Solution → Result mini case study" },
     { "id": "comparison-split", "file": "comparison-split.html", "category": "Feature", "description": "Two-column before/after comparison" },
-    { "id": "specs-table", "file": "specs-table.html", "category": "Feature", "description": "Product specs label/value table" },
+    { "id": "specs-table", "file": "specs-table.html", "category": "Feature", "description": "Product specs table — editable label/value rows" },
     { "id": "pricing-two-up", "file": "pricing-two-up.html", "category": "Feature", "description": "Two pricing tiers side by side" },
     { "id": "event-details", "file": "event-details.html", "category": "Event", "description": "Date, time, location, webinar link" },
     { "id": "agenda-list", "file": "agenda-list.html", "category": "Event", "description": "Timed agenda with orange times" },

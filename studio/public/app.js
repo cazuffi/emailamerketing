@@ -870,6 +870,11 @@ async function loadEditForm(uid) {
       continue;
     }
 
+    if (field.type === 'specs-list') {
+      form.appendChild(renderSpecsListField(uid, field, current));
+      continue;
+    }
+
     const value = Object.prototype.hasOwnProperty.call(current, field.key)
       ? current[field.key]
       : field.value;
@@ -1139,6 +1144,122 @@ function renderTextListField(uid, field, current) {
     syncList();
     const lastTextarea = listEl.querySelector('.edit-list-item:last-child textarea');
     if (lastTextarea) lastTextarea.focus();
+  });
+
+  renderItems();
+  wrap.appendChild(addBtn);
+  return wrap;
+}
+
+function renderSpecsListField(uid, field, current) {
+  const wrap = document.createElement('div');
+  wrap.className = 'edit-field edit-field-list edit-field-specs';
+
+  const label = document.createElement('label');
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  const listEl = document.createElement('div');
+  listEl.className = 'edit-list';
+  wrap.appendChild(listEl);
+
+  const hint = document.createElement('div');
+  hint.className = 'edit-field-hint';
+  hint.textContent = 'Add or remove rows · edit label and value for each spec';
+  wrap.appendChild(hint);
+
+  const items = Array.isArray(current[field.key])
+    ? current[field.key].map((row) => ({
+      label: row?.label ?? '',
+      value: row?.value ?? '',
+    }))
+    : field.value.map((row) => ({
+      label: row?.label ?? '',
+      value: row?.value ?? '',
+    }));
+
+  function syncList() {
+    if (!state.overrides[uid]) state.overrides[uid] = {};
+    state.overrides[uid][field.key] = items.map((row) => ({ ...row }));
+    syncFieldOverrides(uid);
+  }
+
+  function renderItems() {
+    listEl.innerHTML = '';
+    items.forEach((row, index) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'edit-list-item edit-specs-row';
+
+      const rowLabel = document.createElement('span');
+      rowLabel.className = 'edit-list-item-label';
+      rowLabel.textContent = `Row ${index + 1}`;
+
+      const labelWrap = document.createElement('label');
+      labelWrap.className = 'edit-specs-input-label';
+      labelWrap.textContent = 'Label';
+
+      const labelInput = document.createElement('input');
+      labelInput.type = 'text';
+      labelInput.placeholder = 'e.g. Rated voltage';
+      labelInput.value = row.label;
+      labelInput.addEventListener('input', () => {
+        items[index].label = labelInput.value;
+        syncList();
+      });
+
+      const valueWrap = document.createElement('label');
+      valueWrap.className = 'edit-specs-input-label';
+      valueWrap.textContent = 'Value';
+
+      const valueInput = document.createElement('input');
+      valueInput.type = 'text';
+      valueInput.placeholder = 'e.g. Up to 1000 V';
+      valueInput.value = row.value;
+      valueInput.addEventListener('input', () => {
+        items[index].value = valueInput.value;
+        syncList();
+      });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-ghost btn-sm edit-list-remove';
+      removeBtn.textContent = 'Remove';
+      removeBtn.disabled = items.length <= (field.minItems || 1);
+      removeBtn.addEventListener('click', () => {
+        if (items.length <= (field.minItems || 1)) return;
+        items.splice(index, 1);
+        renderItems();
+        syncList();
+      });
+
+      const inputs = document.createElement('div');
+      inputs.className = 'edit-specs-inputs';
+      inputs.appendChild(labelWrap);
+      inputs.appendChild(labelInput);
+      inputs.appendChild(valueWrap);
+      inputs.appendChild(valueInput);
+
+      rowEl.appendChild(rowLabel);
+      rowEl.appendChild(inputs);
+      rowEl.appendChild(removeBtn);
+      listEl.appendChild(rowEl);
+    });
+  }
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'btn btn-ghost btn-sm edit-list-add';
+  addBtn.textContent = '+ Add row';
+  addBtn.addEventListener('click', () => {
+    if (items.length >= (field.maxItems || 16)) {
+      toast(`Maximum ${field.maxItems || 16} rows`);
+      return;
+    }
+    items.push({ label: '', value: '' });
+    renderItems();
+    syncList();
+    const lastLabel = listEl.querySelector('.edit-specs-row:last-child input');
+    if (lastLabel) lastLabel.focus();
   });
 
   renderItems();
@@ -1417,8 +1538,8 @@ function focusEditField(fieldKey, listIndex) {
     if (row) {
       row.classList.add('edit-list-item-highlight');
       row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      const textarea = row.querySelector('textarea');
-      textarea?.focus();
+      const focusEl = row.querySelector('textarea') || row.querySelector('input');
+      focusEl?.focus();
     }
     return;
   }

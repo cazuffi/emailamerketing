@@ -372,6 +372,65 @@ function applyModuleSettings($, normalized) {
   }
 }
 
+function applySpecsRows($, normalized) {
+  if (!Object.prototype.hasOwnProperty.call(normalized, 'list_specs')) return;
+
+  const raw = normalized.list_specs;
+  const rows = Array.isArray(raw) ? raw : [];
+
+  $('[data-studio-specs-rows]').each((_, el) => {
+    const $tbody = $(el);
+    const $template = $tbody.children('tr').first();
+    if (!$template.length) return;
+
+    $tbody.empty();
+    for (const row of rows) {
+      const label = row && row.label !== undefined ? String(row.label) : '';
+      const value = row && row.value !== undefined ? String(row.value) : '';
+      if (isEmptyOverride(label) && isEmptyOverride(value)) continue;
+
+      const $row = $template.clone();
+      $row.find('.specs-label').first().text(label);
+      $row.find('.specs-value').first().text(value);
+      $tbody.append($row);
+    }
+
+    if (!$tbody.children().length) {
+      const $fallback = $template.clone();
+      $fallback.find('.specs-label').first().text('');
+      $fallback.find('.specs-value').first().text('');
+      $tbody.append($fallback);
+    }
+  });
+}
+
+function extractSpecsRows($, fields) {
+  $('[data-studio-specs-rows]').each((_, el) => {
+    const $tbody = $(el);
+    const rows = [];
+
+    $tbody.children('tr').each((__, row) => {
+      const $row = $(row);
+      const $label = $row.find('.specs-label').first();
+      const $value = $row.find('.specs-value').first();
+      if (!$label.length || !$value.length) return;
+      rows.push({
+        label: normalizeTextValue($label.text()),
+        value: normalizeTextValue($value.text()),
+      });
+    });
+
+    fields.push({
+      key: 'list_specs',
+      type: 'specs-list',
+      label: $tbody.attr('data-studio-label') || 'Specification rows',
+      value: rows.length ? rows : [{ label: '', value: '' }],
+      minItems: Number($tbody.attr('data-studio-min') || 1),
+      maxItems: Number($tbody.attr('data-studio-max') || 16),
+    });
+  });
+}
+
 function extractStudioFields($, $block, fields) {
   $block.find('[data-studio-field], [data-studio-repeat]').each((_, el) => {
     const $el = $(el);
@@ -549,6 +608,7 @@ function extractFields(moduleId) {
     linkCount += 1;
   });
 
+  extractSpecsRows($, fields);
   extractModuleSettings($, fields);
 
   return fields;
@@ -616,6 +676,24 @@ function tagPreviewFields($) {
     if (isElementHidden($el)) return;
     $el.attr('data-studio-edit', `link_${linkCount}_label`);
     linkCount += 1;
+  });
+
+  $('[data-studio-specs-rows]').each((_, tbody) => {
+    let listIndex = 0;
+    $(tbody).children('tr').each((__, row) => {
+      const $row = $(row);
+      const $label = $row.find('.specs-label').first();
+      const $value = $row.find('.specs-value').first();
+      if (!$label.length || !$value.length) return;
+      if (isElementHidden($row)) return;
+      $label.attr('data-studio-edit', 'list_specs');
+      $label.attr('data-studio-list-index', String(listIndex));
+      $label.attr('data-studio-specs-part', 'label');
+      $value.attr('data-studio-edit', 'list_specs');
+      $value.attr('data-studio-list-index', String(listIndex));
+      $value.attr('data-studio-specs-part', 'value');
+      listIndex += 1;
+    });
   });
 }
 
@@ -728,6 +806,7 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
   });
 
   applyModuleSettings($, normalized);
+  applySpecsRows($, normalized);
 
   collapseOrphanSpacers($);
   collapseEmptyFaqPairs($);

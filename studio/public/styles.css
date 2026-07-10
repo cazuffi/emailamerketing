@@ -684,6 +684,27 @@ body {
 .edit-list-remove { align-self: flex-start; }
 .edit-list-add { margin-top: 8px; }
 
+.edit-specs-row .edit-specs-inputs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.edit-specs-input-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.edit-specs-row input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: var(--font);
+}
+
 .empty-mode-row {
   display: flex;
   align-items: center;
