@@ -131,6 +131,57 @@ function hardenSmallText($) {
   });
 }
 
+const DIVIDER_LINE_STYLE =
+  'height:2px;line-height:2px;font-size:2px;mso-line-height-rule:exactly;background-color:#ef7800;border:0;padding:0';
+const DIVIDER_DOT_STYLE =
+  'width:6px;height:6px;background-color:#ef7800;font-size:0;line-height:0;mso-line-height-rule:exactly;padding:0;border:0';
+
+function isOrangeBorderTop(style) {
+  return /border-top:\s*2px\s+solid\s+(#ef7800|rgb\(\s*239\s*,\s*120\s*,\s*0\s*\))/i.test(style || '');
+}
+
+function hardenDividers($) {
+  $('.divider-line-cell, .section-rule-cell').each((_, el) => {
+    const $el = $(el);
+    $el.attr('bgcolor', '#ef7800');
+    $el.attr('height', '2');
+    ensureStyle($el, DIVIDER_LINE_STYLE);
+    if (!$el.html()?.trim()) $el.html('&nbsp;');
+  });
+
+  $('.divider-dot-cell').each((_, el) => {
+    const $el = $(el);
+    $el.attr('bgcolor', '#ef7800');
+    $el.attr('height', '6');
+    $el.attr('width', '6');
+    ensureStyle($el, DIVIDER_DOT_STYLE);
+    if (!$el.html()?.trim()) $el.html('&nbsp;');
+  });
+
+  $('[data-editorblocktype="Divider"] td, [data-editorblocktype="Divider"] th').each((_, el) => {
+    const $el = $(el);
+    if ($el.hasClass('divider-line-cell') || $el.hasClass('divider-dot-cell') || $el.hasClass('divider-dot-gap')) return;
+    const style = $el.attr('style') || '';
+    if (!isOrangeBorderTop(style)) return;
+    $el.attr('bgcolor', '#ef7800');
+    $el.attr('height', '2');
+    const cleaned = style
+      .replace(/border-top:\s*2px\s+solid\s+[^;]+;?/gi, '')
+      .replace(/font-size:\s*0;?/gi, '')
+      .replace(/line-height:\s*0;?/gi, '');
+    $el.attr('style', mergeStyle(cleaned, DIVIDER_LINE_STYLE));
+    $el.find('p').remove();
+    if (!$el.html()?.trim()) $el.html('&nbsp;');
+  });
+
+  $('div.section-rule').each((_, el) => {
+    const $div = $(el);
+    $div.replaceWith(
+      '<table align="center" cellpadding="0" cellspacing="0" border="0" role="presentation" class="section-rule-table" style="margin:0 auto 12px auto;"><tr><td width="48" height="2" class="section-rule-cell" bgcolor="#ef7800" style="width:48px;height:2px;line-height:2px;font-size:2px;mso-line-height-rule:exactly;background-color:#ef7800;border:0;padding:0;">&nbsp;</td></tr></table>'
+    );
+  });
+}
+
 function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const $ = cheerio.load(html, { xml: false }, false);
@@ -139,6 +190,7 @@ function hardenEmailHtml(html) {
   hardenButtons($);
   hardenTypography($);
   hardenSmallText($);
+  hardenDividers($);
   return $.html();
 }
 

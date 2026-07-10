@@ -180,10 +180,23 @@
   margin: 0 0 8px 0;
 }
 
-.section-rule {
-  border-top: 2px solid #ef7800;
+.section-rule-table { margin: 0 auto 12px auto; }
+.section-rule-cell {
   width: 48px;
-  margin: 0 auto 12px auto;
+  height: 2px;
+  background-color: #ef7800;
+}
+
+.divider-line-cell {
+  height: 2px;
+  background-color: #ef7800;
+}
+
+.divider-dots-table { margin: 0 auto; }
+.divider-dot-cell {
+  width: 6px;
+  height: 6px;
+  background-color: #ef7800;
 }
 
 .callout-box {
@@ -333,14 +346,7 @@
 
 .four-up-cell { vertical-align: top; text-align: center; padding: 0 4px 16px 4px; width: 25%; }
 
-.divider-dots span {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background-color: #ef7800;
-  margin: 0 4px;
-  border-radius: 50%;
-}
+.divider-dot-gap { width: 8px; }
 
 @media only screen and (max-width: 640px) {
   .stat-number { font-size: 28px !important; }
