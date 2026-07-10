@@ -19,6 +19,7 @@ const state = {
   hoverAbort: null,
   fieldsCache: new Map(),
   thumbObserver: null,
+  libraryDragActive: false,
 };
 
 const previewCache = new Map();
@@ -309,6 +310,7 @@ async function initStudio() {
   scheduleBuild();
   showOnboardingIfNeeded();
   initLibraryCollapse();
+  initComposerDropZone();
   updatePreviewModeUI();
   schedulePreviewScale();
 }
@@ -334,7 +336,10 @@ function renderLibrary(filter = '') {
     for (const mod of items) {
       const el = document.createElement('div');
       el.className = 'module-item';
+      el.draggable = true;
+      el.dataset.moduleId = mod.id;
       el.innerHTML = `
+        <span class="module-drag-handle" title="Drag into your email" aria-hidden="true">⠿</span>
         <div class="module-item-body">
           <div class="module-thumb" data-module-id="${mod.id}">
             <div class="module-thumb-placeholder">…</div>
@@ -350,11 +355,28 @@ function renderLibrary(filter = '') {
       const thumb = el.querySelector('.module-thumb');
       if (state.thumbObserver) state.thumbObserver.observe(thumb);
 
+      el.addEventListener('dragstart', (e) => {
+        state.libraryDragActive = true;
+        hideModuleHover();
+        e.dataTransfer.setData(DRAG_MODULE_MIME, mod.id);
+        e.dataTransfer.effectAllowed = 'copy';
+        el.classList.add('library-dragging');
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('library-dragging');
+        clearComposerDropState();
+        setTimeout(() => { state.libraryDragActive = false; }, 0);
+      });
+
       el.querySelector('.module-add-btn').onclick = (e) => {
         e.stopPropagation();
         addModule(mod.id);
       };
-      el.onclick = () => addModule(mod.id);
+      el.onclick = (e) => {
+        if (state.libraryDragActive) return;
+        if (e.target.closest('.module-add-btn')) return;
+        addModule(mod.id);
+      };
       el.addEventListener('mouseenter', () => scheduleModuleHover(mod, el));
       el.addEventListener('mouseleave', cancelModuleHover);
       group.appendChild(el);
@@ -469,9 +491,13 @@ async function showModuleHover(mod, anchorEl) {
 
 // ── Composer ──────────────────────────────────────────
 
-function addModule(moduleId) {
+const DRAG_MODULE_MIME = 'application/x-studio-module-id';
+const DRAG_REORDER_MIME = 'application/x-studio-reorder-index';
+
+function insertModule(moduleId, index = state.instances.length) {
   const uid = newUid();
-  state.instances.push({ uid, moduleId });
+  const safeIndex = Math.max(0, Math.min(index, state.instances.length));
+  state.instances.splice(safeIndex, 0, { uid, moduleId });
   state.editUid = uid;
   state.previewScope = 'full';
   renderComposer();
@@ -479,6 +505,44 @@ function addModule(moduleId) {
   switchPanel('preview');
   scheduleBuild();
   markDirty();
+}
+
+function addModule(moduleId) {
+  insertModule(moduleId, state.instances.length);
+}
+
+function clearComposerDropState() {
+  $('#composer-list')?.classList.remove('composer-drop-active');
+  $$('.composer-drop-target').forEach((el) => el.classList.remove('composer-drop-target'));
+}
+
+function initComposerDropZone() {
+  const list = $('#composer-list');
+  if (!list || list.dataset.dropBound) return;
+  list.dataset.dropBound = '1';
+
+  list.addEventListener('dragover', (e) => {
+    if (![...e.dataTransfer.types].includes(DRAG_MODULE_MIME)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    list.classList.add('composer-drop-active');
+    const empty = $('#composer-empty');
+    if (empty && !empty.classList.contains('hidden')) {
+      empty.classList.add('composer-drop-target');
+    }
+  });
+
+  list.addEventListener('dragleave', (e) => {
+    if (!list.contains(e.relatedTarget)) clearComposerDropState();
+  });
+
+  list.addEventListener('drop', (e) => {
+    const moduleId = e.dataTransfer.getData(DRAG_MODULE_MIME);
+    if (!moduleId || e.target.closest('.composer-item')) return;
+    e.preventDefault();
+    clearComposerDropState();
+    insertModule(moduleId, state.instances.length);
+  });
 }
 
 function removeModule(index) {
@@ -572,18 +636,34 @@ function renderComposer() {
     el.querySelector('.composer-info').onclick = () => selectInstance(inst.uid);
 
     el.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', i);
+      e.dataTransfer.setData(DRAG_REORDER_MIME, String(i));
+      e.dataTransfer.effectAllowed = 'move';
       el.classList.add('dragging');
     });
-    el.addEventListener('dragend', () => el.classList.remove('dragging'));
-    el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      clearComposerDropState();
+    });
+    el.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = [...e.dataTransfer.types].includes(DRAG_MODULE_MIME) ? 'copy' : 'move';
+      el.classList.add('drag-over');
+    });
     el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
     el.addEventListener('drop', (e) => {
       e.preventDefault();
       el.classList.remove('drag-over');
-      const from = Number(e.dataTransfer.getData('text/plain'));
+      clearComposerDropState();
+
+      const moduleId = e.dataTransfer.getData(DRAG_MODULE_MIME);
+      if (moduleId) {
+        insertModule(moduleId, i);
+        return;
+      }
+
+      const from = Number(e.dataTransfer.getData(DRAG_REORDER_MIME));
       const to = i;
-      if (from === to) return;
+      if (Number.isNaN(from) || from === to) return;
       const [item] = state.instances.splice(from, 1);
       state.instances.splice(to, 0, item);
       renderComposer();

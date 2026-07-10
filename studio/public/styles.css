@@ -394,6 +394,29 @@ body {
   border: 1px solid transparent;
   margin-bottom: 4px;
 }
+.module-item[draggable="true"] { cursor: grab; }
+.module-item.library-dragging {
+  opacity: 0.55;
+  cursor: grabbing;
+  border-color: rgba(239, 120, 0, 0.35);
+  background: var(--orange-light);
+}
+.module-drag-handle {
+  flex-shrink: 0;
+  width: 16px;
+  color: var(--border-strong);
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  opacity: 0.55;
+}
+.module-item:hover .module-drag-handle,
+.module-item.library-dragging .module-drag-handle {
+  color: var(--orange);
+  opacity: 1;
+}
 .module-item:hover {
   background: var(--surface);
   border-color: var(--border);
@@ -434,6 +457,17 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 12px 14px;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.composer-list.composer-drop-active {
+  background: rgba(239, 120, 0, 0.05);
+  box-shadow: inset 0 0 0 2px rgba(239, 120, 0, 0.25);
+  border-radius: var(--radius-sm);
+}
+.composer-empty.composer-drop-target {
+  border: 2px dashed var(--orange);
+  border-radius: var(--radius-sm);
+  background: rgba(239, 120, 0, 0.06);
 }
 .composer-empty, .edit-empty {
   text-align: center;
@@ -1106,7 +1140,7 @@ body {
 }
 
 .module-item {
-  padding: 8px 10px 8px 8px;
+  padding: 8px 10px 8px 6px;
 }
 .module-item-body {
   display: flex;
