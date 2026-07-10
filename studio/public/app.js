@@ -24,6 +24,14 @@ const state = {
 
 const previewCache = new Map();
 
+const LIBRARY_PREVIEW_WIDTH = 641;
+const THUMB_DISPLAY_WIDTH = 72;
+const THUMB_DISPLAY_HEIGHT = 54;
+const THUMB_SCALE = THUMB_DISPLAY_WIDTH / LIBRARY_PREVIEW_WIDTH;
+const THUMB_IFRAME_HEIGHT = Math.ceil(THUMB_DISPLAY_HEIGHT / THUMB_SCALE);
+const HOVER_PREVIEW_WIDTH = 352;
+const HOVER_PREVIEW_HEIGHT = 272;
+
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -201,10 +209,19 @@ async function loadThumbnail(thumbEl, moduleId) {
   const placeholder = thumbEl.querySelector('.module-thumb-placeholder');
   try {
     const html = await fetchModulePreview(moduleId);
-    if (iframe) iframe.srcdoc = html;
-    if (placeholder) placeholder.classList.add('hidden');
+    if (iframe) {
+      iframe.srcdoc = html;
+      iframe.onload = () => {
+        thumbEl.classList.add('is-loaded');
+        if (placeholder) placeholder.classList.add('hidden');
+      };
+    } else if (placeholder) {
+      placeholder.classList.add('hidden');
+    }
+    thumbEl.classList.add('is-loaded');
   } catch {
     if (placeholder) placeholder.textContent = 'Preview';
+    thumbEl.classList.add('is-error');
   }
 }
 
@@ -416,8 +433,8 @@ function hideModuleHover() {
 function positionModuleHover(anchorEl) {
   const pop = $('#module-hover-preview');
   const rect = anchorEl.getBoundingClientRect();
-  const popW = 320;
-  const popH = 290;
+  const popW = 360;
+  const popH = 360;
   const gap = 10;
 
   let left = rect.right + gap;
@@ -433,18 +450,66 @@ function positionModuleHover(anchorEl) {
   pop.style.top = `${top}px`;
 }
 
-async function fetchModulePreview(id) {
-  if (previewCache.has(id)) return previewCache.get(id);
+function modulePreviewCacheKey(id, extraParams = {}) {
+  const params = {
+    libraryPreview: '1',
+    previewSample: '1',
+    ...extraParams,
+  };
+  return `${id}:${JSON.stringify(params)}`;
+}
+
+async function fetchModulePreview(id, extraParams = {}) {
+  const params = {
+    libraryPreview: '1',
+    previewSample: '1',
+    ...extraParams,
+  };
+  const cacheKey = modulePreviewCacheKey(id, extraParams);
+  if (previewCache.has(cacheKey)) return previewCache.get(cacheKey);
 
   state.hoverAbort = new AbortController();
-  const res = await fetch(`/api/modules/${id}/preview`, {
+  const search = new URLSearchParams(params);
+  const res = await fetch(`/api/modules/${id}/preview?${search}`, {
     credentials: 'same-origin',
     signal: state.hoverAbort.signal,
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || res.statusText);
-  previewCache.set(id, data.html);
+  previewCache.set(cacheKey, data.html);
   return data.html;
+}
+
+function fitLibraryPreviewFrame(frame, {
+  maxWidth,
+  maxHeight,
+  nativeWidth = LIBRARY_PREVIEW_WIDTH,
+  minScale = 0.18,
+  maxScale = 0.85,
+  center = false,
+} = {}) {
+  const doc = frame.contentDocument;
+  if (!doc) return null;
+
+  const layout = doc.querySelector('[data-layout="true"]');
+  const contentH = Math.max(layout?.offsetHeight || 0, doc.body?.scrollHeight || 0, 72);
+  const scaleW = maxWidth / nativeWidth;
+  const scaleH = maxHeight / contentH;
+  const scale = Math.max(minScale, Math.min(scaleW, scaleH, maxScale));
+
+  frame.style.width = `${nativeWidth}px`;
+  frame.style.height = `${contentH}px`;
+  frame.style.transform = `scale(${scale})`;
+  frame.style.transformOrigin = 'top left';
+
+  if (center) {
+    const renderedW = nativeWidth * scale;
+    frame.style.marginLeft = `${Math.max(0, (maxWidth - renderedW) / 2)}px`;
+  } else {
+    frame.style.marginLeft = '0';
+  }
+
+  return { scale, contentH };
 }
 
 async function showModuleHover(mod, anchorEl) {
@@ -461,20 +526,34 @@ async function showModuleHover(mod, anchorEl) {
   const loading = $('#hover-loading');
 
   $('#hover-module-id').textContent = mod.id;
+  $('#hover-module-category').textContent = mod.category || '';
   $('#hover-module-desc').textContent = mod.description;
   positionModuleHover(anchorEl);
   pop.classList.remove('hidden');
   pop.classList.add('visible');
   pop.setAttribute('aria-hidden', 'false');
 
-  if (previewCache.has(mod.id)) {
+  const applyHoverFit = () => {
+    requestAnimationFrame(() => {
+      fitLibraryPreviewFrame(frame, {
+        maxWidth: HOVER_PREVIEW_WIDTH,
+        maxHeight: HOVER_PREVIEW_HEIGHT,
+        center: true,
+        maxScale: 0.55,
+      });
+    });
+  };
+
+  if (previewCache.has(modulePreviewCacheKey(mod.id))) {
     loading.classList.add('hidden');
-    frame.srcdoc = previewCache.get(mod.id);
+    frame.srcdoc = previewCache.get(modulePreviewCacheKey(mod.id));
+    frame.onload = applyHoverFit;
     return;
   }
 
   loading.classList.remove('hidden');
   frame.srcdoc = '';
+  frame.onload = applyHoverFit;
 
   try {
     const html = await fetchModulePreview(mod.id);
@@ -1192,11 +1271,12 @@ async function buildPreview() {
       const instanceIndex = state.instances.findIndex((i) => i.uid === inst.uid);
       const params = new URLSearchParams({
         annotate: annotate ? '1' : '0',
+        libraryPreview: '1',
+        previewSample: isSendPreview ? '1' : '0',
         instanceUid: inst.uid,
         instanceIndex: String(instanceIndex),
       });
       if (isSendPreview) {
-        params.set('previewSample', '1');
         if (state.previewOutlookSim) params.set('previewOutlookSim', '1');
       }
       if (Object.keys(overrides).length) {

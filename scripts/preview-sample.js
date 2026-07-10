@@ -44,17 +44,49 @@ function applyOutlookSimStyle(html) {
   return `${block}${html}`;
 }
 
-function preparePreviewHtml(html, { sampleData = false, outlookSim = false } = {}) {
+function preparePreviewHtml(html, { sampleData = false, outlookSim = false, libraryPreview = false } = {}) {
   let out = html;
   if (sampleData) out = applyPreviewSampleData(out);
+  if (libraryPreview) out = applyLibraryPreviewStyle(out);
   if (outlookSim) out = applyOutlookSimStyle(out);
   return out;
+}
+
+const LIBRARY_PREVIEW_STYLE = `<style id="studio-library-preview">
+html, body.studio-library-preview-body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  background-color: #f4f4f4 !important;
+}
+.studio-library-preview-body [data-layout="true"] {
+  margin: 0 auto !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.studio-library-preview-body .wrap-section:last-child {
+  margin-bottom: 0 !important;
+}
+</style>`;
+
+function applyLibraryPreviewStyle(html) {
+  if (!html || html.includes('studio-library-preview')) return html;
+  if (html.includes('</head>')) {
+    return html.replace('</head>', `${LIBRARY_PREVIEW_STYLE}</head>`);
+  }
+  const styleClose = html.indexOf('</style>');
+  if (styleClose !== -1) {
+    const insertAt = styleClose + '</style>'.length;
+    return `${html.slice(0, insertAt)}${LIBRARY_PREVIEW_STYLE}${html.slice(insertAt)}`;
+  }
+  return `${LIBRARY_PREVIEW_STYLE}${html}`;
 }
 
 module.exports = {
   applyPreviewSampleData,
   applyOutlookSimStyle,
+  applyLibraryPreviewStyle,
   preparePreviewHtml,
   getOutlookFallbackCss,
   buildOutlookSimStyle,
+  LIBRARY_PREVIEW_STYLE,
 };

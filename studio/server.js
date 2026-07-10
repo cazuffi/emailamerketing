@@ -52,6 +52,7 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
     const annotate = req.query.annotate === '1';
     const previewSample = req.query.previewSample === '1';
     const previewOutlookSim = req.query.previewOutlookSim === '1';
+    const libraryPreview = req.query.libraryPreview !== '0';
     const instanceUid = req.query.instanceUid || '';
     const instanceIndex = Number(req.query.instanceIndex || 0);
     const html = buildEmailHtml({
@@ -59,7 +60,8 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
       modules: [req.params.id],
       overrides: { 0: overrides },
       annotate,
-      previewSample,
+      libraryPreview,
+      previewSample: previewSample || libraryPreview,
       previewOutlookSim,
       instanceMeta: [{ uid: instanceUid, index: instanceIndex }],
     });

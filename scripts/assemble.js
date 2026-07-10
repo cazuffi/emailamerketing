@@ -7,6 +7,7 @@ const { preparePreviewHtml } = require('./preview-sample');
 const ROOT = path.join(__dirname, '..');
 const STUDIO_BASE = path.join(ROOT, 'campaigns/_studio');
 const SHELL_PATH = path.join(ROOT, 'templates/_campaign-shell.html');
+const MODULE_PREVIEW_SHELL_PATH = path.join(ROOT, 'templates/_module-preview-shell.html');
 const MANIFEST_PATH = path.join(ROOT, 'components/modules/manifest.json');
 
 function resolveIncludes(content, baseDir, depth = 0) {
@@ -50,9 +51,11 @@ function buildSourceHtml({
   overrides = {},
   annotate = false,
   instanceMeta = [],
+  libraryPreview = false,
 } = {}) {
   const safeModules = validateModuleIds(modules);
-  let source = fs.readFileSync(SHELL_PATH, 'utf8');
+  const shellPath = libraryPreview ? MODULE_PREVIEW_SHELL_PATH : SHELL_PATH;
+  let source = fs.readFileSync(shellPath, 'utf8');
 
   const escapedTitle = title
     .replace(/&/g, '&amp;')
@@ -83,9 +86,10 @@ function buildEmailHtml(options = {}) {
   const source = buildSourceHtml(options);
   const assembled = assembleFromSource(source, STUDIO_BASE);
   const hardened = hardenEmailHtml(assembled);
-  if (options.previewSample || options.previewOutlookSim) {
+  if (options.libraryPreview || options.previewSample || options.previewOutlookSim) {
     return preparePreviewHtml(hardened, {
-      sampleData: !!options.previewSample,
+      sampleData: !!options.previewSample || !!options.libraryPreview,
+      libraryPreview: !!options.libraryPreview,
       outlookSim: !!options.previewOutlookSim,
     });
   }
