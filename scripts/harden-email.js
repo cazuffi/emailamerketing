@@ -78,6 +78,28 @@ function hardenButtons($) {
     });
   });
 
+  $('.cta-band-grey .cta-band-grey-button .buttonWrapper').each((_, el) => {
+    const $wrap = $(el);
+    setStyleProp($wrap, 'width', '100%');
+    setStyleProp($wrap, 'max-width', '220px');
+    $wrap.find('.buttonTable').first().each((__, table) => {
+      const $table = $(table);
+      $table.attr('width', '220');
+      setStyleProp($table, 'width', '100%');
+      setStyleProp($table, 'max-width', '220px');
+      setStyleProp($table, 'margin-left', 'auto');
+      setStyleProp($table, 'margin-right', '0');
+    });
+    $wrap.find('a.buttonClass').each((__, link) => {
+      const $link = $(link);
+      setStyleProp($link, 'width', 'auto');
+      setStyleProp($link, 'padding', '14px 16px');
+      setStyleProp($link, 'white-space', 'normal');
+      setStyleProp($link, 'overflow-wrap', 'break-word');
+      setStyleProp($link, 'word-break', 'normal');
+    });
+  });
+
   $('.cta-dual-section .buttonWrapper').each((_, el) => {
     const $wrap = $(el);
     $wrap.attr('align', 'center');

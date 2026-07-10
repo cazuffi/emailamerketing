@@ -6,7 +6,7 @@ const { buildEmailHtml } = require('./assemble');
 
 const options = {
   title: 'Audit fixture',
-  modules: ['header-standard', 'cta-dual', 'specs-table'],
+  modules: ['header-standard', 'cta-dual', 'cta-band-grey', 'specs-table'],
   overrides: {},
   annotate: false,
 };
@@ -69,6 +69,13 @@ assert.match(
   /\.cta-dual-section \.cta-dual-primary \.inner[\s\S]*?padding-left:\s*0 !important;[\s\S]*?padding-right:\s*0 !important;/i,
   'Mobile CTA stack must remove both desktop inner gutters',
 );
+
+const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
+const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
+assert.strictEqual(greyCtaTable.attr('width'), '220');
+assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
+assert.match(greyCtaLink.attr('style') || '', /padding:14px 16px/i);
+assert.match(greyCtaLink.attr('style') || '', /white-space:normal/i);
 
 assert.strictEqual(
   $('.specs-table [data-container], .specs-table [data-container-width]').length,
