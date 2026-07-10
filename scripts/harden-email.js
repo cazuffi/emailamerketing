@@ -72,7 +72,17 @@ function hardenButtons($) {
   $('.cta-dual-section .buttonWrapper').each((_, el) => {
     const $wrap = $(el);
     $wrap.attr('align', 'center');
-    ensureStyle($wrap, 'text-align:center');
+    ensureStyle($wrap, 'text-align:center;display:block;width:100%');
+    $wrap.find('.buttonTable, .button-outline-table').each((__, table) => {
+      const $table = $(table);
+      ensureStyle($table, 'width:100%');
+      $table.find('.buttonCell, .button-outline-cell').each((___, cell) => {
+        ensureStyle($(cell), 'width:100%');
+      });
+      $table.find('a.buttonClass, a.button-outline-link').each((___, link) => {
+        ensureStyle($(link), 'display:block;width:100%;padding:14px 28px;box-sizing:border-box');
+      });
+    });
   });
 }
 

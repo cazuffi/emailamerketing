@@ -78,10 +78,26 @@ a.button-outline-link,
   display: block;
   line-height: 1.4;
   mso-line-height-rule: exactly;
-  padding: 12px 28px;
+  padding: 14px 28px;
   mso-padding-alt: 0;
   box-sizing: border-box;
   border: 0;
+}
+
+/* Dual CTA — equal-width, equal-height button boxes side by side */
+.cta-dual-section .buttonTable,
+.cta-dual-section .button-outline-table {
+  width: 100%;
+}
+.cta-dual-section .buttonCell,
+.cta-dual-section .button-outline-cell {
+  width: 100%;
+}
+.cta-dual-section a.buttonClass.button-primary,
+.cta-dual-section a.button-outline-link {
+  padding: 14px 28px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .buttonWrapper { margin: 4px 0 0 0; }
