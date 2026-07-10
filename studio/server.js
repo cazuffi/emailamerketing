@@ -34,9 +34,12 @@ mountAuthRoutes(app);
 
 app.get('/api/brand', requireAuth, (req, res) => {
   const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '../brand/tokens.json'), 'utf8'));
+  const source = tokens.images.logoSourceSize || { width: 400, height: 45 };
   res.json({
     logo: tokens.images.logo,
     primary: tokens.colors.primary,
+    logoDisplayWidth: tokens.images.logoDisplayWidth || 200,
+    logoSourceSize: source,
   });
 });
 

@@ -1118,9 +1118,23 @@ body {
 
 /* Phase 3: brand logo, thumbnails, progress, status, editor mode, dark theme */
 
-.brand-logo { object-fit: contain; flex-shrink: 0; }
-.brand-logo.sm { max-height: 32px; width: auto; }
-.brand-logo.lg { max-height: 48px; width: auto; margin: 0 auto 14px; display: block; }
+.brand-logo {
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+  border: 0;
+  height: auto;
+  -ms-interpolation-mode: bicubic;
+}
+.brand-logo.sm {
+  width: 160px;
+  max-width: 160px;
+}
+.brand-logo.lg {
+  width: 200px;
+  max-width: 200px;
+  margin: 0 auto 14px;
+}
 
 .status-select {
   padding: 8px 10px;

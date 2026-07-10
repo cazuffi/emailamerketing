@@ -168,9 +168,23 @@ async function copyHtmlExport() {
 
 async function loadBrand() {
   try {
-    const { logo } = await api('/api/brand');
-    $('#topbar-logo').src = logo;
-    $('#login-logo').src = logo;
+    const brand = await api('/api/brand');
+    const sourceW = brand.logoSourceSize?.width || 400;
+    const sourceH = brand.logoSourceSize?.height || 45;
+    const aspect = sourceH / sourceW;
+
+    const applyLogo = (el, displayWidth) => {
+      if (!el || !brand.logo) return;
+      el.src = brand.logo;
+      el.width = displayWidth;
+      el.height = Math.round(displayWidth * aspect);
+      el.style.width = `${displayWidth}px`;
+      el.style.maxWidth = `${displayWidth}px`;
+      el.style.height = 'auto';
+    };
+
+    applyLogo($('#topbar-logo'), 160);
+    applyLogo($('#login-logo'), brand.logoDisplayWidth || 200);
   } catch { /* fallback: hide broken img */ }
 }
 
