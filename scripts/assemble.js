@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { applyOverrides, PREVIEW_INTERACTION_STYLE } = require('./module-fields');
-const { hardenEmailHtml } = require('./harden-email');
+const { hardenEmailHtml, sanitizeExportHtml } = require('./harden-email');
 const { preparePreviewHtml } = require('./preview-sample');
 
 const ROOT = path.join(__dirname, '..');
@@ -85,8 +85,12 @@ function buildSourceHtml({
 function buildEmailHtml(options = {}) {
   const source = buildSourceHtml(options);
   const assembled = assembleFromSource(source, STUDIO_BASE);
-  const hardened = hardenEmailHtml(assembled);
-  if (options.libraryPreview || options.previewSample || options.previewOutlookSim) {
+  let hardened = hardenEmailHtml(assembled);
+  const isPreview = options.libraryPreview || options.previewSample || options.previewOutlookSim;
+  if (!isPreview && !options.annotate) {
+    hardened = sanitizeExportHtml(hardened);
+  }
+  if (isPreview) {
     return preparePreviewHtml(hardened, {
       sampleData: !!options.previewSample || !!options.libraryPreview,
       libraryPreview: !!options.libraryPreview,

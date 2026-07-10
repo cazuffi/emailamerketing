@@ -182,6 +182,98 @@ function hardenDividers($) {
   });
 }
 
+function isHiddenStyle(style) {
+  return /display\s*:\s*none/i.test(style || '');
+}
+
+function stripStudioMetadata($) {
+  $('*').each((_, el) => {
+    const $el = $(el);
+    const attribs = el.attribs || {};
+    for (const key of Object.keys(attribs)) {
+      if (key.startsWith('data-studio')) {
+        $el.removeAttr(key);
+      }
+    }
+  });
+}
+
+function removeHiddenElements($) {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    $('*').each((_, el) => {
+      const $el = $(el);
+      if ($el.is('style, head, title, meta, link')) return;
+      if (!isHiddenStyle($el.attr('style'))) return;
+      $el.remove();
+      changed = true;
+    });
+  }
+
+  $('[data-editorblocktype]').each((_, el) => {
+    const $block = $(el);
+    const hasVisibleText = normalizeText($block.text()).length > 0;
+    const hasMedia = $block.find('img, table, a.buttonClass, a.button-outline-link, v\\:roundrect, roundrect').length > 0;
+    if (!hasVisibleText && !hasMedia) {
+      $block.remove();
+    }
+  });
+}
+
+function normalizeText(value) {
+  return String(value ?? '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .trim();
+}
+
+function hardenHeaderAlignment($) {
+  $('.header-tagline-cell').each((_, el) => {
+    const $cell = $(el);
+    $cell.attr('align', 'right');
+    ensureStyle($cell, 'text-align:right');
+  });
+
+  $('.header-tagline-cell [data-editorblocktype="Text"], .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
+    const $block = $(el);
+    $block.attr('align', 'right');
+    ensureStyle($block, 'text-align:right;width:100%');
+  });
+
+  $('.header-tagline, .header-tagline-cell p').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'right');
+    ensureStyle($el, 'text-align:right;width:100%');
+  });
+}
+
+function hardenFooterAlignment($) {
+  $('.orange-footer .section-pad-accent, .orange-footer .footer-band-content').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'text-align:center');
+  });
+
+  $('.orange-footer [data-editorblocktype="Text"]').each((_, el) => {
+    const $block = $(el);
+    $block.attr('align', 'center');
+    ensureStyle($block, 'text-align:center;width:100%');
+  });
+
+  $('.orange-footer .footer-band-title, .orange-footer .footer-band-address p, .orange-footer .footer-band-contact p').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'text-align:center;width:100%');
+  });
+
+  $('.footer-legal, .footer-legal p, .footer-legal a, .contentBlockWrapper').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'text-align:center');
+  });
+}
+
 function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const $ = cheerio.load(html, { xml: false }, false);
@@ -191,7 +283,19 @@ function hardenEmailHtml(html) {
   hardenTypography($);
   hardenSmallText($);
   hardenDividers($);
+  hardenHeaderAlignment($);
+  hardenFooterAlignment($);
   return $.html();
 }
 
-module.exports = { hardenEmailHtml };
+function sanitizeExportHtml(html) {
+  if (!html || typeof html !== 'string') return html;
+  const $ = cheerio.load(html, { xml: false }, false);
+  removeHiddenElements($);
+  stripStudioMetadata($);
+  hardenHeaderAlignment($);
+  hardenFooterAlignment($);
+  return $.html();
+}
+
+module.exports = { hardenEmailHtml, sanitizeExportHtml };

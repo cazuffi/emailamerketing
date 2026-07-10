@@ -138,6 +138,29 @@ img.header-logo-img--compact {
   text-align: right;
 }
 
+.header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
+  text-align: right;
+  width: 100%;
+}
+
+.orange-footer .footer-band-content,
+.orange-footer [data-editorblocktype="Text"],
+.orange-footer .footer-band-title,
+.orange-footer .footer-band-address p,
+.orange-footer .footer-band-contact p {
+  text-align: center !important;
+}
+
+@media only screen and (min-width: 641px) {
+  .header-standard-section .header-tagline-cell,
+  .header-standard-section .header-tagline-cell .inner,
+  .header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
+  .header-standard-section .header-tagline,
+  .header-standard-section .header-tagline-cell p {
+    text-align: right !important;
+  }
+}
+
 .accent-band h1 { color: #ffffff !important; margin: 0 0 10px 0 !important; }
 .accent-band p { margin: 0 !important; }
 
