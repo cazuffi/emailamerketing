@@ -29,10 +29,15 @@ const $ = cheerio.load(exported, { xml: false }, false);
 assert.strictEqual($('[data-studio-field], [data-studio-label], [data-studio-specs-rows]').length, 0);
 assert.strictEqual($('.header-standard-section .header-logo-cell').length, 1);
 assert.strictEqual($('.header-standard-section .header-tagline-cell[align="right"]').length, 1);
-assert.strictEqual($('.header-standard-section .mobile-center-on-stack').length, 0);
+assert.strictEqual($('.header-standard-section .header-tagline-cell.mobile-center-on-stack').length, 1);
 const taglineCell = $('.header-standard-section .header-tagline-cell');
-assert.strictEqual(taglineCell.attr('valign'), 'top');
-assert.match(taglineCell.attr('style') || '', /vertical-align:top/i);
+assert.strictEqual(taglineCell.attr('valign'), 'middle');
+assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
+assert.match(
+  exported,
+  /\.header-standard-section \.header-tagline-cell \[data-editorblocktype="Text"\]\s*\{\s*text-align:\s*center !important;/i,
+  'Mobile header text block must center below the logo',
+);
 
 const dualColumns = $('.cta-dual-section [data-container="true"]');
 assert.strictEqual(dualColumns.length, 2);

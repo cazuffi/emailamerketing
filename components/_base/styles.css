@@ -170,7 +170,7 @@ img.header-logo-img--compact {
 }
 
 .header-standard-section .header-tagline-cell {
-  vertical-align: top !important;
+  vertical-align: middle !important;
   text-align: right !important;
 }
 
@@ -261,6 +261,9 @@ img.header-logo-img--compact {
     padding-top: 10px !important;
   }
   .header-standard-section .header-tagline-cell {
+    text-align: center !important;
+  }
+  .header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
     text-align: center !important;
   }
   .header-tagline-cell {

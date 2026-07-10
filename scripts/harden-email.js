@@ -270,29 +270,18 @@ function hardenHeaderAlignment($) {
   $('.header-tagline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('align', 'right');
-    $cell.attr('valign', 'top');
-    setStyleProp($cell, 'vertical-align', 'top');
+    $cell.attr('valign', 'middle');
+    setStyleProp($cell, 'vertical-align', 'middle');
     ensureStyle($cell, 'text-align:right');
-  });
-
-  $('.header-standard-section .header-tagline-cell .inner').each((_, el) => {
-    const $inner = $(el);
-    $inner.attr('align', 'right');
-    ensureStyle($inner, 'padding:10px;text-align:right');
-  });
-
-  $('.header-standard-section [data-editorblocktype="Image"]').each((_, el) => {
-    ensureStyle($(el), 'margin:10px 10px 10px 15px');
   });
 
   $('.header-standard-section .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
     const $block = $(el);
     $block.attr('align', 'right');
-    setStyleProp($block, 'margin', '0 0 0 10px');
     ensureStyle($block, 'text-align:right;width:100%');
   });
 
-  $('.header-tagline-cell [data-editorblocktype="Text"], .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
+  $('.header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
     const $block = $(el);
     $block.attr('align', 'right');
     ensureStyle($block, 'text-align:right;width:100%');
