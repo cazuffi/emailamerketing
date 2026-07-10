@@ -290,16 +290,56 @@ function hardenEmailHtml(html) {
   hardenTypography($);
   hardenSmallText($);
   hardenDividers($);
+  hardenD365Containers($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
   return $.html();
+}
+
+function parseContainerWidthPct($el) {
+  const style = $el.attr('style') || '';
+  const styleMatch = style.match(/width\s*:\s*(\d+(?:\.\d+)?)\s*%/i);
+  const widthAttr = $el.attr('width') || '';
+  const attrMatch = String(widthAttr).match(/(\d+(?:\.\d+)?)/);
+  const pct = styleMatch ? parseFloat(styleMatch[1]) : attrMatch ? parseFloat(attrMatch[1]) : null;
+  if (pct == null || Number.isNaN(pct)) return null;
+  if (Math.abs(pct - 33) < 1) return '33.33';
+  return pct.toFixed(2);
+}
+
+function hardenD365Containers($) {
+  $('.tbContainer.multi').each((_, table) => {
+    const $table = $(table);
+    const $section = $table.closest('[data-section="true"]');
+    if ($section.length) $section.addClass('columns-equal-class');
+    $table.addClass('containerWrapper');
+    ensureStyle($table, 'width:100%;border-collapse:collapse');
+
+    $table.children('tbody').children('tr').children('th, td').add($table.children('tr').children('th, td')).each((__, cell) => {
+      const $cell = $(cell);
+      const cls = $cell.attr('class') || '';
+      if (!cls.includes('columnContainer') && !cls.includes('stack-column')) return;
+      if (!$cell.attr('data-container')) $cell.attr('data-container', 'true');
+      if (!$cell.attr('data-container-width')) {
+        const width = parseContainerWidthPct($cell);
+        if (width) $cell.attr('data-container-width', width);
+      }
+      if (!$cell.attr('role')) $cell.attr('role', 'presentation');
+    });
+  });
+
+  $('[data-editorblocktype="Button"]').each((_, el) => {
+    const $btn = $(el);
+    ensureStyle($btn, 'display:block');
+    if ($btn.attr('align')) ensureStyle($btn, `text-align:${$btn.attr('align')}`);
+  });
 }
 
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
   out = out.replace(/\s*<!--<!\[endif\]-->/gi, '');
-  out = out.replace(/<!--\[if mso\]>[\s\S]*?<!\[endif\]-->\s*/gi, '');
+  out = out.replace(/<!--\[if mso\]>\s*<v:roundrect[\s\S]*?<!\[endif\]-->\s*/gi, '');
   return out;
 }
 
@@ -309,6 +349,7 @@ function sanitizeExportHtml(html) {
   const $ = cheerio.load(flattened, { xml: false }, false);
   removeHiddenElements($);
   stripStudioMetadata($);
+  hardenD365Containers($);
   hardenButtons($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
