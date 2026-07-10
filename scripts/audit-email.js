@@ -53,6 +53,11 @@ dualLinks.each((_, link) => {
   assert.match(style, /padding:14px 28px/i);
   assert.match(style, /width:100%/i);
 });
+assert.match(
+  exported,
+  /\.cta-dual-section \.cta-dual-primary \.inner[\s\S]*?padding-left:\s*0 !important;[\s\S]*?padding-right:\s*0 !important;/i,
+  'Mobile CTA stack must remove both desktop inner gutters',
+);
 
 assert.strictEqual(
   $('.specs-table [data-container], .specs-table [data-container-width]').length,
