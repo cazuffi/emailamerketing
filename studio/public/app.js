@@ -1427,8 +1427,8 @@ async function buildPreview() {
       const instanceIndex = state.instances.findIndex((i) => i.uid === inst.uid);
       const params = new URLSearchParams({
         annotate: annotate ? '1' : '0',
-        libraryPreview: '1',
-        previewSample: isSendPreview ? '1' : '0',
+        libraryPreview: isSendPreview ? '0' : '1',
+        previewSample: '0',
         instanceUid: inst.uid,
         instanceIndex: String(instanceIndex),
       });
@@ -1449,7 +1449,7 @@ async function buildPreview() {
           modules: payload.modules,
           overrides: payload.indexOverrides,
           annotate,
-          previewSample: isSendPreview,
+          previewSample: false,
           previewOutlookSim: isSendPreview && state.previewOutlookSim,
           instanceMeta: state.instances.map((i) => ({ uid: i.uid, moduleId: i.moduleId })),
         }),

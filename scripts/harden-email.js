@@ -43,12 +43,13 @@ function setStyleProp($el, prop, value) {
 }
 
 function hardenButtons($) {
-  $('a.button-primary, a.buttonClass.button-primary, a.button-outline-link').each((_, el) => {
+  $('a.buttonClass, a.button-primary, a.button-outline-link').each((_, el) => {
     const $a = $(el);
     const isOutline = $a.hasClass('button-outline-link');
     if (isOutline) {
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
     } else {
+      $a.addClass('button-primary');
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ef7800;color:#ffffff;border:0;mso-padding-alt:0');
     }
     ensureStyle($a, 'text-decoration:none;text-align:center');
@@ -356,6 +357,9 @@ function parseContainerWidthPct($el) {
 function hardenD365Containers($) {
   $('.tbContainer.multi').each((_, table) => {
     const $table = $(table);
+    // Responsive data tables use column classes for mobile stacking, but their
+    // cells are not editable D365 layout containers.
+    if ($table.hasClass('specs-table')) return;
     const $section = $table.closest('[data-section="true"]');
     if ($section.length) $section.addClass('columns-equal-class');
     $table.addClass('containerWrapper');

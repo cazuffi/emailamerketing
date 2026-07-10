@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "preview": "node scripts/preview.js",
+    "test": "node scripts/audit-email.js",
     "new": "node scripts/new-campaign.js",
     "add": "node scripts/add-modules.js",
     "list": "node scripts/list-modules.js",

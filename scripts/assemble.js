@@ -87,12 +87,14 @@ function buildEmailHtml(options = {}) {
   const assembled = assembleFromSource(source, STUDIO_BASE);
   let hardened = hardenEmailHtml(assembled);
   const isPreview = options.libraryPreview || options.previewSample || options.previewOutlookSim;
-  if (!isPreview && !options.annotate) {
+  // Every non-editing path must use the exact same D365-safe markup as Copy HTML.
+  // Preview-only transforms are applied afterwards and never alter structure.
+  if (!options.annotate) {
     hardened = sanitizeExportHtml(hardened);
   }
   if (isPreview) {
     return preparePreviewHtml(hardened, {
-      sampleData: !!options.previewSample || !!options.libraryPreview,
+      sampleData: !!options.previewSample,
       libraryPreview: !!options.libraryPreview,
       outlookSim: !!options.previewOutlookSim,
     });
@@ -103,8 +105,9 @@ function buildEmailHtml(options = {}) {
 function buildFile(sourcePath, outputPath) {
   const source = fs.readFileSync(sourcePath, 'utf8');
   const assembled = assembleFromSource(source, path.dirname(sourcePath));
+  const hardened = sanitizeExportHtml(hardenEmailHtml(assembled));
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, assembled);
+  fs.writeFileSync(outputPath, hardened);
   return path.relative(ROOT, outputPath);
 }
 

@@ -72,7 +72,7 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
       overrides: { 0: overrides },
       annotate,
       libraryPreview,
-      previewSample: previewSample || libraryPreview,
+      previewSample,
       previewOutlookSim,
       instanceMeta: [{ uid: instanceUid, index: instanceIndex }],
     });
