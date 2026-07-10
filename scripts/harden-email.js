@@ -50,7 +50,7 @@ function hardenButtons($) {
 
   $('a.button-outline-link').each((_, el) => {
     const $a = $(el);
-    ensureStyle($a, 'font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:1px solid #ffffff;mso-padding-alt:0');
+    ensureStyle($a, 'font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
     const href = $a.attr('href') || '#';
     const label = $a.text().trim() || 'Button label';
     $a.closest('.button-outline-cell').find('v\\:roundrect, roundrect').each((__, vml) => {

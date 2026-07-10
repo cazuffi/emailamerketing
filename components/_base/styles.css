@@ -53,13 +53,15 @@ a.buttonClass.button-primary,
 
 .button-outline-table {
   border-collapse: separate;
-  border: 2px solid #ef7800;
+  border: 0;
 }
 .button-outline-cell {
   background-color: #ffffff !important;
   border-radius: 0;
   text-align: center;
   vertical-align: middle;
+  border: 2px solid #ef7800;
+  box-sizing: border-box;
 }
 a.button-outline-link,
 .button-outline-link {
@@ -78,6 +80,7 @@ a.button-outline-link,
   padding: 12px 28px;
   mso-padding-alt: 0;
   box-sizing: border-box;
+  border: 0;
 }
 
 .buttonWrapper { margin: 4px 0 0 0; }
@@ -201,6 +204,14 @@ img.header-logo-img--compact {
     font-size: 13px !important;
     line-height: 1.45 !important;
   }
+  .cta-dual-section .cta-dual-primary,
+  .cta-dual-section .cta-dual-outline {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .cta-dual-section .stack-column-gap {
+    padding-top: 12px !important;
+  }
   .hero-split-cell { padding: 20px !important; }
   .containerWrapper, .tbContainer { width: 100% !important; }
   .tbContainer.multi > tbody > tr > .columnContainer,
@@ -237,11 +248,23 @@ img.header-logo-img--compact {
     padding: 14px 20px !important;
     color: #ef7800 !important;
     background-color: #ffffff !important;
+    border: 0 !important;
   }
   .buttonTable,
-  .button-outline-table { width: 100% !important; }
+  .button-outline-table {
+    width: 100% !important;
+    border: 0 !important;
+  }
   .buttonCell,
-  .button-outline-cell { display: block !important; width: 100% !important; }
+  .button-outline-cell {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .button-outline-cell {
+    border: 2px solid #ef7800 !important;
+    background-color: #ffffff !important;
+  }
   .buttonWrapper { text-align: center !important; width: 100% !important; }
   .imageWrapper img:not(.header-logo-img) { width: 100% !important; max-width: 100% !important; height: auto !important; }
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
