@@ -35,37 +35,44 @@ function ensureStyle($el, fragment) {
 }
 
 function hardenButtons($) {
-  $('a.button-primary, a.buttonClass.button-primary').each((_, el) => {
+  $('a.button-primary, a.buttonClass.button-primary, a.button-outline-link').each((_, el) => {
     const $a = $(el);
-    ensureStyle($a, 'font-weight:bold;mso-ansi-font-weight:bold;border:1px solid #ef7800;mso-padding-alt:0');
-    const href = $a.attr('href') || '#';
-    const label = $a.text().trim() || 'Button label';
-    $a.closest('.buttonCell').find('v\\:roundrect, roundrect').each((__, vml) => {
-      const $v = $(vml);
-      $v.attr('href', href);
-      const center = $v.find('center').first();
-      if (center.length) center.text(label);
-    });
-  });
-
-  $('a.button-outline-link').each((_, el) => {
-    const $a = $(el);
-    ensureStyle($a, 'font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
-    const href = $a.attr('href') || '#';
-    const label = $a.text().trim() || 'Button label';
-    $a.closest('.button-outline-cell').find('v\\:roundrect, roundrect').each((__, vml) => {
-      const $v = $(vml);
-      $v.attr('href', href);
-      const center = $v.find('center').first();
-      if (center.length) center.text(label);
-    });
+    const isOutline = $a.hasClass('button-outline-link');
+    if (isOutline) {
+      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
+    } else {
+      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ef7800;color:#ffffff;border:0;mso-padding-alt:0');
+    }
+    ensureStyle($a, 'text-decoration:none;text-align:center');
   });
 
   $('.buttonCell').each((_, el) => {
-    ensureStyle($(el), 'mso-padding-alt:0;border:1px solid #ef7800');
+    const $cell = $(el);
+    $cell.attr('bgcolor', '#ef7800');
+    $cell.attr('align', 'center');
+    ensureStyle($cell, 'background-color:#ef7800;mso-padding-alt:0;border:1px solid #ef7800');
   });
   $('.button-outline-cell').each((_, el) => {
-    ensureStyle($(el), 'mso-padding-alt:0;border:2px solid #ef7800;background-color:#ffffff');
+    const $cell = $(el);
+    $cell.attr('bgcolor', '#ffffff');
+    $cell.attr('align', 'center');
+    ensureStyle($cell, 'mso-padding-alt:0;border:2px solid #ef7800;background-color:#ffffff');
+  });
+
+  $('.buttonWrapper[align="right"]').each((_, el) => {
+    const $wrap = $(el);
+    $wrap.attr('align', 'right');
+    ensureStyle($wrap, 'text-align:right');
+    $wrap.find('.buttonTable, .button-outline-table').first().each((__, table) => {
+      const $table = $(table);
+      ensureStyle($table, 'margin-left:auto;margin-right:0');
+    });
+  });
+
+  $('.cta-dual-section .buttonWrapper').each((_, el) => {
+    const $wrap = $(el);
+    $wrap.attr('align', 'center');
+    ensureStyle($wrap, 'text-align:center');
   });
 }
 
@@ -288,14 +295,24 @@ function hardenEmailHtml(html) {
   return $.html();
 }
 
+function flattenOutlookConditionals(html) {
+  if (!html || typeof html !== 'string') return html;
+  let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
+  out = out.replace(/\s*<!--<!\[endif\]-->/gi, '');
+  out = out.replace(/<!--\[if mso\]>[\s\S]*?<!\[endif\]-->\s*/gi, '');
+  return out;
+}
+
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
-  const $ = cheerio.load(html, { xml: false }, false);
+  const flattened = flattenOutlookConditionals(html);
+  const $ = cheerio.load(flattened, { xml: false }, false);
   removeHiddenElements($);
   stripStudioMetadata($);
+  hardenButtons($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
-  return $.html();
+  return flattenOutlookConditionals($.html());
 }
 
 module.exports = { hardenEmailHtml, sanitizeExportHtml };

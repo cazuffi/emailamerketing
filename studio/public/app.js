@@ -163,7 +163,7 @@ async function copyHtmlExport() {
     }),
   });
   await navigator.clipboard.writeText(html);
-  toast('HTML copied — compare with Send preview at 640px before pasting into D365', 'success');
+  toast('HTML copied — paste directly into D365 HTML (do not open in online HTML editors)', 'success');
 }
 
 function applyBrandLogo(el, brand, displayWidth) {
