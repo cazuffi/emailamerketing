@@ -80,7 +80,9 @@ function hardenImages($) {
     const w = Number($img.attr('width')) || 200;
     ensureStyle($img, `width:${w}px;max-width:${w}px;height:auto`);
     if (!$img.attr('height')) {
-      $img.attr('height', String(Math.round((29 / 213) * w)));
+      const srcW = 400;
+      const srcH = 45;
+      $img.attr('height', String(Math.round((srcH / srcW) * w)));
     }
   });
 }
