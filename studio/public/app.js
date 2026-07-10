@@ -197,11 +197,19 @@ function setupThumbnailObserver() {
       if (!entry.isIntersecting) return;
       const thumb = entry.target;
       const id = thumb.dataset.moduleId;
-      if (!id || thumb.dataset.loaded) return;
-      thumb.dataset.loaded = '1';
-      loadThumbnail(thumb, id);
+      if (!id || thumb.dataset.loaded === '1' || thumb.dataset.loading === '1') return;
+      thumb.dataset.loading = '1';
+      loadThumbnail(thumb, id).finally(() => {
+        delete thumb.dataset.loading;
+      });
     });
   }, { root: $('#module-categories'), rootMargin: '40px' });
+}
+
+function revealThumbnail(thumbEl, placeholder) {
+  thumbEl.classList.add('is-loaded');
+  thumbEl.classList.remove('is-error');
+  if (placeholder) placeholder.classList.add('hidden');
 }
 
 async function loadThumbnail(thumbEl, moduleId) {
@@ -211,15 +219,14 @@ async function loadThumbnail(thumbEl, moduleId) {
     const html = await fetchModulePreview(moduleId);
     if (iframe) {
       iframe.srcdoc = html;
-      iframe.onload = () => {
-        thumbEl.classList.add('is-loaded');
-        if (placeholder) placeholder.classList.add('hidden');
-      };
-    } else if (placeholder) {
-      placeholder.classList.add('hidden');
+      iframe.onload = () => revealThumbnail(thumbEl, placeholder);
+      setTimeout(() => revealThumbnail(thumbEl, placeholder), 150);
+    } else {
+      revealThumbnail(thumbEl, placeholder);
     }
-    thumbEl.classList.add('is-loaded');
-  } catch {
+    thumbEl.dataset.loaded = '1';
+  } catch (ex) {
+    if (ex.name === 'AbortError') return;
     if (placeholder) placeholder.textContent = 'Preview';
     thumbEl.classList.add('is-error');
   }
@@ -459,7 +466,7 @@ function modulePreviewCacheKey(id, extraParams = {}) {
   return `${id}:${JSON.stringify(params)}`;
 }
 
-async function fetchModulePreview(id, extraParams = {}) {
+async function fetchModulePreview(id, extraParams = {}, { signal } = {}) {
   const params = {
     libraryPreview: '1',
     previewSample: '1',
@@ -468,11 +475,10 @@ async function fetchModulePreview(id, extraParams = {}) {
   const cacheKey = modulePreviewCacheKey(id, extraParams);
   if (previewCache.has(cacheKey)) return previewCache.get(cacheKey);
 
-  state.hoverAbort = new AbortController();
   const search = new URLSearchParams(params);
   const res = await fetch(`/api/modules/${id}/preview?${search}`, {
     credentials: 'same-origin',
-    signal: state.hoverAbort.signal,
+    signal,
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || res.statusText);
@@ -556,7 +562,8 @@ async function showModuleHover(mod, anchorEl) {
   frame.onload = applyHoverFit;
 
   try {
-    const html = await fetchModulePreview(mod.id);
+    state.hoverAbort = new AbortController();
+    const html = await fetchModulePreview(mod.id, {}, { signal: state.hoverAbort.signal });
     if (state.hoverModuleId !== mod.id) return;
     frame.srcdoc = html;
     loading.classList.add('hidden');
