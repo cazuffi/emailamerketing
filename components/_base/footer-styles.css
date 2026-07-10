@@ -83,6 +83,10 @@
     overflow: visible !important;
     padding: 24px 16px !important;
   }
+  .orange-footer .footer-band-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
   .footer-legal p,
   .footer-legal span,
   .footer-legal a {
