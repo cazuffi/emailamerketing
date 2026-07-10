@@ -166,26 +166,35 @@ async function copyHtmlExport() {
   toast('HTML copied — paste into D365 → Design → HTML', 'success');
 }
 
+function applyBrandLogo(el, brand, displayWidth) {
+  if (!el || !brand?.logo) return;
+  const sourceW = brand.logoSourceSize?.width || 400;
+  const sourceH = brand.logoSourceSize?.height || 45;
+  const aspect = sourceH / sourceW;
+  el.src = brand.logo;
+  el.width = displayWidth;
+  el.height = Math.round(displayWidth * aspect);
+  el.style.width = `${displayWidth}px`;
+  el.style.maxWidth = `${displayWidth}px`;
+  el.style.height = 'auto';
+}
+
+async function fetchBrandInfo() {
+  try {
+    return await api('/api/brand');
+  } catch {
+    const res = await fetch('/api/brand/public', { credentials: 'same-origin' });
+    if (!res.ok) throw new Error('Brand unavailable');
+    return res.json();
+  }
+}
+
 async function loadBrand() {
   try {
-    const brand = await api('/api/brand');
-    const sourceW = brand.logoSourceSize?.width || 400;
-    const sourceH = brand.logoSourceSize?.height || 45;
-    const aspect = sourceH / sourceW;
-
-    const applyLogo = (el, displayWidth) => {
-      if (!el || !brand.logo) return;
-      el.src = brand.logo;
-      el.width = displayWidth;
-      el.height = Math.round(displayWidth * aspect);
-      el.style.width = `${displayWidth}px`;
-      el.style.maxWidth = `${displayWidth}px`;
-      el.style.height = 'auto';
-    };
-
-    applyLogo($('#topbar-logo'), 160);
-    applyLogo($('#login-logo'), brand.logoDisplayWidth || 200);
-  } catch { /* fallback: hide broken img */ }
+    const brand = await fetchBrandInfo();
+    applyBrandLogo($('#login-logo'), brand, brand.logoDisplayWidth || 200);
+    applyBrandLogo($('#topbar-logo'), brand, 160);
+  } catch { /* keep placeholder empty if CDN unavailable */ }
 }
 
 function initTheme() {
@@ -282,6 +291,7 @@ async function checkAuth() {
     initStudio();
   } catch {
     show('login');
+    await loadBrand();
   }
 }
 

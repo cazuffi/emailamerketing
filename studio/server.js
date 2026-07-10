@@ -32,15 +32,23 @@ app.use(session({
 
 mountAuthRoutes(app);
 
-app.get('/api/brand', requireAuth, (req, res) => {
+function readBrandInfo() {
   const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '../brand/tokens.json'), 'utf8'));
   const source = tokens.images.logoSourceSize || { width: 400, height: 45 };
-  res.json({
+  return {
     logo: tokens.images.logo,
     primary: tokens.colors.primary,
     logoDisplayWidth: tokens.images.logoDisplayWidth || 200,
     logoSourceSize: source,
-  });
+  };
+}
+
+app.get('/api/brand/public', (req, res) => {
+  res.json(readBrandInfo());
+});
+
+app.get('/api/brand', requireAuth, (req, res) => {
+  res.json(readBrandInfo());
 });
 
 app.get('/api/modules', requireAuth, (req, res) => {
