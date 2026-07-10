@@ -352,6 +352,12 @@
     max-width: 100% !important;
     margin-bottom: 12px !important;
     box-sizing: border-box !important;
+    padding: 18px 20px !important;
+  }
+  .comparison-col .bullet-item,
+  .comparison-col-highlight .bullet-item {
+    padding-left: 6px !important;
+    margin-bottom: 8px !important;
   }
   .comparison-col:last-child,
   .comparison-col-highlight:last-child { margin-bottom: 0 !important; }
