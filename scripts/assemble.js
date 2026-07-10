@@ -107,7 +107,7 @@ function buildFile(sourcePath, outputPath) {
   const assembled = assembleFromSource(source, path.dirname(sourcePath));
   const hardened = sanitizeExportHtml(hardenEmailHtml(assembled));
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, hardened);
+  fs.writeFileSync(outputPath, `${hardened.trimEnd()}\n`);
   return path.relative(ROOT, outputPath);
 }
 
