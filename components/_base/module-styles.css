@@ -78,6 +78,22 @@
 .cta-text-link-cell.align-right,
 .cta-text-link-wrap.align-right { text-align: right !important; }
 
+.headline-lead {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #000000;
+  margin-top: 8px;
+}
+
+.headline-block-center,
+.headline-block-center h2,
+.headline-block-center h3,
+.headline-block-center h4,
+.headline-block-center .headline-lead {
+  text-align: center !important;
+}
+
 .mod-intro-centered { text-align: center; }
 .mod-intro-centered h1,
 .mod-intro-centered h2 { text-align: center; }
