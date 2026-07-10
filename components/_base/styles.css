@@ -129,6 +129,11 @@ img.header-logo-img--compact {
   max-width: 180px;
 }
 
+.header-tagline {
+  margin: 0;
+  text-align: right;
+}
+
 .accent-band h1 { color: #ffffff !important; margin: 0 0 10px 0 !important; }
 .accent-band p { margin: 0 !important; }
 
@@ -184,6 +189,17 @@ img.header-logo-img--compact {
   img.header-logo-img--compact {
     width: 180px !important;
     max-width: 180px !important;
+  }
+  .header-standard-section .stack-column-gap {
+    padding-top: 10px !important;
+  }
+  .header-tagline-cell {
+    text-align: center !important;
+  }
+  .header-tagline {
+    text-align: center !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
   }
   .hero-split-cell { padding: 20px !important; }
   .containerWrapper, .tbContainer { width: 100% !important; }
