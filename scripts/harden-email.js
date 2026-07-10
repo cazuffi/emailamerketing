@@ -352,6 +352,9 @@ function hardenD365Containers($) {
     // Responsive data tables use column classes for mobile stacking, but their
     // cells are not editable D365 layout containers.
     if ($table.hasClass('specs-table')) return;
+    // The known-good D365 header is a plain two-cell table. Marking its cells
+    // as designer containers changes their widths during the send transform.
+    if ($table.closest('.header-standard-section').length) return;
     const $section = $table.closest('[data-section="true"]');
     if ($section.length) $section.addClass('columns-equal-class');
     $table.addClass('containerWrapper');

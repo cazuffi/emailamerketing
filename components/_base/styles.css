@@ -245,6 +245,13 @@ img.header-logo-img--compact {
   .header-logo-cell .imageWrapper {
     text-align: center !important;
   }
+  .header-standard-section .header-logo-cell,
+  .header-standard-section .header-tagline-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
   .header-logo-cell img,
   img.header-logo-img {
     width: 200px !important;
@@ -265,6 +272,7 @@ img.header-logo-img--compact {
   }
   .header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
     text-align: center !important;
+    width: 100% !important;
   }
   .header-tagline-cell {
     text-align: center !important;
@@ -272,6 +280,7 @@ img.header-logo-img--compact {
   .header-standard-section .header-tagline,
   .header-tagline {
     text-align: center !important;
+    width: 100% !important;
     font-size: 13px !important;
     line-height: 1.45 !important;
   }
