@@ -58,6 +58,10 @@
     { "id": "article-stack", "file": "article-stack.html", "category": "Newsletter", "description": "Stacked stories with dividers" },
     { "id": "image-caption", "file": "image-caption.html", "category": "Media", "description": "Full-width image with caption" },
     { "id": "image-fullbleed", "file": "image-fullbleed.html", "category": "Media", "description": "Edge-to-edge image with optional caption" },
+    { "id": "image-hero-text", "file": "image-hero-text.html", "category": "Media", "description": "Full-width hero image + headline and copy (no button)" },
+    { "id": "image-large-copy", "file": "image-large-copy.html", "category": "Media", "description": "Large inset image with title, body, and optional note" },
+    { "id": "image-split-text", "file": "image-split-text.html", "category": "Media", "description": "50/50 copy left, large image right (no button)" },
+    { "id": "image-split-text-right", "file": "image-split-text-right.html", "category": "Media", "description": "50/50 large image left, copy right (no button)" },
     { "id": "video-preview", "file": "video-preview.html", "category": "Media", "description": "Video thumbnail with play badge" },
     { "id": "footer", "file": "footer.html", "category": "Footer", "description": "Orange address band + compliance (required)" }
   ]

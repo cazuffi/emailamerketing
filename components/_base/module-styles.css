@@ -97,6 +97,19 @@
   border-top: 3px solid #ef7800;
 }
 
+.image-split-copy {
+  vertical-align: middle;
+}
+
+.image-hero-copy h2 {
+  margin-bottom: 10px;
+}
+
+.image-large-copy-section .imageWrapper img {
+  width: 100%;
+  max-width: 100%;
+}
+
 .article-thumb { vertical-align: top; width: 120px; }
 .article-body { vertical-align: top; padding-left: 16px; }
 
@@ -424,6 +437,11 @@
   .feature-stack-text,
   .feature-stack-media { text-align: left !important; }
   .feature-stack-media .imageWrapper { text-align: center !important; }
+
+  .image-split-copy,
+  .image-split-media { text-align: left !important; }
+  .image-split-media .imageWrapper { text-align: center !important; }
+  .image-hero-copy { padding: 20px 20px 18px 20px !important; }
 
   .card-stack { text-align: left !important; }
   .card-stack .imageWrapper { text-align: center !important; }
