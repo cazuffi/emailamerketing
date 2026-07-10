@@ -270,7 +270,9 @@ function hardenHeaderAlignment($) {
   $('.header-tagline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('align', 'right');
-    ensureStyle($cell, 'text-align:right;vertical-align:middle');
+    $cell.attr('valign', 'top');
+    setStyleProp($cell, 'vertical-align', 'top');
+    ensureStyle($cell, 'text-align:right');
   });
 
   $('.header-standard-section .header-tagline-cell .inner').each((_, el) => {
@@ -286,7 +288,8 @@ function hardenHeaderAlignment($) {
   $('.header-standard-section .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {
     const $block = $(el);
     $block.attr('align', 'right');
-    ensureStyle($block, 'margin:10px 0 0 10px;text-align:right;width:100%');
+    setStyleProp($block, 'margin', '0 0 0 10px');
+    ensureStyle($block, 'text-align:right;width:100%');
   });
 
   $('.header-tagline-cell [data-editorblocktype="Text"], .header-tagline-cell [data-editorblocktype="Text"]').each((_, el) => {

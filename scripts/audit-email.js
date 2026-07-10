@@ -30,6 +30,9 @@ assert.strictEqual($('[data-studio-field], [data-studio-label], [data-studio-spe
 assert.strictEqual($('.header-standard-section .header-logo-cell').length, 1);
 assert.strictEqual($('.header-standard-section .header-tagline-cell[align="right"]').length, 1);
 assert.strictEqual($('.header-standard-section .mobile-center-on-stack').length, 0);
+const taglineCell = $('.header-standard-section .header-tagline-cell');
+assert.strictEqual(taglineCell.attr('valign'), 'top');
+assert.match(taglineCell.attr('style') || '', /vertical-align:top/i);
 
 const dualColumns = $('.cta-dual-section [data-container="true"]');
 assert.strictEqual(dualColumns.length, 2);
