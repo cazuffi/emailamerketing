@@ -256,10 +256,17 @@ function isInsideStudioRepeat($el) {
 }
 
 const ALIGN_OPTIONS = ['left', 'center', 'right'];
+const TOGGLE_OPTIONS = ['yes', 'no'];
 
 function parseAlignValue(value) {
   const v = String(value || 'center').toLowerCase();
   return ALIGN_OPTIONS.includes(v) ? v : 'center';
+}
+
+function parseToggleValue(value, defaultValue = 'yes') {
+  const v = String(value ?? defaultValue).toLowerCase();
+  if (v === 'no' || v === 'false' || v === '0') return 'no';
+  return 'yes';
 }
 
 function mergeInlineStyle(existing, prop, val) {
@@ -284,18 +291,35 @@ function readAlignFromSection($section) {
   return parseAlignValue($cell.attr('align'));
 }
 
+function readShowButtonFromSection($section) {
+  const $btn = $section.find('[data-editorblocktype="Button"]').first();
+  if (!$btn.length) return 'no';
+  return isElementHidden($btn) ? 'no' : 'yes';
+}
+
 function extractModuleSettings($, fields) {
   $('[data-studio-setting]').each((_, el) => {
     const $el = $(el);
     const key = $el.attr('data-studio-setting');
-    if (key !== 'align') return;
-    fields.unshift({
-      key: 'align',
-      type: 'align',
-      label: $el.attr('data-studio-setting-label') || 'Alignment',
-      value: readAlignFromSection($el),
-      options: ALIGN_OPTIONS,
-    });
+    if (key === 'align') {
+      fields.unshift({
+        key: 'align',
+        type: 'align',
+        label: $el.attr('data-studio-setting-label') || 'Alignment',
+        value: readAlignFromSection($el),
+        options: ALIGN_OPTIONS,
+      });
+      return;
+    }
+    if (key === 'showButton') {
+      fields.unshift({
+        key: 'showButton',
+        type: 'toggle',
+        label: $el.attr('data-studio-setting-label') || 'Show button',
+        value: readShowButtonFromSection($el),
+        options: TOGGLE_OPTIONS,
+      });
+    }
   });
 }
 
@@ -316,11 +340,36 @@ function applyAlignSetting($section, align) {
   }
 }
 
+function applyShowButtonSetting($section, showButton) {
+  const value = parseToggleValue(showButton);
+  const $btn = $section.find('[data-editorblocktype="Button"]').first();
+  const $copy = $section.find('.badge-highlight-copy').first();
+  if (!$btn.length) return;
+
+  if (value === 'no') {
+    hideForEmail($btn);
+    if ($copy.length) {
+      $copy.attr('style', mergeInlineStyle($copy.attr('style'), 'margin', '0'));
+    }
+  } else {
+    showForEmail($btn);
+    if ($copy.length) {
+      $copy.attr('style', mergeInlineStyle($copy.attr('style'), 'margin', '0 0 16px 0'));
+    }
+  }
+}
+
 function applyModuleSettings($, normalized) {
-  if (!Object.prototype.hasOwnProperty.call(normalized, 'align')) return;
-  $('[data-studio-setting="align"]').each((_, el) => {
-    applyAlignSetting($(el), normalized.align);
-  });
+  if (Object.prototype.hasOwnProperty.call(normalized, 'align')) {
+    $('[data-studio-setting="align"]').each((_, el) => {
+      applyAlignSetting($(el), normalized.align);
+    });
+  }
+  if (Object.prototype.hasOwnProperty.call(normalized, 'showButton')) {
+    $('[data-studio-setting="showButton"]').each((_, el) => {
+      applyShowButtonSetting($(el), normalized.showButton);
+    });
+  }
 }
 
 function extractStudioFields($, $block, fields) {

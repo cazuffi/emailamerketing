@@ -882,12 +882,14 @@ async function loadEditForm(uid) {
     label.setAttribute('for', `field-${field.key}`);
 
     let input;
-    if (field.type === 'align') {
+    if (field.type === 'align' || field.type === 'toggle') {
       input = document.createElement('select');
-      for (const opt of field.options || ['left', 'center', 'right']) {
+      for (const opt of field.options || (field.type === 'toggle' ? ['yes', 'no'] : ['left', 'center', 'right'])) {
         const option = document.createElement('option');
         option.value = opt;
-        option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+        option.textContent = field.type === 'toggle'
+          ? (opt === 'yes' ? 'Yes' : 'No')
+          : opt.charAt(0).toUpperCase() + opt.slice(1);
         if (opt === value) option.selected = true;
         input.appendChild(option);
       }
@@ -900,11 +902,13 @@ async function loadEditForm(uid) {
     }
     input.id = `field-${field.key}`;
     input.dataset.key = field.key;
-    if (field.type !== 'align') input.value = value;
+    if (field.type !== 'align' && field.type !== 'toggle') input.value = value;
 
     const onFieldChange = () => {
       if (!state.overrides[uid]) state.overrides[uid] = {};
-      state.overrides[uid][field.key] = field.type === 'align' ? input.value : input.value;
+      state.overrides[uid][field.key] = (field.type === 'align' || field.type === 'toggle')
+        ? input.value
+        : input.value;
       renderComposer();
       scheduleBuild();
       markDirty();
@@ -918,7 +922,7 @@ async function loadEditForm(uid) {
     };
 
     input.addEventListener('input', onFieldChange);
-    if (field.type === 'align') input.addEventListener('change', onFieldChange);
+    if (field.type === 'align' || field.type === 'toggle') input.addEventListener('change', onFieldChange);
 
     wrap.appendChild(label);
     wrap.appendChild(input);

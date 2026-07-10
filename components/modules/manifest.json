@@ -46,7 +46,7 @@
     { "id": "feature-left-text", "file": "feature-left-text.html", "category": "Feature", "description": "Text left, image right — no button (58/42)" },
     { "id": "feature-right-text", "file": "feature-right-text.html", "category": "Feature", "description": "Image left, text right — no button (42/58)" },
     { "id": "two-up-cards", "file": "two-up-cards.html", "category": "Feature", "description": "Side-by-side product cards (50/50)" },
-    { "id": "badge-highlight", "file": "badge-highlight.html", "category": "Feature", "description": "NEW badge + product highlight" },
+    { "id": "badge-highlight", "file": "badge-highlight.html", "category": "Feature", "description": "NEW badge + product highlight (optional button)" },
     { "id": "icon-grid-four", "file": "icon-grid-four.html", "category": "Feature", "description": "2×2 icon grid with numbered circles" },
     { "id": "steps-horizontal", "file": "steps-horizontal.html", "category": "Feature", "description": "Three-step process with arrows" },
     { "id": "steps-vertical", "file": "steps-vertical.html", "category": "Feature", "description": "Vertical numbered steps with timeline" },
