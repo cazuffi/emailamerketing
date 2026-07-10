@@ -71,6 +71,13 @@
   text-decoration: underline !important;
 }
 
+.cta-text-link-cell.align-left,
+.cta-text-link-wrap.align-left { text-align: left !important; }
+.cta-text-link-cell.align-center,
+.cta-text-link-wrap.align-center { text-align: center !important; }
+.cta-text-link-cell.align-right,
+.cta-text-link-wrap.align-right { text-align: right !important; }
+
 .mod-intro-centered { text-align: center; }
 .mod-intro-centered h1,
 .mod-intro-centered h2 { text-align: center; }

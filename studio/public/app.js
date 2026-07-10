@@ -716,7 +716,16 @@ async function loadEditForm(uid) {
     label.setAttribute('for', `field-${field.key}`);
 
     let input;
-    if (field.multiline) {
+    if (field.type === 'align') {
+      input = document.createElement('select');
+      for (const opt of field.options || ['left', 'center', 'right']) {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+        if (opt === value) option.selected = true;
+        input.appendChild(option);
+      }
+    } else if (field.multiline) {
       input = document.createElement('textarea');
       input.rows = 3;
     } else {
@@ -725,11 +734,11 @@ async function loadEditForm(uid) {
     }
     input.id = `field-${field.key}`;
     input.dataset.key = field.key;
-    input.value = value;
+    if (field.type !== 'align') input.value = value;
 
-    input.addEventListener('input', () => {
+    const onFieldChange = () => {
       if (!state.overrides[uid]) state.overrides[uid] = {};
-      state.overrides[uid][field.key] = input.value;
+      state.overrides[uid][field.key] = field.type === 'align' ? input.value : input.value;
       renderComposer();
       scheduleBuild();
       markDirty();
@@ -740,7 +749,10 @@ async function loadEditForm(uid) {
       if (state.previewScope === 'module' && state.editUid === uid) {
         scheduleBuild();
       }
-    });
+    };
+
+    input.addEventListener('input', onFieldChange);
+    if (field.type === 'align') input.addEventListener('change', onFieldChange);
 
     wrap.appendChild(label);
     wrap.appendChild(input);

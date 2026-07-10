@@ -255,6 +255,74 @@ function isInsideStudioRepeat($el) {
   return $el.closest('[data-studio-repeat]').length > 0;
 }
 
+const ALIGN_OPTIONS = ['left', 'center', 'right'];
+
+function parseAlignValue(value) {
+  const v = String(value || 'center').toLowerCase();
+  return ALIGN_OPTIONS.includes(v) ? v : 'center';
+}
+
+function mergeInlineStyle(existing, prop, val) {
+  const style = (existing || '').trim();
+  const re = new RegExp(`${prop}\\s*:[^;]*;?`, 'gi');
+  const cleaned = style.replace(re, '').replace(/;+\s*$/, '').trim();
+  const add = `${prop}:${val}`;
+  if (!cleaned) return add;
+  return `${cleaned};${add}`;
+}
+
+function readAlignFromSection($section) {
+  const $cell = $section.find('.cta-text-link-cell').first();
+  if (!$cell.length) return 'center';
+  const classes = ($cell.attr('class') || '').split(/\s+/);
+  for (const cls of classes) {
+    if (cls.startsWith('align-')) return parseAlignValue(cls.slice(6));
+  }
+  const style = $cell.attr('style') || '';
+  const m = style.match(/text-align:\s*(left|center|right)/i);
+  if (m) return parseAlignValue(m[1]);
+  return parseAlignValue($cell.attr('align'));
+}
+
+function extractModuleSettings($, fields) {
+  $('[data-studio-setting]').each((_, el) => {
+    const $el = $(el);
+    const key = $el.attr('data-studio-setting');
+    if (key !== 'align') return;
+    fields.unshift({
+      key: 'align',
+      type: 'align',
+      label: $el.attr('data-studio-setting-label') || 'Alignment',
+      value: readAlignFromSection($el),
+      options: ALIGN_OPTIONS,
+    });
+  });
+}
+
+function applyAlignSetting($section, align) {
+  const value = parseAlignValue(align);
+  const $cell = $section.find('.cta-text-link-cell').first();
+  if (!$cell.length) return;
+  const $wrap = $section.find('.cta-text-link-wrap').first();
+  const alignAttr = value === 'left' ? 'left' : value === 'right' ? 'right' : 'center';
+
+  $cell.attr('align', alignAttr);
+  $cell.attr('style', mergeInlineStyle($cell.attr('style'), 'text-align', value));
+  $cell.removeClass('align-left align-center align-right').addClass(`align-${value}`);
+
+  if ($wrap.length) {
+    $wrap.attr('style', mergeInlineStyle($wrap.attr('style'), 'text-align', value));
+    $wrap.removeClass('align-left align-center align-right').addClass(`align-${value}`);
+  }
+}
+
+function applyModuleSettings($, normalized) {
+  if (!Object.prototype.hasOwnProperty.call(normalized, 'align')) return;
+  $('[data-studio-setting="align"]').each((_, el) => {
+    applyAlignSetting($(el), normalized.align);
+  });
+}
+
 function extractStudioFields($, $block, fields) {
   $block.find('[data-studio-field], [data-studio-repeat]').each((_, el) => {
     const $el = $(el);
@@ -432,6 +500,8 @@ function extractFields(moduleId) {
     linkCount += 1;
   });
 
+  extractModuleSettings($, fields);
+
   return fields;
 }
 
@@ -607,6 +677,8 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
     }
     linkCount += 1;
   });
+
+  applyModuleSettings($, normalized);
 
   collapseOrphanSpacers($);
   collapseEmptyFaqPairs($);
