@@ -54,6 +54,20 @@ Deploy to Render, Railway, or Docker. See **[docs/studio-deploy.md](docs/studio-
 
 See **[docs/workflow.md](docs/workflow.md)** for the full guide.
 
+## Dynamics rendering guidelines
+
+Before creating or changing modules, read
+**[docs/D365_EMAIL_GUIDELINES.md](docs/D365_EMAIL_GUIDELINES.md)**. It records
+the table, button, responsive, header/footer, and export patterns verified in
+real Dynamics 365 test sends.
+
+Run the regression audit and full build before copying HTML:
+
+```bash
+npm test
+npm run build
+```
+
 ## Module library (58 modules)
 
 Pick-and-choose polished sections for long emails — headers, heroes, features, events, CTAs, and more.

@@ -1,0 +1,31 @@
+---
+description: Proven Dynamics 365 HTML email implementation rules
+globs:
+  - "components/**/*.html"
+  - "components/**/*.css"
+  - "campaigns/**/*.html"
+  - "templates/**/*.html"
+  - "scripts/assemble.js"
+  - "scripts/harden-email.js"
+alwaysApply: false
+---
+
+# Dynamics 365 email rules
+
+Follow `docs/D365_EMAIL_GUIDELINES.md` when creating or changing email modules.
+
+- Treat a Dynamics test send as authoritative; browser previews are not enough.
+- Use presentation tables and inline critical styles/HTML attributes.
+- Use Dynamics `tbContainer multi`, `columnContainer`, and `data-container`
+  metadata only for genuine editable layout columns.
+- Keep headers, footers, nested buttons, and data tables free of Dynamics
+  designer-column hooks.
+- Ensure desktop fallbacks remain readable when mobile media queries are ignored.
+- Build buttons from table cells and visible anchors. Do not hide anchors in
+  non-MSO conditionals.
+- Do not combine an explicit `width:100%` anchor with horizontal padding where
+  Outlook may ignore `box-sizing`.
+- Give fixed images matching HTML and inline widths plus alt text.
+- Keep Send Preview, Copy HTML, and CLI build output on the same hardening path.
+- Run `npm test` and `npm run build` after email markup or CSS changes.
+- Add an assertion to `scripts/audit-email.js` for every rendering regression.

@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const cheerio = require('cheerio');
-const { buildEmailHtml } = require('./assemble');
+const { buildEmailHtml, loadManifest } = require('./assemble');
 
 const options = {
   title: 'Audit fixture',
@@ -95,8 +95,52 @@ $('a.buttonClass').each((_, link) => {
   assert($(link).hasClass('button-primary'), 'Every buttonClass link must receive button-primary');
 });
 
+const allModuleIds = loadManifest().modules.map((module) => module.id);
+const allModulesExport = buildEmailHtml({
+  title: 'All-modules audit',
+  modules: allModuleIds,
+  overrides: {},
+  annotate: false,
+});
+const $all = cheerio.load(allModulesExport, { xml: false }, false);
+
+assert.strictEqual(
+  $all('[data-studio-field], [data-studio-label], [data-studio-module], [data-studio-repeat]').length,
+  0,
+  'Studio metadata must not leak from any module',
+);
+assert(!/\[if !mso\]/i.test(allModulesExport), 'Non-MSO wrappers must not survive export');
+
+$all('img').each((_, image) => {
+  assert.notStrictEqual($all(image).attr('alt'), undefined, 'Every exported image must have alt text');
+});
+
+$all('a.buttonClass').each((_, link) => {
+  assert($all(link).hasClass('button-primary'), 'Every exported buttonClass link must be primary');
+});
+
+$all('[data-container="true"]').each((_, cell) => {
+  assert.match(
+    $all(cell).attr('data-container-width') || '',
+    /^\d+\.\d{2}$/,
+    'Every D365 layout container must have a two-decimal width',
+  );
+});
+
+assert.strictEqual(
+  $all('.header-standard-section .tbContainer, .header-standard-section .columnContainer').length,
+  0,
+  'Headers must not use Dynamics designer-column hooks',
+);
+assert.strictEqual(
+  $all('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length,
+  0,
+  'The single-column orange footer must not use Dynamics column hooks',
+);
+
 console.log('✓ export and Send preview use identical markup');
 console.log('✓ header alignment metadata is canonical');
 console.log('✓ dual CTA dimensions are equal');
 console.log('✓ specs table cells are not D365 layout containers');
 console.log('✓ primary button classes are normalized');
+console.log(`✓ all ${allModuleIds.length} modules pass export safeguards`);
