@@ -72,10 +72,18 @@ assert.match(
 
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
-assert.strictEqual(greyCtaTable.attr('width'), '220');
+const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
+assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
+assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
+assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
 assert.match(greyCtaLink.attr('style') || '', /padding:14px 16px/i);
 assert.match(greyCtaLink.attr('style') || '', /white-space:normal/i);
+assert.match(
+  exported,
+  /\.cta-band-grey \.cta-band-grey-button \.buttonTable[\s\S]*?max-width:\s*180px !important;/i,
+  'Mobile grey CTA button must remain compact',
+);
 
 assert.strictEqual(
   $('.specs-table [data-container], .specs-table [data-container-width]').length,

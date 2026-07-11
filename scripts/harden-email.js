@@ -81,12 +81,12 @@ function hardenButtons($) {
   $('.cta-band-grey .cta-band-grey-button .buttonWrapper').each((_, el) => {
     const $wrap = $(el);
     setStyleProp($wrap, 'width', '100%');
-    setStyleProp($wrap, 'max-width', '220px');
+    setStyleProp($wrap, 'max-width', '160px');
     $wrap.find('.buttonTable').first().each((__, table) => {
       const $table = $(table);
-      $table.attr('width', '220');
+      $table.attr('width', '160');
       setStyleProp($table, 'width', '100%');
-      setStyleProp($table, 'max-width', '220px');
+      setStyleProp($table, 'max-width', '160px');
       setStyleProp($table, 'margin-left', 'auto');
       setStyleProp($table, 'margin-right', '0');
     });

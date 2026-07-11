@@ -375,7 +375,7 @@
 .cta-band-grey .cta-band-grey-button .buttonWrapper,
 .cta-band-grey .cta-band-grey-button .buttonTable {
   width: 100%;
-  max-width: 220px;
+  max-width: 160px;
 }
 .cta-band-grey .cta-band-grey-button .buttonTable {
   margin-left: auto;
@@ -560,7 +560,7 @@
   .cta-band-grey .cta-band-grey-button .buttonWrapper,
   .cta-band-grey .cta-band-grey-button .buttonTable {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 180px !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
