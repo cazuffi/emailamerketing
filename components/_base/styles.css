@@ -303,16 +303,28 @@ img.header-logo-img--compact {
   }
   .cta-dual-section a.buttonClass.button-primary,
   .cta-dual-section a.button-outline-link {
+    width: auto !important;
+    max-width: none !important;
     padding: 15px 20px !important;
     height: auto !important;
     min-height: 48px !important;
   }
+  .cta-dual-section .buttonWrapper {
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
   .cta-dual-section .buttonTable,
   .cta-dual-section .button-outline-table {
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
+    table-layout: fixed !important;
   }
   .cta-dual-section .buttonCell,
   .cta-dual-section .button-outline-cell {
+    display: table-cell !important;
+    width: auto !important;
+    max-width: none !important;
     height: auto !important;
     border: 2px solid #ef7800 !important;
     min-height: 48px !important;

@@ -6,7 +6,7 @@ const { buildEmailHtml, loadManifest } = require('./assemble');
 
 const options = {
   title: 'Audit fixture',
-  modules: ['header-standard', 'cta-dual', 'cta-band-grey', 'specs-table'],
+  modules: ['header-standard', 'cta-dual', 'cta-band-grey', 'comparison-split', 'specs-table'],
   overrides: {},
   annotate: false,
 };
@@ -78,6 +78,16 @@ assert.match(
   /\.cta-dual-section \.cta-dual-primary \.inner[\s\S]*?padding-left:\s*0 !important;[\s\S]*?padding-right:\s*0 !important;/i,
   'Mobile CTA stack must remove both desktop inner gutters',
 );
+assert.match(
+  exported,
+  /\.cta-dual-section a\.button-outline-link[\s\S]*?width:\s*auto !important;/i,
+  'Mobile outline CTA must use auto width to keep padding inside the email',
+);
+
+const comparisonTitle = $('.comparison-split-section .comparison-title');
+assert.strictEqual(comparisonTitle.attr('align'), 'left');
+assert.match(comparisonTitle.attr('style') || '', /text-align:left/i);
+assert.strictEqual($('.comparison-split-section .comparison-section-cell').attr('align'), 'left');
 
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');

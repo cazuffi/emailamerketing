@@ -118,6 +118,12 @@
   vertical-align: top;
 }
 
+.comparison-split-section .comparison-section-cell,
+.comparison-split-section .comparison-heading-block,
+.comparison-split-section .comparison-title {
+  text-align: left !important;
+}
+
 .comparison-col-highlight {
   background-color: #fff5eb;
   padding: 16px;
