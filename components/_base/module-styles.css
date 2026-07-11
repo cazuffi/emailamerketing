@@ -372,6 +372,18 @@
 }
 
 .cta-band-grey { background-color: #f4f4f4; }
+.cta-band-grey .cta-band-grey-shell {
+  padding: 26px 28px !important;
+  border-left: 4px solid #ef7800;
+}
+.cta-band-grey .cta-band-grey-title {
+  margin-bottom: 6px !important;
+}
+.cta-band-grey .cta-band-grey-copy {
+  max-width: 360px;
+  color: #333333;
+  line-height: 1.5;
+}
 .cta-band-grey .cta-band-grey-button .buttonWrapper,
 .cta-band-grey .cta-band-grey-button .buttonTable {
   width: 100%;
@@ -557,6 +569,14 @@
 
   .cta-band-grey .stack-column,
   .accent-band .stack-column { text-align: center !important; }
+  .cta-band-grey .cta-band-grey-shell {
+    padding: 16px 20px !important;
+    border-left: 0 !important;
+  }
+  .cta-band-grey .cta-band-grey-copy-inner {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
   .cta-band-grey .cta-band-grey-button .buttonWrapper,
   .cta-band-grey .cta-band-grey-button .buttonTable {
     width: 100% !important;

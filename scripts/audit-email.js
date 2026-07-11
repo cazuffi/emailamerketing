@@ -73,8 +73,12 @@ assert.match(
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
 const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
+const greyCtaShell = $('.cta-band-grey .cta-band-grey-shell');
+const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
 assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
 assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
+assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
+assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 28px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
 assert.match(greyCtaLink.attr('style') || '', /padding:14px 16px/i);
@@ -83,6 +87,11 @@ assert.match(
   exported,
   /\.cta-band-grey \.cta-band-grey-button \.buttonTable[\s\S]*?max-width:\s*180px !important;/i,
   'Mobile grey CTA button must remain compact',
+);
+assert.match(
+  exported,
+  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;/i,
+  'Mobile grey CTA must remove the desktop accent border',
 );
 
 assert.strictEqual(
