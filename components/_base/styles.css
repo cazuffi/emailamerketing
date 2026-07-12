@@ -45,11 +45,15 @@ a.buttonClass,
   box-sizing: border-box;
 }
 
+/* Fill comes from the td (.buttonCell bgcolor), never the anchor.
+   Outlook paints anchor backgrounds only around the text, so keeping the
+   anchor transparent is what prevents the "highlighted label" bug. */
 a.buttonClass.button-primary,
 .buttonCell .buttonClass.button-primary,
 .button-primary.buttonClass {
   color: #ffffff !important;
-  background-color: #ef7800 !important;
+  background-color: transparent !important;
+  background: transparent !important;
 }
 
 .button-outline-table {

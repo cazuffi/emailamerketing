@@ -452,6 +452,15 @@
   .three-up-cell:last-child { padding-bottom: 0 !important; }
   .three-up-cell h3,
   .three-up-cell p { text-align: center !important; }
+  /* Stacked on mobile: drop the desktop equal-height title rows so a title
+     that wraps to two lines doesn't leave uneven gaps between benefits. */
+  .three-up-title-table,
+  .three-up-title-cell {
+    height: auto !important;
+  }
+  .three-up-title-cell {
+    padding-bottom: 2px !important;
+  }
   .product-tile .imageWrapper { text-align: center !important; }
 
   .case-study-cell {

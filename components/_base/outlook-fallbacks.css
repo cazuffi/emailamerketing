@@ -92,29 +92,14 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
-/* Outlook desktop renders the ghost table; hide the modern button duplicate. */
-.buttonTable,
-.button-outline-table {
-  mso-hide: all !important;
-  display: none !important;
-  max-height: 0 !important;
-  overflow: hidden !important;
-  visibility: hidden !important;
-}
-
-/* Outlook desktop ignores @media rules — paint fills on td, not anchor/span. */
-td.buttonCell,
-td.button-outline-cell {
-  width: 100% !important;
-}
-
+/* Outlook desktop: the td paints the fill (bgcolor + mso-padding-alt).
+   Anchors and spans stay transparent so Outlook cannot paint an orange
+   background around the text only (the "highlighted label" bug). */
 td.buttonCell {
-  width: 100% !important;
   background: #ef7800 !important;
   background-color: #ef7800 !important;
   border: 1px solid #ef7800 !important;
   border-color: #ef7800 !important;
-  padding: 14px 28px !important;
   mso-shading: #ef7800;
   mso-pattern: auto;
   mso-padding-alt: 14px 28px;
@@ -127,19 +112,14 @@ a.button-primary {
   color: #ffffff !important;
   background: transparent !important;
   background-color: transparent !important;
-  display: inline !important;
-  width: auto !important;
-  padding: 0 !important;
   mso-padding-alt: 0 !important;
 }
 
 td.button-outline-cell {
-  width: 100% !important;
   background: #ffffff !important;
   background-color: #ffffff !important;
   border: 2px solid #ef7800 !important;
   border-color: #ef7800 !important;
-  padding: 14px 28px !important;
   mso-shading: #ffffff;
   mso-pattern: auto;
   mso-padding-alt: 14px 28px;
@@ -151,9 +131,6 @@ a.button-outline-link {
   color: #ef7800 !important;
   background: transparent !important;
   background-color: transparent !important;
-  display: inline !important;
-  width: auto !important;
-  padding: 0 !important;
   mso-padding-alt: 0 !important;
 }
 

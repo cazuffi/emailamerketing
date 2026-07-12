@@ -104,18 +104,13 @@ assert.doesNotMatch(
 );
 assert.match(
   getOutlookFallbackCss(),
-  /td\.buttonCell\s*\{[\s\S]*?width:\s*100% !important;[\s\S]*?background-color:\s*#ef7800 !important;[\s\S]*?mso-shading:\s*#ef7800;/i,
-  'Outlook desktop must receive full-width primary button cells with explicit fill',
+  /td\.buttonCell\s*\{[\s\S]*?background-color:\s*#ef7800 !important;[\s\S]*?mso-shading:\s*#ef7800;[\s\S]*?mso-padding-alt:\s*14px 28px;/i,
+  'Outlook desktop must paint the primary button fill on the td with mso padding',
 );
 assert.match(
   getOutlookFallbackCss(),
-  /\.buttonTable[\s\S]*?mso-hide:\s*all !important;/i,
-  'Outlook must hide the modern button table so only the ghost table renders',
-);
-assert.match(
-  exported,
-  /<!--\[if mso\]>[\s\S]*?class="button-outlook-mso"[\s\S]*?bgcolor="#ef7800"[\s\S]*?<!\[endif\]-->/i,
-  'Primary buttons must include an Outlook-only ghost button table',
+  /a\.button-primary\s*\{[\s\S]*?background:\s*transparent !important;/i,
+  'Outlook desktop must keep the primary anchor transparent so the td fill shows',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
@@ -227,13 +222,17 @@ $('a.buttonClass').each((_, link) => {
 
 assert.strictEqual((exported.match(/<v:roundrect\b/gi) || []).length, 0);
 $('.buttonCell a.button-primary').each((_, link) => {
-  assert.doesNotMatch($(link).attr('style') || '', /mso-hide\s*:\s*all/i);
-  assert.doesNotMatch($(link).attr('style') || '', /background-color:\s*#ef7800/i);
+  const linkStyle = $(link).attr('style') || '';
+  assert.doesNotMatch(linkStyle, /mso-hide\s*:\s*all/i);
+  assert.doesNotMatch(linkStyle, /background-color:\s*#ef7800/i);
+  assert.match(linkStyle, /background(?:-color)?:\s*transparent/i, 'Primary anchor must be transparent so the td paints the fill');
   assert.strictEqual($(link).children('span').length, 1);
   assert.match($(link).children('span').attr('style') || '', /color:#ffffff/i);
   assert.doesNotMatch($(link).children('span').attr('style') || '', /background-color/i);
-  assert.match($(link).closest('.buttonCell').attr('style') || '', /mso-padding-alt:\s*14px/i);
-  assert.match($(link).closest('.buttonCell').attr('style') || '', /padding:\s*14px 28px/i);
+  const cellStyle = $(link).closest('.buttonCell').attr('style') || '';
+  assert.match(cellStyle, /mso-padding-alt:\s*14px/i);
+  assert.match(cellStyle, /background-color:\s*#ef7800/i, 'Primary button fill must live on the td');
+  assert.doesNotMatch(cellStyle, /(?:^|;)\s*padding:\s*14px 28px/i, 'td must not carry real padding (doubles modern anchor padding)');
   assert.match($(link).closest('.buttonCell').attr('bgcolor'), /#ef7800/i);
 });
 
@@ -252,11 +251,6 @@ const $overriddenButton = cheerio.load(overriddenButtonExport, { xml: false }, f
 const overriddenAnchor = $overriddenButton('.buttonCell a.button-primary');
 assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-cta');
 assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
-assert.match(
-  overriddenButtonExport,
-  /button-outlook-mso[\s\S]*?href="https:\/\/example\.com\/outlook-cta"[\s\S]*?Custom Outlook CTA/i,
-  'Outlook ghost buttons must preserve overridden href and label',
-);
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([

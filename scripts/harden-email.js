@@ -49,74 +49,15 @@ function setStyleProp($el, prop, value) {
   $el.attr('style', next);
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function escapeAttr(value) {
-  return escapeHtml(value);
-}
-
-function readCellPadding($cell, fallback) {
-  const style = $cell.attr('style') || '';
-  const match = style.match(/(?:^|;)\s*mso-padding-alt\s*:\s*([^;]+)/i);
-  return match ? match[1].trim() : fallback;
-}
-
-function buildOutlookPrimaryButton({ href, label, padding, align }) {
-  return [
-    '<!--[if mso]>',
-    `<table role="presentation" class="button-outlook-mso" cellpadding="0" cellspacing="0" border="0" align="${align}" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;">`,
-    '<tbody><tr>',
-    `<td align="center" bgcolor="#ef7800" style="background:#ef7800;background-color:#ef7800;border:1px solid #ef7800;padding:${padding};mso-padding-alt:${padding};mso-shading:#ef7800;mso-pattern:auto;">`,
-    `<a href="${escapeAttr(href)}" style="color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;mso-line-height-rule:exactly;mso-ansi-font-weight:bold;">${escapeHtml(label)}</a>`,
-    '</td>',
-    '</tr></tbody></table>',
-    '<![endif]-->',
-  ].join('');
-}
-
-function buildOutlookOutlineButton({ href, label, padding, align }) {
-  return [
-    '<!--[if mso]>',
-    `<table role="presentation" class="button-outlook-mso" cellpadding="0" cellspacing="0" border="0" align="${align}" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;">`,
-    '<tbody><tr>',
-    `<td align="center" bgcolor="#ffffff" style="background:#ffffff;background-color:#ffffff;border:2px solid #ef7800;padding:${padding};mso-padding-alt:${padding};mso-shading:#ffffff;mso-pattern:auto;">`,
-    `<a href="${escapeAttr(href)}" style="color:#ef7800;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;mso-line-height-rule:exactly;mso-ansi-font-weight:bold;">${escapeHtml(label)}</a>`,
-    '</td>',
-    '</tr></tbody></table>',
-    '<![endif]-->',
-  ].join('');
-}
-
-function injectOutlookButtons($) {
-  $('.buttonWrapper').each((_, wrap) => {
-    const $wrap = $(wrap);
-    const wrapHtml = $wrap.html() || '';
-    if (wrapHtml.includes('button-outlook-mso')) return;
-
-    const $table = $wrap.children('.buttonTable, .button-outline-table').first();
-    if (!$table.length) return;
-
-    const $link = $table.find('a').first();
-    if (!$link.length) return;
-
-    const $cell = $table.find('.buttonCell, .button-outline-cell').first();
-    const isOutline = $table.hasClass('button-outline-table');
-    const label = ($link.find('span').first().text() || $link.text() || '').trim();
-    const href = $link.attr('href') || '#';
-    const padding = readCellPadding($cell, '14px 28px');
-    const align = ($wrap.attr('align') || 'center').toLowerCase();
-    const msoHtml = isOutline
-      ? buildOutlookOutlineButton({ href, label, padding, align })
-      : buildOutlookPrimaryButton({ href, label, padding, align });
-
-    $table.before(msoHtml);
-  });
+function removeStyleProp($el, prop) {
+  const style = $el.attr('style') || '';
+  if (!style) return;
+  const re = new RegExp(`(^|;)\\s*${escapeRegex(prop)}\\s*:[^;]*;?`, 'gi');
+  const next = style
+    .replace(re, (_, separator) => separator)
+    .trim()
+    .replace(/;+\s*$/, '');
+  $el.attr('style', next);
 }
 
 function hardenButtons($) {
@@ -127,6 +68,11 @@ function hardenButtons($) {
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;border:0;mso-padding-alt:0');
     } else {
       $a.addClass('button-primary');
+      // Anchor stays transparent. The td (.buttonCell) provides the fill in
+      // every client — Outlook only paints anchor backgrounds around the text,
+      // which is what causes the "highlighted label" bug.
+      setStyleProp($a, 'background-color', 'transparent');
+      setStyleProp($a, 'background', 'transparent');
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;color:#ffffff;border:0;mso-padding-alt:0');
       const label = ($a.children('span').length ? $a.children('span').first().text() : $a.text()).trim();
       $a.empty();
@@ -135,6 +81,8 @@ function hardenButtons($) {
         const $span = $(span);
         setStyleProp($span, 'color', '#ffffff');
         setStyleProp($span, 'font-weight', 'bold');
+        removeStyleProp($span, 'background-color');
+        removeStyleProp($span, 'background');
       });
     }
     ensureStyle($a, 'text-decoration:none;text-align:center');
@@ -144,14 +92,18 @@ function hardenButtons($) {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ef7800');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto;width:100%;padding:14px 28px');
+    // Fill + Outlook padding live on the td. No real `padding` here or modern
+    // clients would double it against the anchor's own padding.
+    removeStyleProp($cell, 'padding');
+    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto');
     setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
   $('.button-outline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ffffff');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto;width:100%;padding:14px 28px');
+    removeStyleProp($cell, 'padding');
+    ensureStyle($cell, 'border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto');
     setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
 
@@ -248,8 +200,6 @@ function hardenButtons($) {
       });
     });
   });
-
-  injectOutlookButtons($);
 }
 
 function hardenImages($) {
