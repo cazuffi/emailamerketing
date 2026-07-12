@@ -109,8 +109,13 @@ assert.match(
 );
 assert.match(
   getOutlookFallbackCss(),
-  /td\.buttonCell a[\s\S]*?background:\s*transparent !important;[\s\S]*?display:\s*inline !important;/i,
-  'Outlook desktop must keep link text transparent so td bgcolor paints the full button',
+  /\.buttonTable[\s\S]*?mso-hide:\s*all !important;/i,
+  'Outlook must hide the modern button table so only the ghost table renders',
+);
+assert.match(
+  exported,
+  /<!--\[if mso\]>[\s\S]*?class="button-outlook-mso"[\s\S]*?bgcolor="#ef7800"[\s\S]*?<!\[endif\]-->/i,
+  'Primary buttons must include an Outlook-only ghost button table',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
@@ -247,6 +252,11 @@ const $overriddenButton = cheerio.load(overriddenButtonExport, { xml: false }, f
 const overriddenAnchor = $overriddenButton('.buttonCell a.button-primary');
 assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-cta');
 assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
+assert.match(
+  overriddenButtonExport,
+  /button-outlook-mso[\s\S]*?href="https:\/\/example\.com\/outlook-cta"[\s\S]*?Custom Outlook CTA/i,
+  'Outlook ghost buttons must preserve overridden href and label',
+);
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([

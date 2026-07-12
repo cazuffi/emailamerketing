@@ -92,6 +92,16 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
+/* Outlook desktop renders the ghost table; hide the modern button duplicate. */
+.buttonTable,
+.button-outline-table {
+  mso-hide: all !important;
+  display: none !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+}
+
 /* Outlook desktop ignores @media rules — paint fills on td, not anchor/span. */
 td.buttonCell,
 td.button-outline-cell {
