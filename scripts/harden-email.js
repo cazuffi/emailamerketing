@@ -49,23 +49,6 @@ function setStyleProp($el, prop, value) {
   $el.attr('style', next);
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function buildPrimaryButtonVml(href, label) {
-  return `<!--[if mso]>
-<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${escapeHtml(href || '#')}" style="height:48px;v-text-anchor:middle;width:160px;" arcsize="0%" strokecolor="#ef7800" fillcolor="#ef7800">
-<w:anchorlock/>
-<center style="color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;">${escapeHtml(label || 'Button label')}</center>
-</v:roundrect>
-<![endif]-->`;
-}
-
 function hardenButtons($) {
   $('a.buttonClass, a.button-primary, a.button-outline-link').each((_, el) => {
     const $a = $(el);
@@ -75,11 +58,17 @@ function hardenButtons($) {
     } else {
       $a.addClass('button-primary');
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ef7800;color:#ffffff;border:0;mso-padding-alt:0');
-      ensureStyle($a, 'mso-hide:all');
-      const $cell = $a.closest('.buttonCell');
-      if ($cell.length && !/v:roundrect/i.test($cell.html() || '')) {
-        $a.before(buildPrimaryButtonVml($a.attr('href'), $a.text().trim()));
+      if (!$a.children('span').length) {
+        const label = $a.text();
+        $a.text('');
+        $a.append($('<span></span>').text(label));
       }
+      $a.children('span').each((__, span) => {
+        const $span = $(span);
+        setStyleProp($span, 'color', '#ffffff');
+        setStyleProp($span, 'background-color', '#ef7800');
+        setStyleProp($span, 'font-weight', 'bold');
+      });
     }
     ensureStyle($a, 'text-decoration:none;text-align:center');
   });
@@ -88,7 +77,8 @@ function hardenButtons($) {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ef7800');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'background-color:#ef7800;mso-padding-alt:0;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto');
+    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto');
+    setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
   $('.button-outline-cell').each((_, el) => {
     const $cell = $(el);
@@ -127,6 +117,9 @@ function hardenButtons($) {
       setStyleProp($link, 'overflow-wrap', 'break-word');
       setStyleProp($link, 'word-break', 'normal');
     });
+    $wrap.find('.buttonCell').each((__, cell) => {
+      setStyleProp($(cell), 'mso-padding-alt', '14px 16px');
+    });
   });
 
   $('.compact-button-column .buttonWrapper').each((_, el) => {
@@ -144,6 +137,9 @@ function hardenButtons($) {
       setStyleProp($link, 'padding', '14px 12px');
       setStyleProp($link, 'white-space', 'normal');
       setStyleProp($link, 'overflow-wrap', 'break-word');
+    });
+    $wrap.find('.buttonCell').each((__, cell) => {
+      setStyleProp($(cell), 'mso-padding-alt', '14px 12px');
     });
   });
 
@@ -497,6 +493,7 @@ function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
   out = out.replace(/\s*<!--<!\[endif\]-->/gi, '');
+  out = out.replace(/<!--\[if mso\]>\s*<v:roundrect[\s\S]*?<!\[endif\]-->\s*/gi, '');
   return out;
 }
 

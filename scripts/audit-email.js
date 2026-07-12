@@ -213,19 +213,16 @@ $('a.buttonClass').each((_, link) => {
   assert($(link).hasClass('button-primary'), 'Every buttonClass link must receive button-primary');
 });
 
-const focusedPrimaryButtons = $('.buttonCell a.button-primary').length;
-const focusedPrimaryVml = (exported.match(/<v:roundrect\b/gi) || []).length;
-assert.strictEqual(
-  focusedPrimaryVml,
-  focusedPrimaryButtons,
-  'Every primary button must include one Outlook VML fill',
-);
+assert.strictEqual((exported.match(/<v:roundrect\b/gi) || []).length, 0);
 $('.buttonCell a.button-primary').each((_, link) => {
-  assert.match($(link).attr('style') || '', /mso-hide:all/i);
+  assert.doesNotMatch($(link).attr('style') || '', /mso-hide\s*:\s*all/i);
+  assert.strictEqual($(link).children('span').length, 1);
+  assert.match($(link).children('span').attr('style') || '', /color:#ffffff/i);
+  assert.match($(link).closest('.buttonCell').attr('style') || '', /mso-padding-alt:\s*14px/i);
 });
 
 const overriddenButtonExport = buildEmailHtml({
-  title: 'VML override audit',
+  title: 'Native button override audit',
   modules: ['cta-primary-center'],
   overrides: {
     0: {
@@ -235,11 +232,10 @@ const overriddenButtonExport = buildEmailHtml({
   },
   annotate: false,
 });
-assert.match(
-  overriddenButtonExport,
-  /<v:roundrect[^>]*href="https:\/\/example\.com\/outlook-cta"[\s\S]*?<center[^>]*>Custom Outlook CTA<\/center>/i,
-  'Edited button labels and links must propagate to Outlook VML',
-);
+const $overriddenButton = cheerio.load(overriddenButtonExport, { xml: false }, false);
+const overriddenAnchor = $overriddenButton('.buttonCell a.button-primary');
+assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-cta');
+assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([
@@ -285,8 +281,8 @@ $all('a.buttonClass').each((_, link) => {
 });
 assert.strictEqual(
   (allModulesExport.match(/<v:roundrect\b/gi) || []).length,
-  $all('.buttonCell a.button-primary').length,
-  'Every exported primary button must retain exactly one Outlook VML fallback',
+  0,
+  'Dynamics-safe exports must not rely on VML buttons',
 );
 
 $fallback('a.buttonClass, a.button-outline-link').each((_, link) => {
