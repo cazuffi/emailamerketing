@@ -213,6 +213,34 @@ $('a.buttonClass').each((_, link) => {
   assert($(link).hasClass('button-primary'), 'Every buttonClass link must receive button-primary');
 });
 
+const focusedPrimaryButtons = $('.buttonCell a.button-primary').length;
+const focusedPrimaryVml = (exported.match(/<v:roundrect\b/gi) || []).length;
+assert.strictEqual(
+  focusedPrimaryVml,
+  focusedPrimaryButtons,
+  'Every primary button must include one Outlook VML fill',
+);
+$('.buttonCell a.button-primary').each((_, link) => {
+  assert.match($(link).attr('style') || '', /mso-hide:all/i);
+});
+
+const overriddenButtonExport = buildEmailHtml({
+  title: 'VML override audit',
+  modules: ['cta-primary-center'],
+  overrides: {
+    0: {
+      button_0_label: 'Custom Outlook CTA',
+      button_0_href: 'https://example.com/outlook-cta',
+    },
+  },
+  annotate: false,
+});
+assert.match(
+  overriddenButtonExport,
+  /<v:roundrect[^>]*href="https:\/\/example\.com\/outlook-cta"[\s\S]*?<center[^>]*>Custom Outlook CTA<\/center>/i,
+  'Edited button labels and links must propagate to Outlook VML',
+);
+
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([
   'comparison-split',
@@ -255,6 +283,11 @@ $all('img').each((_, image) => {
 $all('a.buttonClass').each((_, link) => {
   assert($all(link).hasClass('button-primary'), 'Every exported buttonClass link must be primary');
 });
+assert.strictEqual(
+  (allModulesExport.match(/<v:roundrect\b/gi) || []).length,
+  $all('.buttonCell a.button-primary').length,
+  'Every exported primary button must retain exactly one Outlook VML fallback',
+);
 
 $fallback('a.buttonClass, a.button-outline-link').each((_, link) => {
   const style = $fallback(link).attr('style') || '';

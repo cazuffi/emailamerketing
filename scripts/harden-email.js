@@ -49,6 +49,23 @@ function setStyleProp($el, prop, value) {
   $el.attr('style', next);
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function buildPrimaryButtonVml(href, label) {
+  return `<!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${escapeHtml(href || '#')}" style="height:48px;v-text-anchor:middle;width:160px;" arcsize="0%" strokecolor="#ef7800" fillcolor="#ef7800">
+<w:anchorlock/>
+<center style="color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;">${escapeHtml(label || 'Button label')}</center>
+</v:roundrect>
+<![endif]-->`;
+}
+
 function hardenButtons($) {
   $('a.buttonClass, a.button-primary, a.button-outline-link').each((_, el) => {
     const $a = $(el);
@@ -58,6 +75,11 @@ function hardenButtons($) {
     } else {
       $a.addClass('button-primary');
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ef7800;color:#ffffff;border:0;mso-padding-alt:0');
+      ensureStyle($a, 'mso-hide:all');
+      const $cell = $a.closest('.buttonCell');
+      if ($cell.length && !/v:roundrect/i.test($cell.html() || '')) {
+        $a.before(buildPrimaryButtonVml($a.attr('href'), $a.text().trim()));
+      }
     }
     ensureStyle($a, 'text-decoration:none;text-align:center');
   });
@@ -475,7 +497,6 @@ function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
   out = out.replace(/\s*<!--<!\[endif\]-->/gi, '');
-  out = out.replace(/<!--\[if mso\]>\s*<v:roundrect[\s\S]*?<!\[endif\]-->\s*/gi, '');
   return out;
 }
 
