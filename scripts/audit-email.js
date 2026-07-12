@@ -210,11 +210,21 @@ assert.strictEqual($('.comparison-heading-section + .comparison-split-section').
 
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
-const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
 const greyCtaShell = $('.cta-band-grey .cta-band-grey-shell');
 const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
-assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
-assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
+const greyCtaButtonCol = $('.cta-band-grey .cta-band-grey-button');
+// Grey CTA is a presentation-only fluid layout (no Dynamics editable columns),
+// so Dynamics does not show an "Add element here" dropzone in the button column.
+assert.strictEqual($('.cta-band-grey [data-container]').length, 0);
+assert.match(greyCtaCopyInner.attr('style') || '', /display:inline-block/i);
+assert.match(greyCtaCopyInner.attr('style') || '', /max-width:392px/i);
+assert.match(greyCtaButtonCol.attr('style') || '', /display:inline-block/i);
+assert.match(greyCtaButtonCol.attr('style') || '', /max-width:180px/i);
+assert.match(
+  buildEmailHtml({ title: 'grey ghost', modules: ['cta-band-grey'], annotate: false }),
+  /<!--\[if mso\]>[\s\S]*?<table[^>]*width="584"[\s\S]*?<td width="392"[\s\S]*?<td width="180"/i,
+  'Grey CTA must include an Outlook desktop ghost table',
+);
 assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
 assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
@@ -297,7 +307,6 @@ assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([
   'comparison-split',
-  'cta-band-grey',
 ]);
 const allModulesExport = buildEmailHtml({
   title: 'All-modules audit',
