@@ -120,7 +120,7 @@ a.button-outline-link,
 }
 .cta-dual-section .buttonCell,
 .cta-dual-section .button-outline-cell {
-  width: 100%;
+  width: auto;
   height: 52px;
   border: 2px solid #ef7800 !important;
   box-sizing: border-box;
@@ -135,7 +135,7 @@ a.button-outline-link,
 .cta-dual-section a.buttonClass.button-primary,
 .cta-dual-section a.button-outline-link {
   padding: 14px 28px !important;
-  width: 100%;
+  width: auto;
   box-sizing: border-box;
   line-height: 1.4;
   height: 48px;
@@ -651,10 +651,16 @@ img.header-logo-img--compact {
   vertical-align: top;
 }
 
-.comparison-split-section .comparison-section-cell,
-.comparison-split-section .comparison-heading-block,
-.comparison-split-section .comparison-title {
+.comparison-heading-section .comparison-heading-cell,
+.comparison-heading-section .comparison-heading-block,
+.comparison-heading-section .comparison-title {
   text-align: left !important;
+}
+
+@media only screen and (max-width: 640px) {
+  .comparison-heading-section .comparison-heading-cell {
+    padding: 16px 20px 0 20px !important;
+  }
 }
 
 .comparison-col-highlight {
