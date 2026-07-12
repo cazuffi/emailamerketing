@@ -305,9 +305,10 @@ assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-c
 assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
-const editableLayoutModules = new Set([
-  'comparison-split',
-]);
+// No module ships the Dynamics editable-column pattern anymore (columns-equal-class
+// + data-container). They are all presentation layouts, so none can trigger the
+// Dynamics editor "Add element here" dropzone. Keep the set for future exceptions.
+const editableLayoutModules = new Set([]);
 const allModulesExport = buildEmailHtml({
   title: 'All-modules audit',
   modules: allModuleIds,
@@ -328,6 +329,18 @@ assert.strictEqual(
   $all('[data-studio-field], [data-studio-label], [data-studio-module], [data-studio-repeat]').length,
   0,
   'Studio metadata must not leak from any module',
+);
+// No module may ship the Dynamics editable-column pattern, which makes the
+// Dynamics editor show an "Add element here" dropzone in short columns.
+assert.strictEqual(
+  $all('[data-container]').length,
+  0,
+  'No module may export Dynamics editable-column metadata (causes the editor dropzone)',
+);
+assert.strictEqual(
+  $all('[data-section="true"].columns-equal-class').length,
+  0,
+  'No module section may ship columns-equal-class (Dynamics editable-column trigger)',
 );
 assert(!/\[if !mso\]/i.test(allModulesExport), 'Non-MSO wrappers must not survive export');
 assert(!/@media\b/i.test(allModulesNoMedia), 'Compatibility preview must remove every media query');
