@@ -22,13 +22,17 @@ function mergeStyle(existing, additions) {
   return `${base};${add}`;
 }
 
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function ensureStyle($el, fragment) {
   const style = $el.attr('style') || '';
   const parts = fragment.split(';').map((s) => s.trim()).filter(Boolean);
   let next = style;
   for (const part of parts) {
     const prop = part.split(':')[0].trim().toLowerCase();
-    if (new RegExp(`${prop}\\s*:`, 'i').test(next)) continue;
+    if (new RegExp(`(?:^|;)\\s*${escapeRegex(prop)}\\s*:`, 'i').test(next)) continue;
     next = mergeStyle(next, part);
   }
   if (next !== style) $el.attr('style', next);
@@ -36,8 +40,11 @@ function ensureStyle($el, fragment) {
 
 function setStyleProp($el, prop, value) {
   const style = $el.attr('style') || '';
-  const re = new RegExp(`${prop}\\s*:[^;]*;?`, 'gi');
-  const stripped = style.replace(re, '').trim().replace(/;+\s*$/, '');
+  const re = new RegExp(`(^|;)\\s*${escapeRegex(prop)}\\s*:[^;]*;?`, 'gi');
+  const stripped = style
+    .replace(re, (_, separator) => separator)
+    .trim()
+    .replace(/;+\s*$/, '');
   const next = stripped ? `${stripped};${prop}:${value}` : `${prop}:${value}`;
   $el.attr('style', next);
 }
@@ -390,21 +397,35 @@ function hardenD365Containers($) {
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
     const $section = $table.closest('[data-section="true"]');
+    const $directCells = $table
+      .children('tbody')
+      .children('tr')
+      .children('th, td')
+      .add($table.children('tr').children('th, td'));
+    const explicitlyEditable =
+      $section.hasClass('columns-equal-class') ||
+      $directCells.filter('[data-container="true"]').length > 0;
+    if (!explicitlyEditable) return;
+
     if ($section.length) $section.addClass('columns-equal-class');
     $table.addClass('containerWrapper');
     ensureStyle($table, 'width:100%;border-collapse:collapse');
 
-    $table.children('tbody').children('tr').children('th, td').add($table.children('tr').children('th, td')).each((__, cell) => {
+    $directCells.each((__, cell) => {
       const $cell = $(cell);
       const cls = $cell.attr('class') || '';
       if (!cls.includes('columnContainer') && !cls.includes('stack-column')) return;
       if (!$cell.attr('data-container')) $cell.attr('data-container', 'true');
-      if (!$cell.attr('data-container-width')) {
-        const width = parseContainerWidthPct($cell);
-        if (width) $cell.attr('data-container-width', width);
-      }
       if (!$cell.attr('role')) $cell.attr('role', 'presentation');
     });
+  });
+
+  $('[data-container="true"]').each((_, cell) => {
+    const $cell = $(cell);
+    const current = parseFloat($cell.attr('data-container-width'));
+    const width = Number.isFinite(current) ? current.toFixed(2) : parseContainerWidthPct($cell);
+    if (width) $cell.attr('data-container-width', width);
+    if (!$cell.attr('role')) $cell.attr('role', 'presentation');
   });
 
   $('[data-editorblocktype="Button"]').each((_, el) => {
