@@ -17,8 +17,15 @@ function getOutlookFallbackCss() {
   return fs.readFileSync(OUTLOOK_FALLBACKS_PATH, 'utf8');
 }
 
+function getOutlookSimulationCss() {
+  return getOutlookFallbackCss().replace(
+    /\/\*\s*OUTLOOK_DESKTOP_STRUCTURE_START[\s\S]*?OUTLOOK_DESKTOP_STRUCTURE_END\s*\*\//g,
+    '',
+  );
+}
+
 function buildOutlookSimStyle() {
-  return `<style id="studio-outlook-sim">\n${getOutlookFallbackCss()}\n</style>`;
+  return `<style id="studio-outlook-sim">\n${getOutlookSimulationCss()}\n</style>`;
 }
 
 function applyPreviewSampleData(html) {
@@ -159,6 +166,7 @@ module.exports = {
   removeMediaQueriesFromCss,
   preparePreviewHtml,
   getOutlookFallbackCss,
+  getOutlookSimulationCss,
   buildOutlookSimStyle,
   LIBRARY_PREVIEW_STYLE,
 };

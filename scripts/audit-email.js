@@ -6,7 +6,11 @@ const fs = require('fs');
 const path = require('path');
 const { buildEmailHtml, loadManifest, assembleFromSource } = require('./assemble');
 const { hardenEmailHtml, sanitizeExportHtml } = require('./harden-email');
-const { removeMediaQueriesFromCss } = require('./preview-sample');
+const {
+  getOutlookFallbackCss,
+  getOutlookSimulationCss,
+  removeMediaQueriesFromCss,
+} = require('./preview-sample');
 
 const options = {
   title: 'Audit fixture',
@@ -65,6 +69,16 @@ assert.match(
   noMediaPreview,
   /\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
   'No-media fallback must center the logo across the email',
+);
+assert.match(
+  getOutlookFallbackCss(),
+  /OUTLOOK_DESKTOP_STRUCTURE_START[\s\S]*?header-logo-column/i,
+  'Real Outlook fallback must retain desktop header structure',
+);
+assert.doesNotMatch(
+  getOutlookSimulationCss(),
+  /header-standard-section \.header-logo-column/i,
+  'Browser Outlook simulation must not force desktop header structure on mobile',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);

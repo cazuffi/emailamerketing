@@ -109,6 +109,8 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
+/* OUTLOOK_DESKTOP_STRUCTURE_START
+   Kept in the real MSO conditional block; excluded from browser simulation. */
 .header-standard-section .header-logo-column,
 .header-standard-section .header-tagline-column {
   display: table-cell !important;
@@ -132,3 +134,4 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 .header-standard-section .header-tagline {
   text-align: right !important;
 }
+/* OUTLOOK_DESKTOP_STRUCTURE_END */
