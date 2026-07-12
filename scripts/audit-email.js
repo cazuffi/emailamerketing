@@ -243,9 +243,20 @@ $('a.buttonClass').each((_, link) => {
 });
 
 assert.strictEqual((exported.match(/<v:roundrect\b/gi) || []).length, 0);
+// Dynamics rebuilds data-editorblocktype="Button" blocks into a bare anchor and
+// drops the table (and the anchor background). Neutralize the block so our
+// bulletproof table (td bgcolor) survives the paste-into-Dynamics step.
+assert.strictEqual(
+  $('[data-editorblocktype="Button"]').length,
+  0,
+  'Exported buttons must not carry data-editorblocktype="Button" (Dynamics flattens it)',
+);
+assert($('.buttonWrapper .buttonTable .buttonCell').length > 0, 'Button table must survive export');
+
 $('.buttonCell a.button-primary').each((_, link) => {
   const linkStyle = $(link).attr('style') || '';
   assert.doesNotMatch(linkStyle, /mso-hide\s*:\s*all/i);
+  assert.doesNotMatch(linkStyle, /(?:^|;)\s*background:\s*#ef7800/i, 'Anchor must not use the background shorthand (Dynamics mangles it)');
   assert.match(linkStyle, /background-color:\s*#ef7800/i, 'Primary anchor must be orange so mobile/Gmail/Apple render a filled button');
   assert.strictEqual($(link).children('span').length, 1);
   assert.match($(link).children('span').attr('style') || '', /color:#ffffff/i);

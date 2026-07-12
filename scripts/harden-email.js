@@ -69,9 +69,11 @@ function hardenButtons($) {
     } else {
       $a.addClass('button-primary');
       // Fill on the anchor (mobile/Gmail/Apple) AND the td (Outlook desktop).
-      // Same color, so Outlook's text-only anchor paint blends into the td.
+      // Use ONLY the background-color longhand — Dynamics mangles the
+      // `background` shorthand into `background-image:initial…` and drops the
+      // color, but it preserves `background-color` (as it does for the badge).
       setStyleProp($a, 'background-color', '#ef7800');
-      setStyleProp($a, 'background', '#ef7800');
+      removeStyleProp($a, 'background');
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;color:#ffffff;border:0;mso-padding-alt:0');
       const label = ($a.children('span').length ? $a.children('span').first().text() : $a.text()).trim();
       $a.empty();
@@ -508,6 +510,13 @@ function hardenD365Containers($) {
     const $btn = $(el);
     ensureStyle($btn, 'display:block');
     if ($btn.attr('align')) ensureStyle($btn, `text-align:${$btn.attr('align')}`);
+    // Dynamics rebuilds data-editorblocktype="Button" blocks into a bare anchor:
+    // it deletes our bulletproof table (the <td> fill Outlook desktop relies on)
+    // and mangles the anchor background. Drop the attribute so Dynamics keeps our
+    // markup as generic content (like the comparison tables and plain links it
+    // already preserves). Links are still tracked regardless of block type.
+    $btn.removeAttr('data-editorblocktype');
+    $btn.addClass('cta-button-block');
   });
 }
 
