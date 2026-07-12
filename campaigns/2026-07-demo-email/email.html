@@ -115,13 +115,11 @@ a.button-outline-link,
 .cta-dual-section .buttonTable,
 .cta-dual-section .button-outline-table {
   width: 100%;
-  height: 52px;
   table-layout: fixed;
 }
 .cta-dual-section .buttonCell,
 .cta-dual-section .button-outline-cell {
   width: auto;
-  height: 52px;
   border: 2px solid #ef7800 !important;
   box-sizing: border-box;
   vertical-align: middle;
@@ -138,7 +136,6 @@ a.button-outline-link,
   width: auto;
   box-sizing: border-box;
   line-height: 1.4;
-  height: 48px;
   min-height: 48px;
 }
 
@@ -683,7 +680,7 @@ img.header-logo-img--compact {
   max-width: 100%;
 }
 
-.article-thumb { vertical-align: top; width: 120px; }
+.article-thumb { vertical-align: top; width: 22%; }
 .article-body { vertical-align: top; padding-left: 16px; }
 
 .play-badge {
@@ -885,7 +882,23 @@ img.header-logo-img--compact {
   min-width: 40px;
 }
 
-.team-photo { vertical-align: top; width: 96px; }
+.compact-button-column .buttonTable,
+.compact-button-column .button-outline-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.compact-button-column a.buttonClass,
+.compact-button-column a.button-outline-link {
+  display: block;
+  width: auto;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.team-photo { vertical-align: top; width: 18%; }
 .team-info { vertical-align: top; padding-left: 16px; }
 
 .social-link {
@@ -1402,7 +1415,7 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 <td class="section-pad-tight" style="padding:16px 24px;" role="presentation">
 <table class="header-layout-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt" border="0"><tbody><tr>
 <td class="header-logo-column header-logo-cell" width="50%" valign="middle" style="vertical-align:middle;width:50%;">
-<div data-editorblocktype="Image"><div align="left" class="imageWrapper"><img class="header-logo-img" src="https://assets-eur.mkt.dynamics.com/e38f9c8b-b24d-f011-a209-6045bdde367f/digitalassets/images/78775cff-f27b-f111-ab0e-7ced8d2f2823?ts=639192387132860848" width="200" height="23" alt="Weidmuller" style="display:block;border:0;outline:none;text-decoration:none;width:200px;max-width:200px;height:auto;-ms-interpolation-mode:bicubic;">
+<div data-editorblocktype="Image"><div align="left" class="imageWrapper"><img class="header-logo-img" src="https://assets-eur.mkt.dynamics.com/e38f9c8b-b24d-f011-a209-6045bdde367f/digitalassets/images/78775cff-f27b-f111-ab0e-7ced8d2f2823?ts=639192387132860848" width="200" height="23" alt="Weidmuller" style="display:block;border:0;outline:none;text-decoration:none;width:100%;max-width:200px;height:auto;-ms-interpolation-mode:bicubic;">
 </div></div>
 </td>
 <td class="header-tagline-column header-tagline-cell" width="50%" valign="middle" align="right" style="width:50%;text-align:right;vertical-align:middle">
@@ -1412,11 +1425,11 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 </td></tr></tbody></table>
 </div>
 
-<div data-section="true" class="emptyContainer wrap-section columns-equal-class">
+<div data-section="true" class="emptyContainer wrap-section">
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt" role="presentation" border="0"><tbody><tr>
 <td style="padding:0;" role="presentation">
-<table class="tbContainer multi containerWrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation" border="0" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%"><tbody><tr>
-<td class="stack-column hero-split-cell columnContainer" width="50%" valign="middle" style="vertical-align:middle;width:50%;padding:24px 20px 24px 24px;background-color:#ffffff;" data-container="true" data-container-width="50.00" role="presentation">
+<table class="tbContainer multi" width="100%" cellpadding="0" cellspacing="0" role="presentation" border="0" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt"><tbody><tr>
+<td class="stack-column hero-split-cell columnContainer" width="50%" valign="middle" style="vertical-align:middle;width:50%;padding:24px 20px 24px 24px;background-color:#ffffff;">
 <div data-editorblocktype="Text"><h1 style="margin:0 0 8px 0;font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly">Split hero headline</h1></div>
 <div data-editorblocktype="Text" style="margin:0 0 16px 0;"><p style="mso-line-height-rule:exactly">Lead copy beside the image. Strong for product launches and event invites.</p></div>
 <div data-editorblocktype="Button" class="buttonWrapper" style="display:block"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="buttonTable" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;">
@@ -1427,34 +1440,34 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 </tr></tbody></table>
 </div>
 </td>
-<td class="stack-column stack-column-gap hero-split-cell columnContainer" width="50%" valign="top" style="vertical-align:top;width:50%;padding:0;" data-container="true" data-container-width="50.00" role="presentation">
+<td class="stack-column stack-column-gap hero-split-cell columnContainer" width="50%" valign="top" style="vertical-align:top;width:50%;padding:0;">
 <div data-editorblocktype="Image"><div align="Center" class="imageWrapper"><img src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-8ee3-6045bd928f41/digitalassets/images/e2f16047-099a-f011-b4cb-7c1e52725572?ts=638943993134534305" width="320" style="max-width:100%;width:100%;height:auto;display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" alt="Hero"></div></div>
 </td>
 </tr></tbody></table>
 </td></tr></tbody></table>
 </div>
 
-<div data-section="true" class="emptyContainer wrap-section columns-equal-class">
+<div data-section="true" class="emptyContainer wrap-section">
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt" role="presentation" border="0"><tbody><tr>
 <td class="section-pad" style="padding:20px 24px;" role="presentation">
-<table class="tbContainer multi containerWrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation" border="0" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%"><tbody><tr>
-<td class="icon-grid-cell stack-column columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;" data-container="true" data-container-width="50.00" role="presentation">
+<table class="tbContainer multi" width="100%" cellpadding="0" cellspacing="0" role="presentation" border="0" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt"><tbody><tr>
+<td class="icon-grid-cell stack-column columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;font-weight:bold;mso-ansi-font-weight:bold">1</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly">Speed</h3></div>
 <div data-editorblocktype="Text"><p style="text-align:center;mso-line-height-rule:exactly">Faster installation on the panel</p></div>
 </td>
-<td class="icon-grid-cell stack-column stack-column-gap columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;" data-container="true" data-container-width="50.00" role="presentation">
+<td class="icon-grid-cell stack-column stack-column-gap columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 20px 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;font-weight:bold;mso-ansi-font-weight:bold">2</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly">Safety</h3></div>
 <div data-editorblocktype="Text"><p style="text-align:center;mso-line-height-rule:exactly">Reliable connections every time</p></div>
 </td>
 </tr><tr>
-<td class="icon-grid-cell stack-column columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;" data-container="true" data-container-width="50.00" role="presentation">
+<td class="icon-grid-cell stack-column columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;font-weight:bold;mso-ansi-font-weight:bold">3</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly">Flexibility</h3></div>
 <div data-editorblocktype="Text"><p style="text-align:center;mso-line-height-rule:exactly">Modular design adapts to your needs</p></div>
 </td>
-<td class="icon-grid-cell stack-column stack-column-gap columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;" data-container="true" data-container-width="50.00" role="presentation">
+<td class="icon-grid-cell stack-column stack-column-gap columnContainer" width="50%" valign="top" align="center" style="width:50%;text-align:center;padding:0 8px 0 8px;">
 <div data-editorblocktype="Text"><span class="icon-circle" style="display:inline-block;width:40px;height:40px;line-height:40px;text-align:center;background-color:#ef7800;color:#ffffff;font-family:ARIALNB,Arial,sans-serif;font-size:16px;font-weight:bold;mso-ansi-font-weight:bold">4</span></div>
 <div data-editorblocktype="Text"><h3 style="text-align:center;font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly">Support</h3></div>
 <div data-editorblocktype="Text"><p style="text-align:center;mso-line-height-rule:exactly">Expert guidance when you need it</p></div>

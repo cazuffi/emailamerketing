@@ -239,31 +239,32 @@ for (const selector of [
 
 $fallback('.tbContainer.multi').each((_, table) => {
   const $table = $fallback(table);
-  const $cells = $table.children('tbody').children('tr').children('th, td');
-  let percentageTotal = 0;
-  $cells.each((__, cell) => {
-    const $cell = $fallback(cell);
-    const width = String($cell.attr('width') || '');
-    const percentage = width.match(/^(\d+(?:\.\d+)?)%$/);
-    if (percentage) percentageTotal += Number(percentage[1]);
-    const style = $cell.attr('style') || '';
-    assert(
-      !(percentage && /(?:^|;)\s*width\s*:\s*\d+px/i.test(style)),
-      'Percentage layout cells must not also force a fixed pixel width',
-    );
-    if (percentage) {
-      $cell.find('img').each((___, image) => {
-        const imageStyle = $fallback(image).attr('style') || '';
-        const fixedWidth = /(?:^|;)\s*width\s*:\s*\d+px/i.test(imageStyle);
-        const fluidCap = /max-width\s*:\s*100%/i.test(imageStyle);
-        assert(
-          !(fixedWidth && !fluidCap),
-          'Images in percentage columns must be fluid or capped by the column',
-        );
-      });
-    }
+  $table.children('tbody').children('tr').each((__, row) => {
+    let percentageTotal = 0;
+    $fallback(row).children('th, td').each((___, cell) => {
+      const $cell = $fallback(cell);
+      const width = String($cell.attr('width') || '');
+      const percentage = width.match(/^(\d+(?:\.\d+)?)%$/);
+      if (percentage) percentageTotal += Number(percentage[1]);
+      const style = $cell.attr('style') || '';
+      assert(
+        !(percentage && /(?:^|;)\s*width\s*:\s*\d+px/i.test(style)),
+        'Percentage layout cells must not also force a fixed pixel width',
+      );
+      if (percentage) {
+        $cell.find('img').each((____, image) => {
+          const imageStyle = $fallback(image).attr('style') || '';
+          const fixedWidth = /(?:^|;)\s*width\s*:\s*\d+px/i.test(imageStyle);
+          const fluidCap = /max-width\s*:\s*100%/i.test(imageStyle);
+          assert(
+            !(fixedWidth && !fluidCap),
+            'Images in percentage columns must be fluid or capped by the column',
+          );
+        });
+      }
+    });
+    assert(percentageTotal <= 100.01, 'Multi-column row widths must not exceed 100%');
   });
-  assert(percentageTotal <= 100.01, 'Multi-column percentage widths must not exceed 100%');
 });
 
 assert.strictEqual(
