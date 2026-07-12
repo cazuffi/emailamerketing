@@ -65,14 +65,13 @@ function hardenButtons($) {
     const $a = $(el);
     const isOutline = $a.hasClass('button-outline-link');
     if (isOutline) {
-      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;border:0;mso-padding-alt:0');
+      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
     } else {
       $a.addClass('button-primary');
-      // Anchor stays transparent. The td (.buttonCell) provides the fill in
-      // every client — Outlook only paints anchor backgrounds around the text,
-      // which is what causes the "highlighted label" bug.
-      setStyleProp($a, 'background-color', 'transparent');
-      setStyleProp($a, 'background', 'transparent');
+      // Fill on the anchor (mobile/Gmail/Apple) AND the td (Outlook desktop).
+      // Same color, so Outlook's text-only anchor paint blends into the td.
+      setStyleProp($a, 'background-color', '#ef7800');
+      setStyleProp($a, 'background', '#ef7800');
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;color:#ffffff;border:0;mso-padding-alt:0');
       const label = ($a.children('span').length ? $a.children('span').first().text() : $a.text()).trim();
       $a.empty();
@@ -92,8 +91,8 @@ function hardenButtons($) {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ef7800');
     $cell.attr('align', 'center');
-    // Fill + Outlook padding live on the td. No real `padding` here or modern
-    // clients would double it against the anchor's own padding.
+    // The td carries the fill for Outlook desktop (bgcolor + mso-padding-alt).
+    // No real `padding` here or modern clients double it with anchor padding.
     removeStyleProp($cell, 'padding');
     ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto');
     setStyleProp($cell, 'mso-padding-alt', '14px 28px');

@@ -109,8 +109,8 @@ assert.match(
 );
 assert.match(
   getOutlookFallbackCss(),
-  /a\.button-primary\s*\{[\s\S]*?background:\s*transparent !important;/i,
-  'Outlook desktop must keep the primary anchor transparent so the td fill shows',
+  /a\.button-primary\s*\{[\s\S]*?background:\s*#ef7800 !important;/i,
+  'Outlook desktop must keep the primary anchor orange so it blends into the td fill',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
@@ -120,8 +120,25 @@ const benefitTitleCells = $('.three-up-benefits-section .three-up-title-cell');
 assert.strictEqual(benefitTitleCells.length, 3);
 benefitTitleCells.each((_, cell) => {
   assert.strictEqual($(cell).attr('height'), '42');
-  assert.strictEqual($(cell).attr('valign'), 'middle');
+  assert.strictEqual($(cell).attr('valign'), 'top');
 });
+
+// Three benefits now stack via a media-query-free fluid layout (like the dual
+// CTA), so Outlook mobile — which ignores @media — no longer keeps them cramped.
+const benefitColumns = $('.three-up-benefits-section .three-up-col');
+assert.strictEqual(benefitColumns.length, 3);
+benefitColumns.each((_, col) => {
+  const style = $(col).attr('style') || '';
+  assert.match(style, /display:inline-block/i);
+  assert.match(style, /width:100%/i);
+  assert.match(style, /max-width:190px/i);
+});
+assert.strictEqual($('.three-up-benefits-section [data-container]').length, 0);
+assert.match(
+  buildEmailHtml({ title: 'three-up ghost', modules: ['three-up-benefits'], annotate: false }),
+  /<!--\[if mso\]>[\s\S]*?<table[^>]*width="592"[\s\S]*?<td width="197"[\s\S]*?<td width="197"[\s\S]*?<td width="197"/i,
+  'Three benefits must include an Outlook desktop ghost table',
+);
 
 const dualColumns = $('.cta-dual-section .cta-dual-column');
 assert.strictEqual(dualColumns.length, 2);
@@ -224,14 +241,13 @@ assert.strictEqual((exported.match(/<v:roundrect\b/gi) || []).length, 0);
 $('.buttonCell a.button-primary').each((_, link) => {
   const linkStyle = $(link).attr('style') || '';
   assert.doesNotMatch(linkStyle, /mso-hide\s*:\s*all/i);
-  assert.doesNotMatch(linkStyle, /background-color:\s*#ef7800/i);
-  assert.match(linkStyle, /background(?:-color)?:\s*transparent/i, 'Primary anchor must be transparent so the td paints the fill');
+  assert.match(linkStyle, /background-color:\s*#ef7800/i, 'Primary anchor must be orange so mobile/Gmail/Apple render a filled button');
   assert.strictEqual($(link).children('span').length, 1);
   assert.match($(link).children('span').attr('style') || '', /color:#ffffff/i);
   assert.doesNotMatch($(link).children('span').attr('style') || '', /background-color/i);
   const cellStyle = $(link).closest('.buttonCell').attr('style') || '';
   assert.match(cellStyle, /mso-padding-alt:\s*14px/i);
-  assert.match(cellStyle, /background-color:\s*#ef7800/i, 'Primary button fill must live on the td');
+  assert.match(cellStyle, /background-color:\s*#ef7800/i, 'Primary button fill must also live on the td for Outlook desktop');
   assert.doesNotMatch(cellStyle, /(?:^|;)\s*padding:\s*14px 28px/i, 'td must not carry real padding (doubles modern anchor padding)');
   assert.match($(link).closest('.buttonCell').attr('bgcolor'), /#ef7800/i);
 });
@@ -256,7 +272,6 @@ const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([
   'comparison-split',
   'cta-band-grey',
-  'three-up-benefits',
 ]);
 const allModulesExport = buildEmailHtml({
   title: 'All-modules audit',

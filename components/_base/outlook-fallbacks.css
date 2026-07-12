@@ -92,9 +92,9 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
-/* Outlook desktop: the td paints the fill (bgcolor + mso-padding-alt).
-   Anchors and spans stay transparent so Outlook cannot paint an orange
-   background around the text only (the "highlighted label" bug). */
+/* Outlook desktop: the td paints the fill (bgcolor + mso-padding-alt). The
+   anchor keeps the same orange so Outlook's text-only anchor paint blends
+   into the td instead of looking like a highlight on a white button. */
 td.buttonCell {
   background: #ef7800 !important;
   background-color: #ef7800 !important;
@@ -110,8 +110,8 @@ td.buttonCell a span,
 a.buttonClass.button-primary,
 a.button-primary {
   color: #ffffff !important;
-  background: transparent !important;
-  background-color: transparent !important;
+  background: #ef7800 !important;
+  background-color: #ef7800 !important;
   mso-padding-alt: 0 !important;
 }
 
@@ -129,8 +129,8 @@ td.button-outline-cell a,
 td.button-outline-cell a span,
 a.button-outline-link {
   color: #ef7800 !important;
-  background: transparent !important;
-  background-color: transparent !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   mso-padding-alt: 0 !important;
 }
 
