@@ -197,18 +197,43 @@ img.header-logo-img--compact {
   vertical-align: middle !important;
 }
 
+.header-standard-section .header-logo-column,
+.header-standard-section .header-tagline-column {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.header-standard-section .header-logo-column,
+.header-standard-section .header-logo-column [data-editorblocktype="Image"],
+.header-standard-section .header-logo-column .imageWrapper {
+  text-align: center !important;
+}
+
+.header-standard-section .header-logo-column img {
+  display: block;
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .header-standard-section .header-tagline-cell {
   vertical-align: middle !important;
-  text-align: right !important;
+  text-align: center !important;
 }
 
 .header-standard-section .header-tagline-cell .inner {
-  text-align: right !important;
+  text-align: center !important;
 }
 
 .header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
-  text-align: right;
+  text-align: center;
   width: 100%;
+}
+
+.header-standard-section .header-tagline {
+  text-align: center !important;
 }
 
 .orange-footer .footer-band-content,
@@ -220,6 +245,21 @@ img.header-logo-img--compact {
 }
 
 @media only screen and (min-width: 641px) {
+  .header-standard-section .header-logo-column,
+  .header-standard-section .header-tagline-column {
+    display: table-cell !important;
+    width: 50% !important;
+    max-width: 50% !important;
+  }
+  .header-standard-section .header-logo-column,
+  .header-standard-section .header-logo-column [data-editorblocktype="Image"],
+  .header-standard-section .header-logo-column .imageWrapper {
+    text-align: left !important;
+  }
+  .header-standard-section .header-logo-column img {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
   .header-standard-section .header-tagline-cell,
   .header-standard-section .header-tagline-cell .inner,
   .header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
@@ -1391,6 +1431,30 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
+.header-standard-section .header-logo-column,
+.header-standard-section .header-tagline-column {
+  display: table-cell !important;
+  width: 50% !important;
+  max-width: 50% !important;
+}
+
+.header-standard-section .header-logo-column,
+.header-standard-section .header-logo-column [data-editorblocktype="Image"],
+.header-standard-section .header-logo-column .imageWrapper {
+  text-align: left !important;
+}
+
+.header-standard-section .header-logo-column img {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.header-standard-section .header-tagline-cell,
+.header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
+.header-standard-section .header-tagline {
+  text-align: right !important;
+}
+
 </style>
 <![endif]-->
 
@@ -1402,8 +1466,8 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 <table class="outer" align="center" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt" role="presentation" border="0"><tbody><tr>
 <td class="section-pad-tight" style="padding:16px 24px;" role="presentation">
 <table class="header-layout-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt" border="0"><tbody><tr>
-<td class="header-logo-column header-logo-cell" width="50%" valign="middle" style="vertical-align:middle;width:50%;">
-<div data-editorblocktype="Image"><div align="left" class="imageWrapper"><img class="header-logo-img" src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-b4cb-7c1e52725572/digitalassets/images/fe07e416-099a-f011-b4cb-7c1e52725572?ts=638943992386672616" width="200" style="max-width:200px;width:100%;height:auto;display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" alt="Weidmuller" height="23"></div></div>
+<td class="header-logo-column header-logo-cell" width="50%" valign="middle" align="center" style="vertical-align:middle;width:50%;text-align:center;">
+<div data-editorblocktype="Image" align="center" style="text-align:center;"><div align="center" class="imageWrapper"><img class="header-logo-img" src="https://assets-eur.mkt.dynamics.com/efac8d96-204d-f011-b4cb-7c1e52725572/digitalassets/images/fe07e416-099a-f011-b4cb-7c1e52725572?ts=638943992386672616" width="200" style="max-width:200px;width:100%;height:auto;display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" alt="Weidmuller" height="23"></div></div>
 </td>
 <td class="header-tagline-column header-tagline-cell" width="50%" valign="middle" align="right" style="width:50%;text-align:right;vertical-align:middle">
 <div data-editorblocktype="Text" align="right" style="text-align:right;width:100%;">
