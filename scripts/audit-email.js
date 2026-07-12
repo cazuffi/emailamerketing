@@ -66,6 +66,7 @@ dualCells.each((_, cell) => {
 
 const dualTables = $('.cta-dual-section .buttonTable, .cta-dual-section .button-outline-table');
 dualTables.each((_, table) => {
+  assert.strictEqual($(table).attr('width'), '100%');
   assert.strictEqual($(table).attr('height'), '52');
   assert.match($(table).attr('style') || '', /table-layout:fixed/i);
 });
@@ -75,7 +76,7 @@ assert.strictEqual(dualLinks.length, 2);
 dualLinks.each((_, link) => {
   const style = $(link).attr('style') || '';
   assert.match(style, /padding:14px 28px/i);
-  assert.match(style, /width:100%/i);
+  assert.match(style, /width:auto/i);
   assert.match(style, /height:48px/i);
 });
 assert.match(
@@ -89,10 +90,12 @@ assert.match(
   'Mobile outline CTA must use auto width to keep padding inside the email',
 );
 
-const comparisonTitle = $('.comparison-split-section .comparison-title');
+const comparisonTitle = $('.comparison-heading-section .comparison-title');
 assert.strictEqual(comparisonTitle.attr('align'), 'left');
 assert.match(comparisonTitle.attr('style') || '', /text-align:left/i);
-assert.strictEqual($('.comparison-split-section .comparison-section-cell').attr('align'), 'left');
+assert.strictEqual($('.comparison-heading-section .comparison-heading-cell').attr('align'), 'left');
+assert.strictEqual($('.comparison-heading-section.columns-equal-class').length, 0);
+assert.strictEqual($('.comparison-heading-section + .comparison-split-section').length, 1);
 
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');

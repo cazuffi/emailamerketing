@@ -93,7 +93,7 @@ a.button-outline-link,
 }
 .cta-dual-section .buttonCell,
 .cta-dual-section .button-outline-cell {
-  width: 100%;
+  width: auto;
   height: 52px;
   border: 2px solid #ef7800 !important;
   box-sizing: border-box;
@@ -108,7 +108,7 @@ a.button-outline-link,
 .cta-dual-section a.buttonClass.button-primary,
 .cta-dual-section a.button-outline-link {
   padding: 14px 28px !important;
-  width: 100%;
+  width: auto;
   box-sizing: border-box;
   line-height: 1.4;
   height: 48px;

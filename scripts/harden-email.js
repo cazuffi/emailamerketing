@@ -110,6 +110,7 @@ function hardenButtons($) {
     ensureStyle($wrap, 'text-align:center;display:block;width:100%');
     $wrap.find('.buttonTable, .button-outline-table').each((__, table) => {
       const $table = $(table);
+      $table.attr('width', '100%');
       $table.attr('height', '52');
       ensureStyle($table, 'width:100%');
       setStyleProp($table, 'height', '52px');
@@ -117,7 +118,7 @@ function hardenButtons($) {
       $table.find('.buttonCell, .button-outline-cell').each((___, cell) => {
         const $cell = $(cell);
         $cell.attr('height', '52');
-        setStyleProp($cell, 'width', '100%');
+        setStyleProp($cell, 'width', 'auto');
         setStyleProp($cell, 'height', '52px');
         setStyleProp($cell, 'border', '2px solid #ef7800');
         setStyleProp($cell, 'box-sizing', 'border-box');
@@ -130,7 +131,7 @@ function hardenButtons($) {
       $table.find('a.buttonClass, a.button-outline-link').each((___, link) => {
         const $link = $(link);
         setStyleProp($link, 'display', 'block');
-        setStyleProp($link, 'width', '100%');
+        setStyleProp($link, 'width', 'auto');
         setStyleProp($link, 'padding', '14px 28px');
         setStyleProp($link, 'box-sizing', 'border-box');
         setStyleProp($link, 'height', '48px');
