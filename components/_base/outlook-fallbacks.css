@@ -108,3 +108,27 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   line-height: 28px !important;
   mso-line-height-rule: exactly;
 }
+
+.header-standard-section .header-logo-column,
+.header-standard-section .header-tagline-column {
+  display: table-cell !important;
+  width: 50% !important;
+  max-width: 50% !important;
+}
+
+.header-standard-section .header-logo-column,
+.header-standard-section .header-logo-column [data-editorblocktype="Image"],
+.header-standard-section .header-logo-column .imageWrapper {
+  text-align: left !important;
+}
+
+.header-standard-section .header-logo-column img {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.header-standard-section .header-tagline-cell,
+.header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
+.header-standard-section .header-tagline {
+  text-align: right !important;
+}

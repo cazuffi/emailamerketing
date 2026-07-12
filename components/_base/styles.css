@@ -170,18 +170,43 @@ img.header-logo-img--compact {
   vertical-align: middle !important;
 }
 
+.header-standard-section .header-logo-column,
+.header-standard-section .header-tagline-column {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.header-standard-section .header-logo-column,
+.header-standard-section .header-logo-column [data-editorblocktype="Image"],
+.header-standard-section .header-logo-column .imageWrapper {
+  text-align: center !important;
+}
+
+.header-standard-section .header-logo-column img {
+  display: block;
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .header-standard-section .header-tagline-cell {
   vertical-align: middle !important;
-  text-align: right !important;
+  text-align: center !important;
 }
 
 .header-standard-section .header-tagline-cell .inner {
-  text-align: right !important;
+  text-align: center !important;
 }
 
 .header-standard-section .header-tagline-cell [data-editorblocktype="Text"] {
-  text-align: right;
+  text-align: center;
   width: 100%;
+}
+
+.header-standard-section .header-tagline {
+  text-align: center !important;
 }
 
 .orange-footer .footer-band-content,
@@ -193,6 +218,21 @@ img.header-logo-img--compact {
 }
 
 @media only screen and (min-width: 641px) {
+  .header-standard-section .header-logo-column,
+  .header-standard-section .header-tagline-column {
+    display: table-cell !important;
+    width: 50% !important;
+    max-width: 50% !important;
+  }
+  .header-standard-section .header-logo-column,
+  .header-standard-section .header-logo-column [data-editorblocktype="Image"],
+  .header-standard-section .header-logo-column .imageWrapper {
+    text-align: left !important;
+  }
+  .header-standard-section .header-logo-column img {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
   .header-standard-section .header-tagline-cell,
   .header-standard-section .header-tagline-cell .inner,
   .header-standard-section .header-tagline-cell [data-editorblocktype="Text"],

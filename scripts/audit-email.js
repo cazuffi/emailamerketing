@@ -21,6 +21,10 @@ const sendPreview = buildEmailHtml({
   previewSample: false,
   previewOutlookSim: false,
 });
+const noMediaPreview = buildEmailHtml({
+  ...options,
+  previewCssOff: true,
+});
 
 assert.strictEqual(
   sendPreview,
@@ -38,6 +42,8 @@ assert.strictEqual($('.header-standard-section .containerWrapper').length, 0);
 assert.strictEqual($('.header-standard-section .tbContainer, .header-standard-section .columnContainer').length, 0);
 assert.strictEqual($('.header-standard-section .header-layout-table').length, 1);
 const taglineCell = $('.header-standard-section .header-tagline-cell');
+const logoCell = $('.header-standard-section .header-logo-cell');
+assert.strictEqual(logoCell.attr('align'), 'center');
 assert.strictEqual(taglineCell.attr('valign'), 'middle');
 assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
 assert.match(
@@ -49,6 +55,16 @@ assert.match(
   exported,
   /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
   'Mobile header logo wrappers must center across the email',
+);
+assert.match(
+  noMediaPreview,
+  /\.header-standard-section \.header-logo-column,\s*\.header-standard-section \.header-tagline-column\s*\{[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;/i,
+  'No-media fallback must stack header columns at full width',
+);
+assert.match(
+  noMediaPreview,
+  /\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  'No-media fallback must center the logo across the email',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
