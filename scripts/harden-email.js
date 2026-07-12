@@ -438,6 +438,22 @@ function hardenFooterAlignment($) {
   });
 }
 
+// Dynamics expands an inline `background:` shorthand into
+// `background-image:initial; background-position:initial; …` and drops the
+// color. It leaves the `background-color` longhand untouched. Convert any
+// solid-color shorthand to the longhand so no element loses its fill on send.
+function normalizeInlineBackgrounds($) {
+  $('[style*="background:"]').each((_, el) => {
+    const $el = $(el);
+    const style = $el.attr('style') || '';
+    const next = style.replace(
+      /(^|;)\s*background\s*:\s*(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))\s*(!important)?\s*(?=;|$)/gi,
+      (_m, sep, color, imp) => `${sep}background-color:${color}${imp ? ` ${imp}` : ''}`,
+    );
+    if (next !== style) $el.attr('style', next);
+  });
+}
+
 function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const $ = cheerio.load(html, { xml: false }, false);
@@ -451,6 +467,7 @@ function hardenEmailHtml(html) {
   hardenD365Containers($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
+  normalizeInlineBackgrounds($);
   return $.html();
 }
 
@@ -538,6 +555,7 @@ function sanitizeExportHtml(html) {
   hardenButtons($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
+  normalizeInlineBackgrounds($);
   return flattenOutlookConditionals($.html());
 }
 

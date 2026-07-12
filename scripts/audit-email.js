@@ -253,6 +253,16 @@ assert.strictEqual(
 );
 assert($('.buttonWrapper .buttonTable .buttonCell').length > 0, 'Button table must survive export');
 
+// No element may export a solid-color `background:` shorthand — Dynamics expands
+// it to `background-image:initial…` and drops the fill. Use background-color.
+$('[style*="background:"]').each((_, el) => {
+  assert.doesNotMatch(
+    $(el).attr('style') || '',
+    /(^|;)\s*background\s*:\s*(#[0-9a-fA-F]{3,8}|rgba?\()/i,
+    'Inline styles must use background-color, not the background shorthand',
+  );
+});
+
 $('.buttonCell a.button-primary').each((_, link) => {
   const linkStyle = $(link).attr('style') || '';
   assert.doesNotMatch(linkStyle, /mso-hide\s*:\s*all/i);
