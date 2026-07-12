@@ -85,6 +85,9 @@ a.button-outline-link,
 }
 
 /* Dual CTA — equal-width, equal-height button boxes side by side */
+.cta-dual-section .cta-dual-column {
+  text-align: center;
+}
 .cta-dual-section .buttonTable,
 .cta-dual-section .button-outline-table {
   width: 100%;
@@ -221,6 +224,9 @@ img.header-logo-img--compact {
 }
 
 @media only screen and (min-width: 641px) {
+  .cta-dual-section .cta-dual-outline {
+    padding-top: 0 !important;
+  }
   .header-standard-section .header-logo-column,
   .header-standard-section .header-tagline-column {
     display: table-cell !important;

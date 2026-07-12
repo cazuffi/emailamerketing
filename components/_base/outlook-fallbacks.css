@@ -128,4 +128,10 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 .header-standard-section .header-tagline {
   text-align: right !important;
 }
+
+.cta-dual-section .cta-dual-column {
+  width: auto !important;
+  max-width: none !important;
+  padding: 0 6px !important;
+}
 /* OUTLOOK_DESKTOP_STRUCTURE_END */

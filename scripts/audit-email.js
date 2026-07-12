@@ -89,11 +89,20 @@ assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');
 
-const dualColumns = $('.cta-dual-section [data-container="true"]');
+const dualColumns = $('.cta-dual-section .cta-dual-column');
 assert.strictEqual(dualColumns.length, 2);
 dualColumns.each((_, cell) => {
-  assert.strictEqual($(cell).attr('data-container-width'), '50.00');
+  const style = $(cell).attr('style') || '';
+  assert.match(style, /display:inline-block/i);
+  assert.match(style, /width:100%/i);
+  assert.match(style, /max-width:296px/i);
 });
+assert.strictEqual($('.cta-dual-section [data-container]').length, 0);
+assert.match(
+  exported,
+  /<!--\[if mso\]>[\s\S]*?<table[^>]*width="592"[\s\S]*?<td width="296"[\s\S]*?<td width="296"/i,
+  'Dual CTA must include an Outlook desktop ghost table',
+);
 
 const dualCells = $('.cta-dual-section .buttonCell, .cta-dual-section .button-outline-cell');
 assert.strictEqual(dualCells.length, 2);
@@ -174,7 +183,6 @@ const allModuleIds = loadManifest().modules.map((module) => module.id);
 const editableLayoutModules = new Set([
   'comparison-split',
   'cta-band-grey',
-  'cta-dual',
   'three-up-benefits',
 ]);
 const allModulesExport = buildEmailHtml({
