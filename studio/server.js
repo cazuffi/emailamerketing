@@ -63,6 +63,7 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
     const annotate = req.query.annotate === '1';
     const previewSample = req.query.previewSample === '1';
     const previewOutlookSim = req.query.previewOutlookSim === '1';
+    const previewCssOff = req.query.previewCssOff === '1';
     const libraryPreview = req.query.libraryPreview !== '0';
     const instanceUid = req.query.instanceUid || '';
     const instanceIndex = Number(req.query.instanceIndex || 0);
@@ -74,6 +75,7 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
       libraryPreview,
       previewSample,
       previewOutlookSim,
+      previewCssOff,
       instanceMeta: [{ uid: instanceUid, index: instanceIndex }],
     });
     res.json({ html, id: req.params.id });
@@ -100,6 +102,7 @@ app.post('/api/build', requireAuth, (req, res) => {
       annotate = false,
       previewSample = false,
       previewOutlookSim = false,
+      previewCssOff = false,
       instanceMeta = [],
     } = req.body || {};
     if (!Array.isArray(modules)) {
@@ -112,6 +115,7 @@ app.post('/api/build', requireAuth, (req, res) => {
       annotate,
       previewSample,
       previewOutlookSim,
+      previewCssOff,
       instanceMeta,
     });
     res.json({ html });

@@ -27,5 +27,7 @@ Follow `docs/D365_EMAIL_GUIDELINES.md` when creating or changing email modules.
   Outlook may ignore `box-sizing`.
 - Give fixed images matching HTML and inline widths plus alt text.
 - Keep Send Preview, Copy HTML, and CLI build output on the same hardening path.
+- Verify the Send preview with **No media CSS** enabled; critical containment
+  and alignment must not depend on responsive media queries.
 - Run `npm test` and `npm run build` after email markup or CSS changes.
 - Add an assertion to `scripts/audit-email.js` for every rendering regression.

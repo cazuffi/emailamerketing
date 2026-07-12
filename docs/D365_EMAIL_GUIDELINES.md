@@ -117,10 +117,18 @@ Before considering a new module complete:
 2. Run `npm run build`.
 3. Check Desktop Send preview.
 4. Check Mobile Send preview.
-5. Copy HTML directly into a fresh Dynamics email.
-6. Send tests to Outlook and Gmail.
-7. Confirm the layout remains usable when stacking does not activate.
-8. Add a regression assertion for every new rendering bug fixed.
+5. In Send preview, enable **No media CSS** at both widths.
+6. Confirm the fallback remains readable, contained, and free of horizontal
+   scrolling. This simulates Dynamics or an email client ignoring responsive
+   media queries; it does not change copied/exported HTML.
+7. Copy HTML directly into a fresh Dynamics email.
+8. Send tests to Outlook and Gmail.
+9. Confirm the layout remains usable when stacking does not activate.
+10. Add a regression assertion for every new rendering bug fixed.
+
+`npm test` also builds all modules with media queries removed and rejects known
+source-level overflow patterns such as a padded button anchor with inline
+`width:100%`.
 
 ## Canonical examples
 

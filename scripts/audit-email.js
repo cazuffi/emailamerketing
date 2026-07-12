@@ -139,6 +139,14 @@ const allModulesExport = buildEmailHtml({
   annotate: false,
 });
 const $all = cheerio.load(allModulesExport, { xml: false }, false);
+const allModulesNoMedia = buildEmailHtml({
+  title: 'All-modules fallback audit',
+  modules: allModuleIds,
+  overrides: {},
+  annotate: false,
+  previewCssOff: true,
+});
+const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
 
 assert.strictEqual(
   $all('[data-studio-field], [data-studio-label], [data-studio-module], [data-studio-repeat]').length,
@@ -146,6 +154,7 @@ assert.strictEqual(
   'Studio metadata must not leak from any module',
 );
 assert(!/\[if !mso\]/i.test(allModulesExport), 'Non-MSO wrappers must not survive export');
+assert(!/@media\b/i.test(allModulesNoMedia), 'Compatibility preview must remove every media query');
 
 $all('img').each((_, image) => {
   assert.notStrictEqual($all(image).attr('alt'), undefined, 'Every exported image must have alt text');
@@ -153,6 +162,18 @@ $all('img').each((_, image) => {
 
 $all('a.buttonClass').each((_, link) => {
   assert($all(link).hasClass('button-primary'), 'Every exported buttonClass link must be primary');
+});
+
+$fallback('a.buttonClass, a.button-outline-link').each((_, link) => {
+  const style = $fallback(link).attr('style') || '';
+  const isFullWidth = /(?:^|;)\s*width\s*:\s*100%/i.test(style);
+  const hasHorizontalPadding =
+    /(?:^|;)\s*padding\s*:\s*(?!0(?:px)?(?:\s|;|$))/i.test(style) ||
+    /(?:^|;)\s*padding-(?:left|right)\s*:\s*(?!0(?:px)?(?:\s|;|$))/i.test(style);
+  assert(
+    !(isFullWidth && hasHorizontalPadding),
+    'Fallback buttons must not combine inline width:100% with horizontal padding',
+  );
 });
 
 $all('[data-container="true"]').each((_, cell) => {
@@ -180,3 +201,4 @@ console.log('✓ dual CTA dimensions are equal');
 console.log('✓ specs table cells are not D365 layout containers');
 console.log('✓ primary button classes are normalized');
 console.log(`✓ all ${allModuleIds.length} modules pass export safeguards`);
+console.log('✓ no-media-query fallback remains structurally safe');

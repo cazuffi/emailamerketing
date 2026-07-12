@@ -44,11 +44,83 @@ function applyOutlookSimStyle(html) {
   return `${block}${html}`;
 }
 
-function preparePreviewHtml(html, { sampleData = false, outlookSim = false, libraryPreview = false } = {}) {
+function findAtRuleEnd(css, openBraceIndex) {
+  let depth = 1;
+  let quote = '';
+  let inComment = false;
+  for (let i = openBraceIndex + 1; i < css.length; i += 1) {
+    const char = css[i];
+    const next = css[i + 1];
+    if (inComment) {
+      if (char === '*' && next === '/') {
+        inComment = false;
+        i += 1;
+      }
+      continue;
+    }
+    if (!quote && char === '/' && next === '*') {
+      inComment = true;
+      i += 1;
+      continue;
+    }
+    if (quote) {
+      if (char === '\\') i += 1;
+      else if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '{') depth += 1;
+    if (char === '}') {
+      depth -= 1;
+      if (depth === 0) return i + 1;
+    }
+  }
+  return -1;
+}
+
+function removeMediaQueriesFromCss(css) {
+  let output = '';
+  let cursor = 0;
+  const mediaPattern = /@media\b/gi;
+  let match;
+  while ((match = mediaPattern.exec(css))) {
+    output += css.slice(cursor, match.index);
+    const openBrace = css.indexOf('{', mediaPattern.lastIndex);
+    if (openBrace === -1) {
+      cursor = match.index;
+      break;
+    }
+    const end = findAtRuleEnd(css, openBrace);
+    if (end === -1) {
+      cursor = match.index;
+      break;
+    }
+    cursor = end;
+    mediaPattern.lastIndex = end;
+  }
+  return output + css.slice(cursor);
+}
+
+function disableMediaQueries(html) {
+  if (!html || typeof html !== 'string') return html;
+  return html.replace(
+    /(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi,
+    (_, open, css, close) => `${open}${removeMediaQueriesFromCss(css)}${close}`,
+  );
+}
+
+function preparePreviewHtml(
+  html,
+  { sampleData = false, outlookSim = false, libraryPreview = false, mediaQueriesDisabled = false } = {},
+) {
   let out = html;
   if (sampleData) out = applyPreviewSampleData(out);
   if (libraryPreview) out = applyLibraryPreviewStyle(out);
   if (outlookSim) out = applyOutlookSimStyle(out);
+  if (mediaQueriesDisabled) out = disableMediaQueries(out);
   return out;
 }
 
@@ -85,6 +157,8 @@ module.exports = {
   applyPreviewSampleData,
   applyOutlookSimStyle,
   applyLibraryPreviewStyle,
+  disableMediaQueries,
+  removeMediaQueriesFromCss,
   preparePreviewHtml,
   getOutlookFallbackCss,
   buildOutlookSimStyle,

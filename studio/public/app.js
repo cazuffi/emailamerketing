@@ -8,6 +8,7 @@ const state = {
   previewScope: 'full',
   previewMode: 'edit',
   previewOutlookSim: false,
+  previewCssOff: false,
   previewActiveField: null,
   campaignId: null,
   campaignStatus: 'draft',
@@ -845,7 +846,18 @@ $$('[data-preview-mode]').forEach((btn) => {
 
 $('#preview-outlook-sim')?.addEventListener('change', (e) => {
   state.previewOutlookSim = e.target.checked;
-  if (state.previewMode === 'send') scheduleBuild();
+  if (state.previewMode === 'send') {
+    updatePreviewModeUI();
+    scheduleBuild();
+  }
+});
+
+$('#preview-css-off')?.addEventListener('change', (e) => {
+  state.previewCssOff = e.target.checked;
+  if (state.previewMode === 'send') {
+    updatePreviewModeUI();
+    scheduleBuild();
+  }
 });
 
 $$('.panel-tab').forEach((tab) => {
@@ -1318,12 +1330,19 @@ function updatePreviewModeUI() {
     btn.classList.toggle('active', btn.dataset.previewMode === state.previewMode);
   });
   $('#preview-outlook-wrap')?.classList.toggle('hidden', !isSend);
+  $('#preview-css-off-wrap')?.classList.toggle('hidden', !isSend);
   $('#preview-frame-wrap')?.classList.toggle('send-preview-mode', isSend);
   const hint = $('#preview-hint');
   if (hint) {
-    hint.textContent = isSend
-      ? 'Send preview — same HTML as Copy HTML · 1:1 size · D365 test send is still the final check'
-      : 'Edit preview — click text to edit · Desktop scales to fit your screen';
+    if (!isSend) {
+      hint.textContent = 'Edit preview — click text to edit · Desktop scales to fit your screen';
+    } else if (state.previewCssOff) {
+      hint.textContent =
+        'Compatibility preview — media queries disabled · layout must stay readable and contained';
+    } else {
+      hint.textContent =
+        'Send preview — same HTML as Copy HTML · 1:1 size · D365 test send is still the final check';
+    }
   }
 }
 
@@ -1345,6 +1364,7 @@ function updatePreviewScale() {
     if (label) {
       const parts = [nativeWidth === MOBILE_PREVIEW_WIDTH ? '375px' : '640px', '1:1'];
       if (state.previewOutlookSim) parts.push('Outlook');
+      if (state.previewCssOff) parts.push('No media CSS');
       label.textContent = `Send · ${parts.join(' · ')}`;
     }
     return;
@@ -1434,6 +1454,7 @@ async function buildPreview() {
       });
       if (isSendPreview) {
         if (state.previewOutlookSim) params.set('previewOutlookSim', '1');
+        if (state.previewCssOff) params.set('previewCssOff', '1');
       }
       if (Object.keys(overrides).length) {
         params.set('overrides', JSON.stringify(overrides));
@@ -1451,6 +1472,7 @@ async function buildPreview() {
           annotate,
           previewSample: false,
           previewOutlookSim: isSendPreview && state.previewOutlookSim,
+          previewCssOff: isSendPreview && state.previewCssOff,
           instanceMeta: state.instances.map((i) => ({ uid: i.uid, moduleId: i.moduleId })),
         }),
       });
