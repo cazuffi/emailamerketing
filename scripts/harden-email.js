@@ -107,6 +107,24 @@ function hardenButtons($) {
     });
   });
 
+  $('.compact-button-column .buttonWrapper').each((_, el) => {
+    const $wrap = $(el);
+    $wrap.find('.buttonTable, .button-outline-table').each((__, table) => {
+      const $table = $(table);
+      $table.attr('width', '100%');
+      setStyleProp($table, 'width', '100%');
+      setStyleProp($table, 'table-layout', 'fixed');
+    });
+    $wrap.find('a.buttonClass, a.button-outline-link').each((__, link) => {
+      const $link = $(link);
+      setStyleProp($link, 'display', 'block');
+      setStyleProp($link, 'width', 'auto');
+      setStyleProp($link, 'padding', '14px 12px');
+      setStyleProp($link, 'white-space', 'normal');
+      setStyleProp($link, 'overflow-wrap', 'break-word');
+    });
+  });
+
   $('.cta-dual-section .containerWrapper').each((_, table) => {
     setStyleProp($(table), 'table-layout', 'fixed');
   });

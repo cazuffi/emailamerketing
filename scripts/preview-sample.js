@@ -90,13 +90,11 @@ function removeMediaQueriesFromCss(css) {
     output += css.slice(cursor, match.index);
     const openBrace = css.indexOf('{', mediaPattern.lastIndex);
     if (openBrace === -1) {
-      cursor = match.index;
-      break;
+      throw new Error('Malformed @media rule: missing opening brace');
     }
     const end = findAtRuleEnd(css, openBrace);
     if (end === -1) {
-      cursor = match.index;
-      break;
+      throw new Error('Malformed @media rule: missing closing brace');
     }
     cursor = end;
     mediaPattern.lastIndex = end;
