@@ -49,13 +49,37 @@ The orange footer is also a plain single-column presentation table.
 - Check the 641px desktop preview and 375px mobile preview, then send a Dynamics
   test email.
 
+## What Dynamics does to pasted HTML (verified from a real send)
+
+When you paste the exported HTML into a Dynamics content editor and send, Dynamics
+reprocesses it. Confirmed transformations:
+
+- **Flattens `data-editorblocktype="Button"` blocks** into a bare `<a>`, deleting
+  the surrounding bulletproof table (and the `<td>` fill Outlook desktop needs).
+  The export step now strips this attribute so the table survives. Never rely on
+  the `Button` block type to preserve markup.
+- **Mangles the inline `background:` shorthand** into `background-image:initial…`
+  and drops the color. Always use the `background-color` longhand inline. The
+  export normalizes this automatically and the audit fails on regressions.
+- **Preserves** the `<style>` block, `background-color` longhand, `bgcolor`
+  attributes, plain links (with tracking added), MSO conditional comments/ghost
+  tables, and normal tables (comparison, divider, footer).
+- Wraps every block in a fixed-pixel-width flex `data-container` div; adds
+  `columns-equal-class` and `display:block` to sections; normalizes image
+  `max-width` to 100%. These are non-destructive — the mobile CSS forces
+  `[data-container]` wrappers fluid so they cannot overflow.
+
 ## Buttons
 
-- Use a table cell for the background and border.
+- Use a table cell for the background and border; put the fill (`bgcolor` +
+  `background-color`) and `mso-padding-alt` on the `<td class="buttonCell">`.
+- Never use the `background:` shorthand on the anchor — only `background-color`.
+- The export strips `data-editorblocktype="Button"` so Dynamics keeps the table.
 - Keep the anchor visible without MSO conditional wrappers; Dynamics may strip
   the comments and leave only a label.
+- In the MSO block the anchor is forced `display:inline` so a block anchor cannot
+  cover the td fill (Word does not paint block-anchor backgrounds).
 - Use `button-primary` or `button-outline-link` consistently.
-- Put `bgcolor`, `align`, border, and fallback color on the table cell.
 - Allow labels to wrap with `white-space:normal`.
 - Avoid `width:100%` plus horizontal padding on an anchor. Outlook can calculate
   that as wider than its cell because it ignores `box-sizing`.

@@ -22,7 +22,10 @@ Follow `docs/D365_EMAIL_GUIDELINES.md` when creating or changing email modules.
   designer-column hooks.
 - Ensure desktop fallbacks remain readable when mobile media queries are ignored.
 - Build buttons from table cells and visible anchors. Do not hide anchors in
-  non-MSO conditionals.
+  non-MSO conditionals. The export strips `data-editorblocktype="Button"` so
+  Dynamics cannot flatten the table into a background-less anchor.
+- Never use the inline `background:` shorthand — Dynamics expands it to
+  `background-image:initial…` and drops the color. Use `background-color` only.
 - Do not combine an explicit `width:100%` anchor with horizontal padding where
   Outlook may ignore `box-sizing`.
 - Give fixed images matching HTML and inline widths plus alt text.
