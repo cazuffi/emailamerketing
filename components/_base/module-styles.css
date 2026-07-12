@@ -150,7 +150,7 @@
   max-width: 100%;
 }
 
-.article-thumb { vertical-align: top; width: 120px; }
+.article-thumb { vertical-align: top; width: 22%; }
 .article-body { vertical-align: top; padding-left: 16px; }
 
 .play-badge {
@@ -352,7 +352,7 @@
   min-width: 40px;
 }
 
-.team-photo { vertical-align: top; width: 96px; }
+.team-photo { vertical-align: top; width: 18%; }
 .team-info { vertical-align: top; padding-left: 16px; }
 
 .social-link {

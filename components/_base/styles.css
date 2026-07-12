@@ -88,13 +88,11 @@ a.button-outline-link,
 .cta-dual-section .buttonTable,
 .cta-dual-section .button-outline-table {
   width: 100%;
-  height: 52px;
   table-layout: fixed;
 }
 .cta-dual-section .buttonCell,
 .cta-dual-section .button-outline-cell {
   width: auto;
-  height: 52px;
   border: 2px solid #ef7800 !important;
   box-sizing: border-box;
   vertical-align: middle;
@@ -111,7 +109,6 @@ a.button-outline-link,
   width: auto;
   box-sizing: border-box;
   line-height: 1.4;
-  height: 48px;
   min-height: 48px;
 }
 
