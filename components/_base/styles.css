@@ -95,13 +95,16 @@ a.button-outline-link,
 }
 .cta-dual-section .buttonCell,
 .cta-dual-section .button-outline-cell {
-  width: auto;
-  border: 2px solid #ef7800 !important;
+  width: 100%;
   box-sizing: border-box;
   vertical-align: middle;
 }
 .cta-dual-section .buttonCell {
   background-color: #ef7800 !important;
+  border: 1px solid #ef7800 !important;
+}
+.cta-dual-section .button-outline-cell {
+  border: 2px solid #ef7800 !important;
 }
 .cta-dual-section .button-outline-cell {
   background-color: #ffffff !important;

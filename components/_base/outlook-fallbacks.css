@@ -92,30 +92,50 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
+/* Outlook desktop ignores @media rules — paint fills on td, not anchor. */
+td.buttonCell,
+td.button-outline-cell {
+  width: 100% !important;
+}
+
 td.buttonCell {
+  width: 100% !important;
   background-color: #ef7800 !important;
+  border: 1px solid #ef7800 !important;
   border-color: #ef7800 !important;
   mso-shading: #ef7800;
   mso-pattern: auto;
+  mso-padding-alt: 14px 28px;
 }
 
 td.buttonCell a,
 td.buttonCell a span {
   color: #ffffff !important;
   background-color: #ef7800 !important;
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+  mso-padding-alt: 0 !important;
 }
 
 td.button-outline-cell {
+  width: 100% !important;
   background-color: #ffffff !important;
+  border: 2px solid #ef7800 !important;
   border-color: #ef7800 !important;
   mso-shading: #ffffff;
   mso-pattern: auto;
+  mso-padding-alt: 14px 28px;
 }
 
 td.button-outline-cell a,
 td.button-outline-cell a span {
   color: #ef7800 !important;
   background-color: #ffffff !important;
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+  mso-padding-alt: 0 !important;
 }
 
 .footer-band-title {

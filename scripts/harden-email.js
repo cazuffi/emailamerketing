@@ -77,14 +77,15 @@ function hardenButtons($) {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ef7800');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto');
+    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto;width:100%');
     setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
   $('.button-outline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ffffff');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'mso-padding-alt:0;border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto');
+    ensureStyle($cell, 'border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto;width:100%');
+    setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
 
   $('.buttonWrapper[align="right"]').each((_, el) => {
@@ -158,13 +159,16 @@ function hardenButtons($) {
       setStyleProp($table, 'table-layout', 'fixed');
       $table.find('.buttonCell, .button-outline-cell').each((___, cell) => {
         const $cell = $(cell);
-        setStyleProp($cell, 'width', 'auto');
-        setStyleProp($cell, 'border', '2px solid #ef7800');
+        setStyleProp($cell, 'width', '100%');
         setStyleProp($cell, 'box-sizing', 'border-box');
         if ($cell.hasClass('buttonCell')) {
           setStyleProp($cell, 'background-color', '#ef7800');
+          setStyleProp($cell, 'border', '1px solid #ef7800');
+          setStyleProp($cell, 'mso-padding-alt', '14px 28px');
         } else {
           setStyleProp($cell, 'background-color', '#ffffff');
+          setStyleProp($cell, 'border', '2px solid #ef7800');
+          setStyleProp($cell, 'mso-padding-alt', '14px 28px');
         }
       });
       $table.find('a.buttonClass, a.button-outline-link').each((___, link) => {

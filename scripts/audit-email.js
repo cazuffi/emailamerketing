@@ -104,8 +104,13 @@ assert.doesNotMatch(
 );
 assert.match(
   getOutlookFallbackCss(),
-  /td\.buttonCell\s*\{[\s\S]*?background-color:\s*#ef7800 !important;[\s\S]*?mso-shading:\s*#ef7800;/i,
-  'Outlook desktop must receive an explicit primary button fill',
+  /td\.buttonCell\s*\{[\s\S]*?width:\s*100% !important;[\s\S]*?background-color:\s*#ef7800 !important;[\s\S]*?mso-shading:\s*#ef7800;/i,
+  'Outlook desktop must receive full-width primary button cells with explicit fill',
+);
+assert.match(
+  getOutlookFallbackCss(),
+  /td\.buttonCell a[\s\S]*?padding:\s*0 !important;[\s\S]*?width:\s*100% !important;/i,
+  'Outlook desktop must zero anchor padding so mso-padding-alt on td controls click area',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
@@ -135,8 +140,10 @@ assert.match(
 
 const dualCells = $('.cta-dual-section .buttonCell, .cta-dual-section .button-outline-cell');
 assert.strictEqual(dualCells.length, 2);
+assert.match($('.cta-dual-section .buttonCell').attr('style') || '', /border:1px solid #ef7800/i);
+assert.match($('.cta-dual-section .button-outline-cell').attr('style') || '', /border:2px solid #ef7800/i);
 dualCells.each((_, cell) => {
-  assert.match($(cell).attr('style') || '', /border:2px solid #ef7800/i);
+  assert.match($(cell).attr('style') || '', /width:100%/i);
   assert.strictEqual($(cell).attr('height'), undefined);
   assert.doesNotMatch($(cell).attr('style') || '', /(?:^|;)\s*height:/i);
 });
