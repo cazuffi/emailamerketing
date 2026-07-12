@@ -54,19 +54,20 @@ function hardenButtons($) {
     const $a = $(el);
     const isOutline = $a.hasClass('button-outline-link');
     if (isOutline) {
-      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
+      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;border:0;mso-padding-alt:0');
     } else {
       $a.addClass('button-primary');
-      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ef7800;color:#ffffff;border:0;mso-padding-alt:0');
-      if (!$a.children('span').length) {
-        const label = $a.text();
-        $a.text('');
-        $a.append($('<span></span>').text(label));
-      }
+      ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;color:#ffffff;border:0;mso-padding-alt:0');
+      const label = $a.children('span').length ? $a.children('span').first().text() : $a.text();
+      $a.empty();
+      $a.append(
+        '<!--[if mso]><i style="mso-font-width:100%;mso-text-raise:30pt" hidden>&#8195;</i><span style="mso-text-raise:50%;"><![endif]-->'
+        + `<span style="color:#ffffff;font-weight:bold">${label}</span>`
+        + '<!--[if mso]></span><i style="mso-font-width:100%;" hidden>&#8195;</i><![endif]-->',
+      );
       $a.children('span').each((__, span) => {
         const $span = $(span);
         setStyleProp($span, 'color', '#ffffff');
-        setStyleProp($span, 'background-color', '#ef7800');
         setStyleProp($span, 'font-weight', 'bold');
       });
     }
@@ -77,14 +78,14 @@ function hardenButtons($) {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ef7800');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto;width:100%');
+    ensureStyle($cell, 'background-color:#ef7800;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto;width:100%;padding:14px 28px');
     setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
   $('.button-outline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ffffff');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto;width:100%');
+    ensureStyle($cell, 'border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto;width:100%;padding:14px 28px');
     setStyleProp($cell, 'mso-padding-alt', '14px 28px');
   });
 

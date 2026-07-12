@@ -109,8 +109,8 @@ assert.match(
 );
 assert.match(
   getOutlookFallbackCss(),
-  /td\.buttonCell a[\s\S]*?padding:\s*0 !important;[\s\S]*?width:\s*100% !important;/i,
-  'Outlook desktop must zero anchor padding so mso-padding-alt on td controls click area',
+  /td\.buttonCell a[\s\S]*?background:\s*transparent !important;[\s\S]*?display:\s*inline !important;/i,
+  'Outlook desktop must keep link text transparent so td bgcolor paints the full button',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
@@ -223,9 +223,13 @@ $('a.buttonClass').each((_, link) => {
 assert.strictEqual((exported.match(/<v:roundrect\b/gi) || []).length, 0);
 $('.buttonCell a.button-primary').each((_, link) => {
   assert.doesNotMatch($(link).attr('style') || '', /mso-hide\s*:\s*all/i);
+  assert.doesNotMatch($(link).attr('style') || '', /background-color:\s*#ef7800/i);
   assert.strictEqual($(link).children('span').length, 1);
   assert.match($(link).children('span').attr('style') || '', /color:#ffffff/i);
+  assert.doesNotMatch($(link).children('span').attr('style') || '', /background-color/i);
   assert.match($(link).closest('.buttonCell').attr('style') || '', /mso-padding-alt:\s*14px/i);
+  assert.match($(link).closest('.buttonCell').attr('style') || '', /padding:\s*14px 28px/i);
+  assert.match($(link).closest('.buttonCell').attr('bgcolor'), /#ef7800/i);
 });
 
 const overriddenButtonExport = buildEmailHtml({
