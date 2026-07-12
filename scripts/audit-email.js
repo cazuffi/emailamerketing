@@ -112,6 +112,11 @@ assert.match(
   /a\.button-primary\s*\{[\s\S]*?background:\s*#ef7800 !important;/i,
   'Outlook desktop must keep the primary anchor orange so it blends into the td fill',
 );
+assert.match(
+  getOutlookFallbackCss(),
+  /a\.button-primary\s*\{[\s\S]*?display:\s*inline !important;/i,
+  'Outlook desktop must force the anchor inline so a block anchor cannot cover the td fill',
+);
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');

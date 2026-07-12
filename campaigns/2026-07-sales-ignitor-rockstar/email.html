@@ -1453,6 +1453,10 @@ td.buttonCell {
   mso-padding-alt: 14px 28px;
 }
 
+/* Word paints td backgrounds reliably but NOT block-anchor backgrounds. A
+   display:block anchor therefore covers the td's orange fill with an unpainted
+   (white) box. Force the anchor inline in Word so the td fill shows through;
+   the td's mso-padding-alt supplies the button's padding. */
 td.buttonCell a,
 td.buttonCell a span,
 a.buttonClass.button-primary,
@@ -1460,6 +1464,9 @@ a.button-primary {
   color: #ffffff !important;
   background: #ef7800 !important;
   background-color: #ef7800 !important;
+  display: inline !important;
+  width: auto !important;
+  padding: 0 !important;
   mso-padding-alt: 0 !important;
 }
 
@@ -1479,6 +1486,9 @@ a.button-outline-link {
   color: #ef7800 !important;
   background: #ffffff !important;
   background-color: #ffffff !important;
+  display: inline !important;
+  width: auto !important;
+  padding: 0 !important;
   mso-padding-alt: 0 !important;
 }
 
