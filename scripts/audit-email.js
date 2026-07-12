@@ -39,6 +39,16 @@ assert.strictEqual(
 const $ = cheerio.load(exported, { xml: false }, false);
 
 assert.strictEqual($('[data-studio-field], [data-studio-label], [data-studio-specs-rows]').length, 0);
+assert.match(
+  $('[data-layout="true"]').attr('style') || '',
+  /background-color:\s*#ffffff/i,
+  'The email content wrapper must carry an inline white background',
+);
+assert.strictEqual(
+  $('.header-standard-section > table.outer').attr('bgcolor'),
+  '#ffffff',
+  'Neutral sections must have a table-level white fallback',
+);
 assert.strictEqual($('.header-standard-section .header-logo-cell').length, 1);
 assert.strictEqual($('.header-standard-section .header-tagline-cell[align="right"]').length, 1);
 assert.strictEqual($('.header-standard-section [data-container]').length, 0);
@@ -319,6 +329,20 @@ assert.strictEqual(
   $all('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length,
   0,
   'The single-column orange footer must not use Dynamics column hooks',
+);
+
+$all('[data-layout="true"] > [data-section="true"]').each((_, section) => {
+  const $section = $all(section);
+  assert.match(
+    $section.attr('style') || '',
+    /background(?:-color)?\s*:/i,
+    'Every top-level section must export with an explicit background',
+  );
+});
+assert.match(
+  $all('.accent-band').first().attr('style') || '',
+  /background-color:\s*#ef7800/i,
+  'Intentional accent backgrounds must survive neutral fallback hardening',
 );
 
 const nestedCss =

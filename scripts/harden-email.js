@@ -189,6 +189,28 @@ function hardenTables($) {
   });
 }
 
+function hasBackgroundStyle($el) {
+  return /(?:^|;)\s*background(?:-color)?\s*:/i.test($el.attr('style') || '');
+}
+
+function hardenSectionBackgrounds($) {
+  $('[data-layout="true"]').each((_, layout) => {
+    const $layout = $(layout);
+    setStyleProp($layout, 'background-color', '#ffffff');
+    $layout.children('[data-section="true"]').each((__, section) => {
+      const $section = $(section);
+      if (hasBackgroundStyle($section)) return;
+      setStyleProp($section, 'background-color', '#ffffff');
+      $section.children('table.outer').first().each((___, table) => {
+        const $table = $(table);
+        if (hasBackgroundStyle($table)) return;
+        $table.attr('bgcolor', '#ffffff');
+        setStyleProp($table, 'background-color', '#ffffff');
+      });
+    });
+  });
+}
+
 function hardenTypography($) {
   $('h1, h3').each((_, el) => {
     ensureStyle($(el), 'font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly');
@@ -378,6 +400,7 @@ function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const $ = cheerio.load(html, { xml: false }, false);
   hardenTables($);
+  hardenSectionBackgrounds($);
   hardenImages($);
   hardenButtons($);
   hardenTypography($);
