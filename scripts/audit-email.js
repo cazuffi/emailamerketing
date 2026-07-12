@@ -14,7 +14,14 @@ const {
 
 const options = {
   title: 'Audit fixture',
-  modules: ['header-standard', 'cta-dual', 'cta-band-grey', 'comparison-split', 'specs-table'],
+  modules: [
+    'header-standard',
+    'cta-dual',
+    'cta-band-grey',
+    'comparison-split',
+    'three-up-benefits',
+    'specs-table',
+  ],
   overrides: {},
   annotate: false,
 };
@@ -95,9 +102,21 @@ assert.doesNotMatch(
   /header-standard-section \.header-logo-column/i,
   'Browser Outlook simulation must not force desktop header structure on mobile',
 );
+assert.match(
+  getOutlookFallbackCss(),
+  /td\.buttonCell\s*\{[\s\S]*?background-color:\s*#ef7800 !important;[\s\S]*?mso-shading:\s*#ef7800;/i,
+  'Outlook desktop must receive an explicit primary button fill',
+);
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');
+
+const benefitTitleCells = $('.three-up-benefits-section .three-up-title-cell');
+assert.strictEqual(benefitTitleCells.length, 3);
+benefitTitleCells.each((_, cell) => {
+  assert.strictEqual($(cell).attr('height'), '42');
+  assert.strictEqual($(cell).attr('valign'), 'middle');
+});
 
 const dualColumns = $('.cta-dual-section .cta-dual-column');
 assert.strictEqual(dualColumns.length, 2);
@@ -121,6 +140,11 @@ dualCells.each((_, cell) => {
   assert.strictEqual($(cell).attr('height'), undefined);
   assert.doesNotMatch($(cell).attr('style') || '', /(?:^|;)\s*height:/i);
 });
+assert.match(
+  $('.cta-dual-section .buttonCell').attr('style') || '',
+  /mso-shading:#ef7800/i,
+  'Primary dual CTA cell must carry inline Outlook shading',
+);
 
 const dualTables = $('.cta-dual-section .buttonTable, .cta-dual-section .button-outline-table');
 dualTables.each((_, table) => {

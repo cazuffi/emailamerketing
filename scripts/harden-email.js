@@ -66,13 +66,13 @@ function hardenButtons($) {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ef7800');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'background-color:#ef7800;mso-padding-alt:0;border:1px solid #ef7800');
+    ensureStyle($cell, 'background-color:#ef7800;mso-padding-alt:0;border:1px solid #ef7800;mso-shading:#ef7800;mso-pattern:auto');
   });
   $('.button-outline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('bgcolor', '#ffffff');
     $cell.attr('align', 'center');
-    ensureStyle($cell, 'mso-padding-alt:0;border:2px solid #ef7800;background-color:#ffffff');
+    ensureStyle($cell, 'mso-padding-alt:0;border:2px solid #ef7800;background-color:#ffffff;mso-shading:#ffffff;mso-pattern:auto');
   });
 
   $('.buttonWrapper[align="right"]').each((_, el) => {

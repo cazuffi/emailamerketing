@@ -92,6 +92,32 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
   mso-line-height-rule: exactly;
 }
 
+td.buttonCell {
+  background-color: #ef7800 !important;
+  border-color: #ef7800 !important;
+  mso-shading: #ef7800;
+  mso-pattern: auto;
+}
+
+td.buttonCell a,
+td.buttonCell a span {
+  color: #ffffff !important;
+  background-color: #ef7800 !important;
+}
+
+td.button-outline-cell {
+  background-color: #ffffff !important;
+  border-color: #ef7800 !important;
+  mso-shading: #ffffff;
+  mso-pattern: auto;
+}
+
+td.button-outline-cell a,
+td.button-outline-cell a span {
+  color: #ef7800 !important;
+  background-color: #ffffff !important;
+}
+
 .footer-band-title {
   font-size: 21px !important;
   line-height: 27px !important;
