@@ -210,21 +210,13 @@ assert.strictEqual($('.comparison-heading-section + .comparison-split-section').
 
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
+const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
 const greyCtaShell = $('.cta-band-grey .cta-band-grey-shell');
 const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
-const greyCtaButtonCol = $('.cta-band-grey .cta-band-grey-button');
-// Grey CTA is a presentation-only fluid layout (no Dynamics editable columns),
-// so Dynamics does not show an "Add element here" dropzone in the button column.
-assert.strictEqual($('.cta-band-grey [data-container]').length, 0);
-assert.match(greyCtaCopyInner.attr('style') || '', /display:inline-block/i);
-assert.match(greyCtaCopyInner.attr('style') || '', /max-width:392px/i);
-assert.match(greyCtaButtonCol.attr('style') || '', /display:inline-block/i);
-assert.match(greyCtaButtonCol.attr('style') || '', /max-width:180px/i);
-assert.match(
-  buildEmailHtml({ title: 'grey ghost', modules: ['cta-band-grey'], annotate: false }),
-  /<!--\[if mso\]>[\s\S]*?<table[^>]*width="584"[\s\S]*?<td width="392"[\s\S]*?<td width="180"/i,
-  'Grey CTA must include an Outlook desktop ghost table',
-);
+// Grey CTA keeps the Dynamics editable-column layout (68/32) so it renders
+// full-width with the button correctly on the right in a Dynamics send.
+assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
+assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
 assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
 assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
@@ -305,10 +297,15 @@ assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-c
 assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
-// No module ships the Dynamics editable-column pattern anymore (columns-equal-class
-// + data-container). They are all presentation layouts, so none can trigger the
-// Dynamics editor "Add element here" dropzone. Keep the set for future exceptions.
-const editableLayoutModules = new Set([]);
+// These modules intentionally keep the Dynamics editable-column pattern
+// (columns-equal-class + data-container). Dynamics needs that metadata to render
+// their multi-column layout full-width with correct column positions; the fluid
+// pattern breaks their width/alignment on send. The only cost is an editor-only
+// "Add element here" dropzone, which does not appear in the sent email.
+const editableLayoutModules = new Set([
+  'comparison-split',
+  'cta-band-grey',
+]);
 const allModulesExport = buildEmailHtml({
   title: 'All-modules audit',
   modules: allModuleIds,
@@ -330,18 +327,17 @@ assert.strictEqual(
   0,
   'Studio metadata must not leak from any module',
 );
-// No module may ship the Dynamics editable-column pattern, which makes the
-// Dynamics editor show an "Add element here" dropzone in short columns.
-assert.strictEqual(
-  $all('[data-container]').length,
-  0,
-  'No module may export Dynamics editable-column metadata (causes the editor dropzone)',
-);
-assert.strictEqual(
-  $all('[data-section="true"].columns-equal-class').length,
-  0,
-  'No module section may ship columns-equal-class (Dynamics editable-column trigger)',
-);
+// Only the intentional editable-layout modules (comparison-split, cta-band-grey)
+// may ship the Dynamics editable-column pattern; everything else must be fluid or
+// plain so the editor cannot show an "Add element here" dropzone.
+$all('[data-section="true"].columns-equal-class').each((_, section) => {
+  const cls = $all(section).attr('class') || '';
+  const isAllowed = [...editableLayoutModules].some((id) => cls.includes(`${id}-section`) || cls.includes(id));
+  assert(
+    isAllowed || /comparison|cta-band-grey/.test(cls),
+    `Unexpected editable-column section (${cls}) — convert to the fluid pattern`,
+  );
+});
 assert(!/\[if !mso\]/i.test(allModulesExport), 'Non-MSO wrappers must not survive export');
 assert(!/@media\b/i.test(allModulesNoMedia), 'Compatibility preview must remove every media query');
 assert.strictEqual(
