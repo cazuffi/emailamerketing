@@ -76,6 +76,11 @@ assert.match(
   'Real Outlook fallback must retain desktop header structure',
 );
 assert.doesNotMatch(
+  getOutlookFallbackCss(),
+  /OUTLOOK_DESKTOP_STRUCTURE_START[\s\S]*?display:\s*table-cell/i,
+  'Outlook Word must retain native table-cell display instead of overriding a stacked cell',
+);
+assert.doesNotMatch(
   getOutlookSimulationCss(),
   /header-standard-section \.header-logo-column/i,
   'Browser Outlook simulation must not force desktop header structure on mobile',

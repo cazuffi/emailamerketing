@@ -110,14 +110,8 @@ a.button-primary, a.button-outline-link, a.buttonClass, .buttonClass {
 }
 
 /* OUTLOOK_DESKTOP_STRUCTURE_START
-   Kept in the real MSO conditional block; excluded from browser simulation. */
-.header-standard-section .header-logo-column,
-.header-standard-section .header-tagline-column {
-  display: table-cell !important;
-  width: 50% !important;
-  max-width: 50% !important;
-}
-
+   Kept in the real MSO conditional block; excluded from browser simulation.
+   Native table-cell display is intentionally left untouched for Outlook Word. */
 .header-standard-section .header-logo-column,
 .header-standard-section .header-logo-column [data-editorblocktype="Image"],
 .header-standard-section .header-logo-column .imageWrapper {
