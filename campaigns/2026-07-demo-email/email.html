@@ -56,6 +56,18 @@ b, strong, .text-bold {
 .text-spacer { line-height: 16px; font-size: 16px; mso-line-height-rule: exactly; }
 .bullet-item { margin: 0 0 6px 0; padding-left: 2px; }
 
+/* Apple Mail / iOS auto-detects addresses, phone numbers, and dates and
+   restyles them as tappable links (larger, colored, underlined). Reset that
+   styling so auto-linked text matches the surrounding copy. */
+a[x-apple-data-detectors] {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  text-decoration: none !important;
+}
+
 a.buttonClass,
 .buttonClass {
   font-family: ARIALNB, Arial, Verdana, sans-serif;
