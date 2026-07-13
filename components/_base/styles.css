@@ -141,6 +141,10 @@ a.button-outline-link,
 .outer {
   width: 100% !important;
   max-width: 640px !important;
+  /* Dynamics adds display:block to section tables on send, which breaks table
+     layout in web browsers (modules render at inconsistent widths / stick out).
+     Outlook Word ignores display, so force table layout back for browsers. */
+  display: table !important;
 }
 
 .section-pad { padding: 20px 24px !important; }
