@@ -223,6 +223,7 @@ const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
 assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
 assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
 assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
+assert.match(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
 assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
@@ -235,8 +236,8 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;/i,
-  'Mobile grey CTA must remove the desktop accent border',
+  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
+  'Mobile grey CTA must remove both desktop edge rails',
 );
 
 assert.strictEqual(
