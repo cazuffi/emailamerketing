@@ -64,7 +64,6 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
     const previewSample = req.query.previewSample === '1';
     const previewOutlookSim = req.query.previewOutlookSim === '1';
     const previewCssOff = req.query.previewCssOff === '1';
-    const previewDynamicsSim = req.query.previewDynamicsSim === '1';
     const libraryPreview = req.query.libraryPreview !== '0';
     const instanceUid = req.query.instanceUid || '';
     const instanceIndex = Number(req.query.instanceIndex || 0);
@@ -77,7 +76,6 @@ app.get('/api/modules/:id/preview', requireAuth, (req, res) => {
       previewSample,
       previewOutlookSim,
       previewCssOff,
-      previewDynamicsSim,
       instanceMeta: [{ uid: instanceUid, index: instanceIndex }],
     });
     res.json({ html, id: req.params.id });
@@ -105,7 +103,6 @@ app.post('/api/build', requireAuth, (req, res) => {
       previewSample = false,
       previewOutlookSim = false,
       previewCssOff = false,
-      previewDynamicsSim = false,
       instanceMeta = [],
     } = req.body || {};
     if (!Array.isArray(modules)) {
@@ -119,7 +116,6 @@ app.post('/api/build', requireAuth, (req, res) => {
       previewSample,
       previewOutlookSim,
       previewCssOff,
-      previewDynamicsSim,
       instanceMeta,
     });
     res.json({ html });
