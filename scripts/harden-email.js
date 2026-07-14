@@ -183,7 +183,7 @@ function hardenButtons($) {
         setStyleProp($cell, 'box-sizing', 'border-box');
         if ($cell.hasClass('buttonCell')) {
           setStyleProp($cell, 'background-color', '#ef7800');
-          setStyleProp($cell, 'border', '1px solid #ef7800');
+          setStyleProp($cell, 'border', '2px solid #ef7800');
           setStyleProp($cell, 'mso-padding-alt', '14px 28px');
         } else {
           setStyleProp($cell, 'background-color', '#ffffff');

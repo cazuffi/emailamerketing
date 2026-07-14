@@ -162,7 +162,7 @@ assert.match(
 
 const dualCells = $('.cta-dual-section .buttonCell, .cta-dual-section .button-outline-cell');
 assert.strictEqual(dualCells.length, 2);
-assert.match($('.cta-dual-section .buttonCell').attr('style') || '', /border:1px solid #ef7800/i);
+assert.match($('.cta-dual-section .buttonCell').attr('style') || '', /border:2px solid #ef7800/i);
 assert.match($('.cta-dual-section .button-outline-cell').attr('style') || '', /border:2px solid #ef7800/i);
 dualCells.each((_, cell) => {
   assert.match($(cell).attr('style') || '', /width:100%/i);

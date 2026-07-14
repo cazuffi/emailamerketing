@@ -105,6 +105,10 @@ td.buttonCell {
   mso-padding-alt: 14px 28px;
 }
 
+.cta-dual-section td.buttonCell {
+  border: 2px solid #ef7800 !important;
+}
+
 /* Word paints td backgrounds reliably but NOT block-anchor backgrounds. A
    display:block anchor therefore covers the td's orange fill with an unpainted
    (white) box. Force the anchor inline in Word so the td fill shows through;
