@@ -174,17 +174,11 @@ function hardenButtons($) {
     ensureStyle($wrap, 'text-align:center;display:block;width:100%');
     $wrap.find('.buttonTable, .button-outline-table').each((__, table) => {
       const $table = $(table);
-      // HTML dimensions are the rendering authority in Outlook Word. CSS-only
-      // percentages are rounded differently for filled vs outlined tables.
-      // Modern/mobile clients still use the responsive width/height CSS.
-      $table.attr('width', '284');
-      $table.attr('height', '52');
+      $table.attr('width', '100%');
       ensureStyle($table, 'width:100%');
       setStyleProp($table, 'table-layout', 'fixed');
       $table.find('.buttonCell, .button-outline-cell').each((___, cell) => {
         const $cell = $(cell);
-        $cell.attr('height', '52');
-        $cell.attr('valign', 'middle');
         setStyleProp($cell, 'width', '100%');
         setStyleProp($cell, 'box-sizing', 'border-box');
         if ($cell.hasClass('buttonCell')) {

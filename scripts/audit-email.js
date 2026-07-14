@@ -171,8 +171,7 @@ assert.match($('.cta-dual-section .buttonCell').attr('style') || '', /border:2px
 assert.match($('.cta-dual-section .button-outline-cell').attr('style') || '', /border:2px solid #ef7800/i);
 dualCells.each((_, cell) => {
   assert.match($(cell).attr('style') || '', /width:100%/i);
-  assert.strictEqual($(cell).attr('height'), '52');
-  assert.strictEqual($(cell).attr('valign'), 'middle');
+  assert.strictEqual($(cell).attr('height'), undefined);
   assert.doesNotMatch($(cell).attr('style') || '', /(?:^|;)\s*height:/i);
 });
 assert.match(
@@ -183,8 +182,8 @@ assert.match(
 
 const dualTables = $('.cta-dual-section .buttonTable, .cta-dual-section .button-outline-table');
 dualTables.each((_, table) => {
-  assert.strictEqual($(table).attr('width'), '284');
-  assert.strictEqual($(table).attr('height'), '52');
+  assert.strictEqual($(table).attr('width'), '100%');
+  assert.strictEqual($(table).attr('height'), undefined);
   assert.match($(table).attr('style') || '', /table-layout:fixed/i);
 });
 
