@@ -66,6 +66,15 @@ function hardenButtons($) {
     const isOutline = $a.hasClass('button-outline-link');
     if (isOutline) {
       ensureStyle($a, 'display:block;font-weight:bold;mso-ansi-font-weight:bold;background-color:#ffffff;border:0;mso-padding-alt:0');
+      const label = ($a.children('span').length ? $a.children('span').first().text() : $a.text()).trim();
+      $a.empty();
+      $a.append($('<span></span>').text(label));
+      $a.children('span').each((__, span) => {
+        const $span = $(span);
+        setStyleProp($span, 'color', '#ef7800');
+        setStyleProp($span, 'font-weight', 'bold');
+        setStyleProp($span, 'background-color', '#ffffff');
+      });
     } else {
       $a.addClass('button-primary');
       // Fill on the anchor (mobile/Gmail/Apple) AND the td (Outlook desktop).

@@ -194,6 +194,7 @@ dualLinks.each((_, link) => {
   assert.match(style, /padding:14px 28px/i);
   assert.match(style, /width:auto/i);
   assert.doesNotMatch(style, /(?:^|;)\s*height:/i);
+  assert.strictEqual($(link).children('span').length, 1);
 });
 assert.match(
   exported,
