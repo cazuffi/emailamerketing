@@ -3,6 +3,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { simulateDynamicsSend } = require('./simulate-dynamics');
 
 const OUTLOOK_FALLBACKS_PATH = path.join(__dirname, '../components/_base/outlook-fallbacks.css');
 
@@ -119,9 +120,18 @@ function disableMediaQueries(html) {
 
 function preparePreviewHtml(
   html,
-  { sampleData = false, outlookSim = false, libraryPreview = false, mediaQueriesDisabled = false } = {},
+  {
+    sampleData = false,
+    outlookSim = false,
+    libraryPreview = false,
+    mediaQueriesDisabled = false,
+    dynamicsSim = false,
+  } = {},
 ) {
   let out = html;
+  // Apply the Dynamics send transform FIRST, so all other preview layers render
+  // against the markup that actually ships (not the clean export).
+  if (dynamicsSim) out = simulateDynamicsSend(out);
   if (sampleData) out = applyPreviewSampleData(out);
   if (libraryPreview) out = applyLibraryPreviewStyle(out);
   if (outlookSim) out = applyOutlookSimStyle(out);
@@ -164,6 +174,7 @@ module.exports = {
   applyLibraryPreviewStyle,
   disableMediaQueries,
   removeMediaQueriesFromCss,
+  simulateDynamicsSend,
   preparePreviewHtml,
   getOutlookFallbackCss,
   getOutlookSimulationCss,

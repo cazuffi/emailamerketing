@@ -529,6 +529,45 @@ assert.strictEqual(
   'Legacy feature block must use a table-backed button',
 );
 
+// ---------------------------------------------------------------------------
+// Dynamics send simulation: run the exported HTML through the same transforms
+// Dynamics applies on send, then assert our fixes still hold. This catches the
+// class of bugs that only appear after Dynamics rewrites the markup.
+// ---------------------------------------------------------------------------
+const { simulateDynamicsSend } = require('./simulate-dynamics');
+const simulated = simulateDynamicsSend(allModulesExport);
+const $sim = cheerio.load(simulated, { xml: false }, false);
+
+// Buttons keep their td fill after the Dynamics transform (background-color
+// longhand survives; nothing was mangled into background-image:initial).
+const simButtonCells = $sim('.buttonCell');
+assert(simButtonCells.length > 0, 'Simulation should contain primary button cells');
+simButtonCells.each((_, cell) => {
+  const style = $sim(cell).attr('style') || '';
+  assert.match(style, /background-color:\s*#ef7800/i, 'Button td fill must survive the Dynamics send transform');
+  assert.doesNotMatch(style, /background-image:\s*initial/i, 'Button td fill must not be mangled by Dynamics');
+  assert.match($sim(cell).attr('bgcolor') || '', /#ef7800/i, 'Button td bgcolor must survive the transform');
+});
+
+// The base stylesheet neutralizes Dynamics' display:block on section tables.
+// Confirm the simulation actually adds display:block (so the scenario is real)
+// AND the stylesheet override is present to counter it in browsers.
+assert(
+  /table\.outer[^{]*\{[^}]*display\s*:\s*block/i.test(simulated) ||
+    $sim('table.outer').filter((_, t) => /display\s*:\s*block/i.test($sim(t).attr('style') || '')).length > 0,
+  'Simulation must reproduce Dynamics adding display:block to section tables',
+);
+assert.match(
+  allModulesExport,
+  /\.outer\s*\{[\s\S]*?display:\s*table !important/i,
+  'Base CSS must force .outer back to display:table to counter Dynamics display:block',
+);
+
+// Three-benefit copy stays inside table cells after the transform (so Outlook
+// desktop renders it at the correct size, not collapsed).
+const simThreeUpCopy = $sim('.three-up-benefits-section .three-up-copy-cell, .three-up-benefits-section td.three-up-title-cell');
+assert(simThreeUpCopy.length >= 3, 'Three-benefit text must remain in table cells after the Dynamics transform');
+
 console.log('✓ export and Send preview use identical markup');
 console.log('✓ header alignment metadata is canonical');
 console.log('✓ dual CTA dimensions are equal');
@@ -537,3 +576,4 @@ console.log('✓ primary button classes are normalized');
 console.log(`✓ all ${allModuleIds.length} modules pass export safeguards`);
 console.log('✓ no-media-query fallback remains structurally safe');
 console.log('✓ campaign sources and legacy blocks pass export safeguards');
+console.log('✓ fixes hold under the Dynamics send simulation');

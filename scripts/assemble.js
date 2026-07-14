@@ -87,7 +87,11 @@ function buildEmailHtml(options = {}) {
   const assembled = assembleFromSource(source, STUDIO_BASE);
   let hardened = hardenEmailHtml(assembled);
   const isPreview =
-    options.libraryPreview || options.previewSample || options.previewOutlookSim || options.previewCssOff;
+    options.libraryPreview ||
+    options.previewSample ||
+    options.previewOutlookSim ||
+    options.previewCssOff ||
+    options.previewDynamicsSim;
   // Every non-editing path must use the exact same D365-safe markup as Copy HTML.
   // Preview-only transforms are applied afterwards and never alter structure.
   if (!options.annotate) {
@@ -99,6 +103,7 @@ function buildEmailHtml(options = {}) {
       libraryPreview: !!options.libraryPreview,
       outlookSim: !!options.previewOutlookSim,
       mediaQueriesDisabled: !!options.previewCssOff,
+      dynamicsSim: !!options.previewDynamicsSim,
     });
   }
   return hardened;

@@ -9,6 +9,7 @@ const state = {
   previewMode: 'edit',
   previewOutlookSim: false,
   previewCssOff: false,
+  previewDynamicsSim: false,
   previewActiveField: null,
   campaignId: null,
   campaignStatus: 'draft',
@@ -860,6 +861,14 @@ $('#preview-css-off')?.addEventListener('change', (e) => {
   }
 });
 
+$('#preview-dynamics-sim')?.addEventListener('change', (e) => {
+  state.previewDynamicsSim = e.target.checked;
+  if (state.previewMode === 'send') {
+    updatePreviewModeUI();
+    scheduleBuild();
+  }
+});
+
 $$('.panel-tab').forEach((tab) => {
   tab.addEventListener('click', () => switchPanel(tab.dataset.panel));
 });
@@ -1331,11 +1340,15 @@ function updatePreviewModeUI() {
   });
   $('#preview-outlook-wrap')?.classList.toggle('hidden', !isSend);
   $('#preview-css-off-wrap')?.classList.toggle('hidden', !isSend);
+  $('#preview-dynamics-sim-wrap')?.classList.toggle('hidden', !isSend);
   $('#preview-frame-wrap')?.classList.toggle('send-preview-mode', isSend);
   const hint = $('#preview-hint');
   if (hint) {
     if (!isSend) {
       hint.textContent = 'Edit preview — click text to edit · Desktop scales to fit your screen';
+    } else if (state.previewDynamicsSim) {
+      hint.textContent =
+        'Dynamics send simulation — approximates how D365 rewrites the HTML on send · reveals send-time layout issues';
     } else if (state.previewCssOff) {
       hint.textContent =
         'Compatibility preview — media queries disabled · layout must stay readable and contained';
@@ -1365,6 +1378,7 @@ function updatePreviewScale() {
       const parts = [nativeWidth === MOBILE_PREVIEW_WIDTH ? '375px' : '640px', '1:1'];
       if (state.previewOutlookSim) parts.push('Outlook');
       if (state.previewCssOff) parts.push('No media CSS');
+      if (state.previewDynamicsSim) parts.push('Dynamics send');
       label.textContent = `Send · ${parts.join(' · ')}`;
     }
     return;
@@ -1455,6 +1469,7 @@ async function buildPreview() {
       if (isSendPreview) {
         if (state.previewOutlookSim) params.set('previewOutlookSim', '1');
         if (state.previewCssOff) params.set('previewCssOff', '1');
+        if (state.previewDynamicsSim) params.set('previewDynamicsSim', '1');
       }
       if (Object.keys(overrides).length) {
         params.set('overrides', JSON.stringify(overrides));
@@ -1473,6 +1488,7 @@ async function buildPreview() {
           previewSample: false,
           previewOutlookSim: isSendPreview && state.previewOutlookSim,
           previewCssOff: isSendPreview && state.previewCssOff,
+          previewDynamicsSim: isSendPreview && state.previewDynamicsSim,
           instanceMeta: state.instances.map((i) => ({ uid: i.uid, moduleId: i.moduleId })),
         }),
       });
