@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { buildEmailHtml, loadManifest, assembleFromSource } = require('./assemble');
 const { hardenEmailHtml, sanitizeExportHtml } = require('./harden-email');
+const { extractFields } = require('./module-fields');
 const {
   getOutlookFallbackCss,
   getOutlookSimulationCss,
@@ -21,6 +22,7 @@ const options = {
     'comparison-split',
     'three-up-benefits',
     'specs-table',
+    'event-details',
   ],
   overrides: {},
   annotate: false,
@@ -149,6 +151,34 @@ assert.match(
   /<!--\[if mso\]>[\s\S]*?<table[^>]*width="592"[\s\S]*?<td width="197"[\s\S]*?<td width="197"[\s\S]*?<td width="197"/i,
   'Three benefits must include an Outlook desktop ghost table',
 );
+
+const eventCard = $('.event-details-section .event-details-card');
+const eventRows = $('.event-details-section .event-details-row');
+assert.strictEqual(eventCard.length, 1);
+assert.strictEqual(eventRows.length, 5);
+assert.match(
+  $('.event-details-section .event-details-shell').attr('style') || '',
+  /border-left:4px solid #ef7800/i,
+  'Event details card must use a Word-safe td accent border',
+);
+eventRows.each((_, row) => {
+  assert.strictEqual($(row).find('.event-details-label').attr('width'), '28%');
+  assert.strictEqual($(row).find('.event-details-value').attr('width'), '72%');
+});
+assert.strictEqual($('.event-details-section [data-container]').length, 0);
+assert.strictEqual($('.event-details-section .buttonWrapper').length, 0);
+
+const eventFieldKeys = extractFields('event-details').map((field) => field.key);
+for (const key of [
+  'event_details_title',
+  'event_date',
+  'event_time',
+  'event_duration',
+  'event_format',
+  'event_registration',
+]) {
+  assert(eventFieldKeys.includes(key), `Enhanced event details must expose ${key} in Studio`);
+}
 
 const dualColumns = $('.cta-dual-section .cta-dual-column');
 assert.strictEqual(dualColumns.length, 2);

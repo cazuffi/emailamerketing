@@ -58,7 +58,7 @@
     { "id": "comparison-split", "file": "comparison-split.html", "category": "Feature", "description": "Two-column before/after comparison" },
     { "id": "specs-table", "file": "specs-table.html", "category": "Feature", "description": "Product specs table — editable label/value rows" },
     { "id": "pricing-two-up", "file": "pricing-two-up.html", "category": "Feature", "description": "Two pricing tiers side by side" },
-    { "id": "event-details", "file": "event-details.html", "category": "Event", "description": "Date, time, location, webinar link" },
+    { "id": "event-details", "file": "event-details.html", "category": "Event", "description": "Structured webinar card — date, time, duration, format, registration" },
     { "id": "agenda-list", "file": "agenda-list.html", "category": "Event", "description": "Timed agenda with orange times" },
     { "id": "quote-testimonial", "file": "quote-testimonial.html", "category": "Social proof", "description": "Customer quote with orange left border" },
     { "id": "quote-centered", "file": "quote-centered.html", "category": "Social proof", "description": "Centered italic quote with attribution" },
