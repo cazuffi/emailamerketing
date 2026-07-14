@@ -117,6 +117,11 @@ assert.match(
   /a\.button-primary\s*\{[\s\S]*?display:\s*inline !important;/i,
   'Outlook desktop must force the anchor inline so a block anchor cannot cover the td fill',
 );
+assert.match(
+  getOutlookFallbackCss(),
+  /\.cta-dual-section \.buttonTable,[\s\S]*?\.cta-dual-section \.button-outline-table[\s\S]*?width:\s*284px !important;/i,
+  'Outlook desktop dual CTA tables must use equal fixed widths to avoid Word rounding differences',
+);
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');

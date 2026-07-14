@@ -186,8 +186,17 @@ a.button-outline-link {
 }
 
 .cta-dual-section .cta-dual-column {
-  width: auto !important;
-  max-width: none !important;
+  width: 296px !important;
+  max-width: 296px !important;
   padding: 0 6px !important;
+}
+
+.cta-dual-section .buttonWrapper,
+.cta-dual-section .buttonTable,
+.cta-dual-section .button-outline-table {
+  width: 284px !important;
+  max-width: 284px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 /* OUTLOOK_DESKTOP_STRUCTURE_END */
