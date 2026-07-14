@@ -167,18 +167,16 @@ assert.match(
 
 const dualCells = $('.cta-dual-section .buttonCell, .cta-dual-section .button-outline-cell');
 assert.strictEqual(dualCells.length, 2);
-assert.match($('.cta-dual-section .buttonCell').attr('style') || '', /border:2px solid #ef7800/i);
-assert.match($('.cta-dual-section .button-outline-cell').attr('style') || '', /border:2px solid #ef7800/i);
+assert.strictEqual($('.cta-dual-section .buttonCell').length, 0);
+assert.strictEqual($('.cta-dual-section .button-outline-cell').length, 2);
 dualCells.each((_, cell) => {
   assert.match($(cell).attr('style') || '', /width:100%/i);
+  assert.match($(cell).attr('style') || '', /border:2px solid #ef7800/i);
+  assert.match($(cell).attr('style') || '', /mso-shading:#ffffff/i);
+  assert.strictEqual($(cell).attr('bgcolor'), '#ffffff');
   assert.strictEqual($(cell).attr('height'), undefined);
   assert.doesNotMatch($(cell).attr('style') || '', /(?:^|;)\s*height:/i);
 });
-assert.match(
-  $('.cta-dual-section .buttonCell').attr('style') || '',
-  /mso-shading:#ef7800/i,
-  'Primary dual CTA cell must carry inline Outlook shading',
-);
 
 const dualTables = $('.cta-dual-section .buttonTable, .cta-dual-section .button-outline-table');
 dualTables.each((_, table) => {
@@ -191,6 +189,7 @@ const dualLinks = $('.cta-dual-section a');
 assert.strictEqual(dualLinks.length, 2);
 dualLinks.each((_, link) => {
   const style = $(link).attr('style') || '';
+  assert($(link).hasClass('button-outline-link'));
   assert.match(style, /padding:14px 28px/i);
   assert.match(style, /width:auto/i);
   assert.doesNotMatch(style, /(?:^|;)\s*height:/i);
