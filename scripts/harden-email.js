@@ -674,10 +674,9 @@ function hardenSectionHeadings($) {
     $section.find('center').each((__, el) => {
       ensureStyle($(el), 'width:100%;text-align:center');
     });
-    $section.find('.section-rule-table').each((__, table) => {
+    $section.find('.divider-line-table').each((__, table) => {
       const $table = $(table);
-      $table.attr('align', 'center');
-      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+      ensureStyle($table, 'margin:0 auto 12px auto;width:100%');
     });
     $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2').each((__, el) => {
       const $el = $(el);
@@ -879,7 +878,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v10';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v11';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

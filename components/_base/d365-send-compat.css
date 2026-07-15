@@ -257,7 +257,6 @@ table.outer,
 .section-heading-section center,
 .section-heading-section .section-heading-center,
 .section-heading-section .section-heading-center td,
-.section-heading-section .section-rule-table,
 .section-heading-section [data-editorblocktype="Text"],
 .section-heading-section [data-editorblocktype="Text"] h2,
 .section-heading-section h2 {
@@ -265,16 +264,22 @@ table.outer,
   width: 100% !important;
 }
 
+.section-heading-section .divider-line-table,
+.section-heading-section .divider-line-cell,
+.section-heading-section .divider-line-img {
+  width: 100% !important;
+  max-width: 640px !important;
+}
+
+.section-heading-section .divider-line-table {
+  margin: 0 auto 12px auto !important;
+}
+
 .section-heading-section [data-container="true"] {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
   text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-.section-heading-section .section-rule-table {
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -591,7 +596,13 @@ u + .body .section-heading-section h2 {
   margin-right: auto !important;
 }
 
-u + .body .section-heading-section .section-rule-table {
+u + .body .section-heading-section .divider-line-table,
+u + .body .section-heading-section .divider-line-img {
+  width: 100% !important;
+  max-width: 640px !important;
+}
+
+u + .body .section-heading-section .divider-line-table {
   margin-left: auto !important;
   margin-right: auto !important;
 }

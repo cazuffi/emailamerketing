@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v10';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v11';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -226,6 +226,24 @@ assert.strictEqual(
   )('.section-heading-section .section-heading-center').length,
   1,
   'Section heading must use an inner centering table',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-table').length,
+  1,
+  'Section heading must use a full-width divider rule',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-img').length,
+  1,
+  'Section heading divider must ship the Gmail-safe spacer image',
 );
 assert.match(
   exported,
