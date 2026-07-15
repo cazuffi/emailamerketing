@@ -491,7 +491,7 @@ function loadArticleStackDividerHtml() {
 
 function buildArticleStackDividerHtml() {
   const divider = loadArticleStackDividerHtml().trim();
-  return `<div data-editorblocktype="Divider" class="article-stack-divider" style="margin:16px 0;">${divider}</div>`;
+  return `<div class="article-stack-divider" style="margin:16px 0;display:block;width:100%;">${divider}</div>`;
 }
 
 function extractArticleStackRows($, fields) {

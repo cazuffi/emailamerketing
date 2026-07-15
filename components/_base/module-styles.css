@@ -235,6 +235,10 @@ h2.subhead-orange {
   background-color: #ef7800;
 }
 
+.section-heading-section .divider-line-table {
+  margin: 0 auto 12px auto;
+}
+
 .divider-line-cell {
   height: 2px;
   background-color: #ef7800;

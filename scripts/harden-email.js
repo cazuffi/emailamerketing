@@ -247,7 +247,7 @@ function hasBackgroundStyle($el) {
 function hardenOrangeFooterSections($) {
   $('.orange-footer[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    setStyleProp($section, 'background-color', '#ffffff');
+    removeStyleProp($section, 'background-color');
     $section.find('table.outer').first().each((__, table) => {
       const $table = $(table);
       $table.attr('bgcolor', '#ef7800');
@@ -285,7 +285,7 @@ function hardenOuterTableCentering($) {
 function hardenAccentSections($) {
   $('.accent-band[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    setStyleProp($section, 'background-color', '#ffffff');
+    removeStyleProp($section, 'background-color');
     $section.find('table.outer').first().each((__, table) => {
       const $table = $(table);
       $table.attr('bgcolor', '#ef7800');
@@ -305,6 +305,14 @@ function hardenSectionBackgrounds($) {
     setStyleProp($layout, 'background-color', '#ffffff');
     $layout.children('[data-section="true"]').each((__, section) => {
       const $section = $(section);
+      if (
+        $section.hasClass('accent-band') ||
+        $section.hasClass('urgency-band') ||
+        $section.hasClass('orange-footer') ||
+        $section.hasClass('cta-band-grey')
+      ) {
+        return;
+      }
       if (hasBackgroundStyle($section)) return;
       setStyleProp($section, 'background-color', '#ffffff');
       $section.children('table.outer').first().each((___, table) => {
@@ -402,17 +410,43 @@ function unwrapPassengerDivs($) {
   });
 }
 
-function shouldUseSectionGapShim($section) {
-  if (
-    $section.hasClass('accent-band') ||
-    $section.hasClass('orange-footer') ||
-    $section.hasClass('urgency-band') ||
-    $section.hasClass('cta-band-grey')
-  ) {
-    return false;
-  }
-  if ($section.hasClass('divider-line-section') || $section.find('.divider-line-cell').length) return false;
-  return true;
+function hardenFullBleedBands($) {
+  const bands = [
+    { selector: '.accent-band', color: '#ef7800' },
+    { selector: '.urgency-band', color: '#333333' },
+    { selector: '.orange-footer', color: '#ef7800' },
+  ];
+
+  bands.forEach(({ selector, color }) => {
+    $(`${selector}[data-section="true"]`).each((_, section) => {
+      const $section = $(section);
+      if (selector === '.urgency-band') {
+        setStyleProp($section, 'background-color', color);
+      } else {
+        removeStyleProp($section, 'background-color');
+      }
+      $section.find('table.outer').each((__, table) => {
+        const $table = $(table);
+        $table.attr('align', 'center');
+        $table.attr('bgcolor', color);
+        ensureStyle(
+          $table,
+          `width:100%;min-width:100%;max-width:640px;margin-left:auto;margin-right:auto;background-color:${color}`,
+        );
+      });
+    });
+  });
+}
+
+function hardenArticleStackDividers($) {
+  $('.article-stack-section .article-stack-divider').each((_, el) => {
+    const $divider = $(el);
+    $divider.removeAttr('data-editorblocktype');
+    ensureStyle($divider, 'display:block;width:100%;max-width:100%;margin-left:0;margin-right:0');
+    $divider.find('.divider-line-table, .divider-line-cell, .divider-line-img').each((__, node) => {
+      ensureStyle($(node), 'width:100%;max-width:100%');
+    });
+  });
 }
 
 function hardenUrgencyBand($) {
@@ -457,7 +491,7 @@ function hardenCtaBandGrey($) {
     $section.find('.cta-band-grey-shell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f4f4f4');
-      ensureStyle($cell, 'background-color:#f4f4f4;width:100%');
+      ensureStyle($cell, 'background-color:#f4f4f4;width:100%;border-left:4px solid #ef7800;border-right:4px solid #ffffff');
     });
   });
 }
@@ -508,37 +542,10 @@ function hardenThreeUpBenefits($) {
 function hardenSectionGaps($) {
   $('[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    if ($section.hasClass('divider-line-section')) {
-      ensureStyle($section, 'margin:0;padding:0;display:block');
-      return;
-    }
-    ensureStyle($section, 'margin:0;padding:0;line-height:0;font-size:0;display:block');
-    $section.children('table.section-gap-shim').each((__, shim) => {
-      const $shim = $(shim);
-      ensureStyle($shim, 'margin:0;padding:0;border-collapse:collapse;width:100%');
-      $shim.find('> tbody > tr > td, > tr > td').first().each((___, cell) => {
-        ensureStyle($(cell), 'padding:0;margin:0;line-height:normal;font-size:15px;mso-line-height-rule:exactly');
-      });
-    });
+    ensureStyle($section, 'margin:0;padding:0;display:block');
     $section.children('table.outer').each((__, table) => {
       ensureStyle($(table), 'margin-top:0;margin-bottom:0;line-height:normal;font-size:15px');
     });
-  });
-}
-
-function wrapSectionGapShims($) {
-  $('[data-section="true"]').each((_, section) => {
-    const $section = $(section);
-    if (!shouldUseSectionGapShim($section)) return;
-    if ($section.children('table.section-gap-shim').length) return;
-    const $outer = $section.children('table.outer').first();
-    if (!$outer.length) return;
-
-    const $shim = $(
-      '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="section-gap-shim" role="presentation" style="margin:0;padding:0;border-collapse:collapse;width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt"><tbody><tr><td align="left" width="100%" style="padding:0;margin:0;line-height:normal;font-size:15px;mso-line-height-rule:exactly;text-align:left;width:100%;"></td></tr></tbody></table>',
-    );
-    $shim.find('td').first().append($outer);
-    $section.append($shim);
   });
 }
 
@@ -711,10 +718,9 @@ function hardenSectionHeadings($) {
     $section.find('center').each((__, el) => {
       ensureStyle($(el), 'width:100%;text-align:center');
     });
-    $section.find('.section-rule-table').each((__, table) => {
+    $section.find('.divider-line-table').each((__, table) => {
       const $table = $(table);
-      $table.attr('align', 'center');
-      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+      ensureStyle($table, 'margin:0 auto 12px auto;width:100%');
     });
     $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2').each((__, el) => {
       const $el = $(el);
@@ -824,6 +830,7 @@ function hardenEmailHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenFullBleedBands($);
   hardenOrangeFooterSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
@@ -836,8 +843,8 @@ function hardenEmailHtml(html) {
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
+  hardenArticleStackDividers($);
   hardenBodyTextSections($);
-  wrapSectionGapShims($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -917,7 +924,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v13';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -931,10 +938,11 @@ function sanitizeExportHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenFullBleedBands($);
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
-  wrapSectionGapShims($);
+  hardenArticleStackDividers($);
   hardenSectionGaps($);
   hardenBodyTextSections($);
   unwrapPassengerDivs($);
