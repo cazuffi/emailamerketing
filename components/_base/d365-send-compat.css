@@ -24,7 +24,6 @@ body > div[data-layout="true"],
 
 table.outer,
 [data-section="true"] > table.outer,
-[data-section="true"] > table.section-gap-shim table.outer,
 .accent-band table.outer,
 .orange-footer table.outer {
   width: 100% !important;
@@ -38,8 +37,6 @@ table.outer,
 [data-section="true"] {
   margin: 0 !important;
   padding: 0 !important;
-  line-height: 0 !important;
-  font-size: 0 !important;
 }
 
 [data-section="true"] > table.outer {
@@ -47,39 +44,7 @@ table.outer,
   margin-bottom: 0 !important;
   line-height: normal !important;
   font-size: 15px !important;
-}
-
-/* Dynamics display:block on table.outer creates phantom gaps in Gmail iOS.
-   The shim table stays display:table; the outer table nests inside its td. */
-[data-section="true"] > table.section-gap-shim {
-  margin: 0 !important;
-  padding: 0 !important;
-  border-collapse: collapse !important;
-  width: 100% !important;
   display: table !important;
-}
-
-[data-section="true"] > table.section-gap-shim > tbody > tr > td,
-[data-section="true"] > table.section-gap-shim > tr > td {
-  padding: 0 !important;
-  margin: 0 !important;
-  line-height: normal !important;
-  font-size: 15px !important;
-  text-align: left !important;
-  width: 100% !important;
-}
-
-[data-section="true"] > table.section-gap-shim table.outer {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  width: 100% !important;
-  max-width: 640px !important;
-  display: table !important;
-}
-
-.divider-line-section[data-section="true"] {
-  line-height: normal !important;
-  font-size: 15px !important;
 }
 
 .eyebrow-headline + [data-section="true"] > table.outer,
@@ -96,7 +61,6 @@ table.outer,
 }
 
 .accent-band > table.outer,
-.accent-band > table.section-gap-shim table.outer,
 .accent-band table.outer,
 .accent-band .section-pad-accent {
   background-color: #ef7800 !important;
@@ -180,6 +144,13 @@ table.outer,
 .cta-band-grey .cta-band-grey-shell {
   width: 100% !important;
   max-width: 640px !important;
+  background-color: #f4f4f4 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+
+.accent-band + .cta-band-grey[data-section="true"],
+.wrap-section.accent-band + .wrap-section.cta-band-grey {
   background-color: #f4f4f4 !important;
 }
 
@@ -571,7 +542,7 @@ u + .body .divider-line-img {
 
 u + .body .accent-band table.outer,
 u + .body .three-up-benefits-section table.outer,
-u + .body [data-section="true"] table.section-gap-shim table.outer {
+u + .body [data-section="true"] > table.outer {
   width: 100% !important;
   max-width: 640px !important;
   display: table !important;
