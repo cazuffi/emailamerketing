@@ -247,7 +247,7 @@ function hasBackgroundStyle($el) {
 function hardenOrangeFooterSections($) {
   $('.orange-footer[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    setStyleProp($section, 'background-color', '#ffffff');
+    removeStyleProp($section, 'background-color');
     $section.find('table.outer').first().each((__, table) => {
       const $table = $(table);
       $table.attr('bgcolor', '#ef7800');
@@ -285,7 +285,7 @@ function hardenOuterTableCentering($) {
 function hardenAccentSections($) {
   $('.accent-band[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    setStyleProp($section, 'background-color', '#ffffff');
+    removeStyleProp($section, 'background-color');
     $section.find('table.outer').first().each((__, table) => {
       const $table = $(table);
       $table.attr('bgcolor', '#ef7800');
@@ -305,6 +305,14 @@ function hardenSectionBackgrounds($) {
     setStyleProp($layout, 'background-color', '#ffffff');
     $layout.children('[data-section="true"]').each((__, section) => {
       const $section = $(section);
+      if (
+        $section.hasClass('accent-band') ||
+        $section.hasClass('urgency-band') ||
+        $section.hasClass('orange-footer') ||
+        $section.hasClass('cta-band-grey')
+      ) {
+        return;
+      }
       if (hasBackgroundStyle($section)) return;
       setStyleProp($section, 'background-color', '#ffffff');
       $section.children('table.outer').first().each((___, table) => {
@@ -399,6 +407,45 @@ function unwrapPassengerDivs($) {
     if (children.filter('p, h1, h2, h3, h4').length === children.length) {
       $div.replaceWith($div.contents());
     }
+  });
+}
+
+function hardenFullBleedBands($) {
+  const bands = [
+    { selector: '.accent-band', color: '#ef7800' },
+    { selector: '.urgency-band', color: '#333333' },
+    { selector: '.orange-footer', color: '#ef7800' },
+  ];
+
+  bands.forEach(({ selector, color }) => {
+    $(`${selector}[data-section="true"]`).each((_, section) => {
+      const $section = $(section);
+      if (selector === '.urgency-band') {
+        setStyleProp($section, 'background-color', color);
+      } else {
+        removeStyleProp($section, 'background-color');
+      }
+      $section.find('table.outer').each((__, table) => {
+        const $table = $(table);
+        $table.attr('align', 'center');
+        $table.attr('bgcolor', color);
+        ensureStyle(
+          $table,
+          `width:100%;min-width:100%;max-width:640px;margin-left:auto;margin-right:auto;background-color:${color}`,
+        );
+      });
+    });
+  });
+}
+
+function hardenArticleStackDividers($) {
+  $('.article-stack-section .article-stack-divider').each((_, el) => {
+    const $divider = $(el);
+    $divider.removeAttr('data-editorblocktype');
+    ensureStyle($divider, 'display:block;width:100%;max-width:100%;margin-left:0;margin-right:0');
+    $divider.find('.divider-line-table, .divider-line-cell, .divider-line-img').each((__, node) => {
+      ensureStyle($(node), 'width:100%;max-width:100%');
+    });
   });
 }
 
@@ -783,6 +830,7 @@ function hardenEmailHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenFullBleedBands($);
   hardenOrangeFooterSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
@@ -795,6 +843,7 @@ function hardenEmailHtml(html) {
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
+  hardenArticleStackDividers($);
   hardenBodyTextSections($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
@@ -875,7 +924,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v12';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v13';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -889,9 +938,11 @@ function sanitizeExportHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenFullBleedBands($);
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
+  hardenArticleStackDividers($);
   hardenSectionGaps($);
   hardenBodyTextSections($);
   unwrapPassengerDivs($);

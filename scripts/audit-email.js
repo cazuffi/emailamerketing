@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v12';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v13';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -103,6 +103,16 @@ assert.match(
   $('.accent-band table.outer').first().attr('style') || '',
   /background-color:\s*#ef7800/i,
   'Accent band table must carry the orange fill',
+);
+assert.match(
+  exported,
+  /\.accent-band\[data-section="true"\][\s\S]*background-color:\s*#ef7800 !important/i,
+  'Accent band section wrapper must inherit orange so canvas gutters never flash white',
+);
+assert.match(
+  exported,
+  /\.urgency-band table\.outer[\s\S]*min-width:\s*100% !important/i,
+  'Urgency band must harden full-bleed outer tables',
 );
 assert.strictEqual(
   $('.header-standard-section table.outer').first().attr('bgcolor'),
@@ -274,6 +284,28 @@ assert.strictEqual(
   (articleStackExport.match(/article-stack-cta-link/g) || []).length,
   1,
   'Article stack must export one CTA when only one story has showCta enabled',
+);
+assert.strictEqual(
+  cheerio.load(articleStackExport, { xml: false }, false)('.article-stack-divider').length,
+  1,
+  'Article stack must export a divider between stories',
+);
+assert.doesNotMatch(
+  articleStackExport,
+  /class="article-stack-divider"[^>]*data-editorblocktype="Divider"/i,
+  'Article stack dividers must not use Dynamics Divider blocks',
+);
+assert.match(
+  articleStackExport,
+  /\.article-stack-section \.article-stack-divider[\s\S]*width:\s*100% !important/i,
+  'Article stack dividers must span the full content column',
+);
+assert.strictEqual(
+  cheerio.load(simulateDynamicsPaste(articleStackExport), { xml: false }, false)(
+    '.article-stack-divider',
+  ).parent('[data-container="true"]').length,
+  0,
+  'Dynamics paste must not wrap article stack dividers in fixed-width containers',
 );
 
 const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
@@ -779,6 +811,7 @@ assert.strictEqual(
 
 $all('[data-layout="true"] > [data-section="true"]').each((_, section) => {
   const $section = $all(section);
+  if ($section.hasClass('accent-band') || $section.hasClass('orange-footer')) return;
   assert.match(
     $section.attr('style') || '',
     /background(?:-color)?\s*:/i,

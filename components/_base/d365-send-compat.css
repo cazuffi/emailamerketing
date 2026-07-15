@@ -25,8 +25,10 @@ body > div[data-layout="true"],
 table.outer,
 [data-section="true"] > table.outer,
 .accent-band table.outer,
+.urgency-band table.outer,
 .orange-footer table.outer {
   width: 100% !important;
+  min-width: 100% !important;
   max-width: 640px !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -53,11 +55,11 @@ table.outer,
   margin-top: 0 !important;
 }
 
-/* Orange accent fill on table cells only — not the section wrapper (Gmail clip
-   fragments otherwise paint multiple orange bars between collapsed blocks). */
+/* Full-bleed band wrappers inherit the band color so sub-pixel gutters never
+   flash white when Dynamics shrinks table.outer below the 640px canvas. */
 .accent-band[data-section="true"],
 .wrap-section.accent-band {
-  background-color: #ffffff !important;
+  background-color: #ef7800 !important;
 }
 
 .accent-band > table.outer,
@@ -66,19 +68,43 @@ table.outer,
   background-color: #ef7800 !important;
 }
 
+.urgency-band > table.outer,
+.urgency-band table.outer {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+.orange-footer[data-section="true"],
+.wrap-section.orange-footer {
+  background-color: #ef7800 !important;
+}
+
 .accent-band .section-pad-accent {
   text-align: left !important;
   width: 100% !important;
 }
 
-.orange-footer[data-section="true"],
-.wrap-section.orange-footer {
-  background-color: #ffffff !important;
-}
-
 .orange-footer > table.outer,
 .orange-footer .section-pad-accent {
   background-color: #ef7800 !important;
+}
+
+.article-stack-section .article-stack-divider,
+.article-stack-section .article-stack-divider .divider-line-table,
+.article-stack-section .article-stack-divider .divider-line-cell,
+.article-stack-section .article-stack-divider .divider-line-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+}
+
+.article-stack-section [data-container="true"] .article-stack-divider,
+.article-stack-section .article-stack-divider [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
+  flex-basis: auto !important;
+  display: block !important;
 }
 
 /* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
@@ -553,11 +579,22 @@ u + .body .divider-line-img {
 }
 
 u + .body .accent-band table.outer,
+u + .body .urgency-band table.outer,
+u + .body .orange-footer table.outer,
 u + .body .three-up-benefits-section table.outer,
 u + .body [data-section="true"] > table.outer {
   width: 100% !important;
+  min-width: 100% !important;
   max-width: 640px !important;
   display: table !important;
+}
+
+u + .body .article-stack-section .article-stack-divider,
+u + .body .article-stack-section .article-stack-divider .divider-line-table,
+u + .body .article-stack-section .article-stack-divider .divider-line-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
 }
 
 u + .body .accent-band [data-container="true"] {

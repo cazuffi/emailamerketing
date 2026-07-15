@@ -21,6 +21,7 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'article-stack-cta',
   'article-stack-cta-link',
   'article-stack-cta-wrap',
+  'article-stack-divider',
   'article-stack-headline',
   'article-stack-item',
   'article-stack-section',
