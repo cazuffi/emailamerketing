@@ -330,6 +330,25 @@ assert.match(
   /class="subhead-orange"[^>]*style="[^"]*color:#ef7800/i,
   'Orange subheadlines must carry inline color for Gmail',
 );
+const $eyebrowHeadline = cheerio.load(
+  buildEmailHtml({ title: 'eyebrow stack', modules: ['eyebrow-headline'], annotate: false }),
+  { xml: false },
+  false,
+);
+assert.strictEqual(
+  $eyebrowHeadline('.eyebrow-headline [data-editorblocktype="Text"]').length,
+  1,
+  'Eyebrow headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'intro stack', modules: ['intro-headline'], annotate: false }),
+    { xml: false },
+    false,
+  )('.intro-headline [data-editorblocktype="Text"]').length,
+  1,
+  'Intro headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
+);
 assert.strictEqual(
   cheerio.load(
     buildEmailHtml({ title: 'video audit', modules: ['video-preview'], annotate: false }),

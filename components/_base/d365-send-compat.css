@@ -220,6 +220,46 @@ h2.subhead-orange,
   color: #ef7800 !important;
 }
 
+/* Eyebrow + headline stacks: Dynamics used to split each line into its own
+   data-container, doubling margins in Gmail. Keep spacing on the elements only. */
+.eyebrow-headline [data-container="true"],
+.intro-headline [data-container="true"] {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.eyebrow-headline [data-container="true"] + [data-container="true"],
+.intro-headline [data-container="true"] + [data-container="true"] {
+  margin-top: 0 !important;
+}
+
+.eyebrow-headline .eyebrow-label {
+  margin: 0 0 8px 0 !important;
+  line-height: 1.3 !important;
+}
+
+.eyebrow-headline h1,
+.intro-headline h1 {
+  margin: 0 0 8px 0 !important;
+  line-height: 1.3 !important;
+}
+
+.eyebrow-headline h2,
+.intro-headline h2 {
+  margin: 0 !important;
+  line-height: 1.35 !important;
+}
+
+.eyebrow-h2-section [data-container="true"] + [data-container="true"] {
+  margin-top: 0 !important;
+}
+
+.eyebrow-h2-section .headline-lead {
+  margin-top: 8px !important;
+}
+
 @media only screen and (min-width: 641px) {
   .header-standard-section .header-logo-column [data-container="true"] {
     text-align: left !important;
