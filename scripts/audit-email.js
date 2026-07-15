@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center-v2';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -28,6 +28,7 @@ const options = {
     'three-up-benefits',
     'specs-table',
     'event-details',
+    'footer',
   ],
   overrides: {},
   annotate: false,
@@ -72,6 +73,17 @@ assert.match(
   'Post-paste CSS must neutralize Dynamics flex data-container wrappers',
 );
 assert.strictEqual($('.accent-band [data-editorblocktype="Text"]').length, 1);
+assert.strictEqual($('.orange-footer [data-editorblocktype="Text"]').length, 1);
+assert.doesNotMatch(
+  $('.accent-band').first().attr('style') || '',
+  /background-color:\s*#ef7800/i,
+  'Accent band orange fill must live on the table, not the section wrapper',
+);
+assert.match(
+  $('.accent-band table.outer').first().attr('style') || '',
+  /background-color:\s*#ef7800/i,
+  'Accent band table must carry the orange fill',
+);
 assert.strictEqual(
   $('.header-standard-section > table.outer').attr('bgcolor'),
   '#ffffff',
@@ -147,7 +159,7 @@ assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length
 assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer .footer-band-content > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
-assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');
+assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '100%');
 
 const benefitTitleCells = $('.three-up-benefits-section .three-up-title-cell');
 assert.strictEqual(benefitTitleCells.length, 3);
@@ -612,9 +624,9 @@ $all('[data-layout="true"] > [data-section="true"]').each((_, section) => {
   );
 });
 assert.match(
-  $all('.accent-band').first().attr('style') || '',
+  $all('.accent-band').first().find('table.outer').attr('style') || '',
   /background-color:\s*#ef7800/i,
-  'Intentional accent backgrounds must survive neutral fallback hardening',
+  'Intentional accent backgrounds must survive neutral fallback hardening on the table',
 );
 
 const nestedCss =

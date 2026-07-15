@@ -12,6 +12,10 @@
   padding: 0 !important;
 }
 
+.email-canvas-cell {
+  text-align: center !important;
+}
+
 [data-layout="true"] {
   width: 100% !important;
   max-width: 640px !important;
@@ -20,9 +24,22 @@
 }
 
 [data-section="true"] > table.outer {
+  width: 100% !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  max-width: 100% !important;
+  max-width: 640px !important;
+}
+
+/* Orange accent fill on table cells only — not the section wrapper (Gmail clip
+   fragments otherwise paint multiple orange bars between collapsed blocks). */
+.accent-band[data-section="true"],
+.wrap-section.accent-band {
+  background-color: #ffffff !important;
+}
+
+.accent-band > table.outer,
+.accent-band .section-pad-accent {
+  background-color: #ef7800 !important;
 }
 
 /* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
@@ -202,5 +219,28 @@ h2.subhead-orange,
 
   .cta-dual-section .cta-dual-outline {
     padding-bottom: 0 !important;
+  }
+
+  .orange-footer .section-pad-accent,
+  .orange-footer .footer-band-content,
+  .orange-footer .footer-band-inner,
+  .footer-legal td,
+  .footer-legal .footer-legal-center {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  .orange-footer [data-container="true"],
+  .footer-legal [data-container="true"],
+  .orange-footer [data-editorblocktype="Text"],
+  .footer-legal [data-editorblocktype="Content"],
+  .footer-legal .contentBlockWrapper {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
   }
 }

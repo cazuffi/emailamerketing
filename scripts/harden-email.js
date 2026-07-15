@@ -244,6 +244,23 @@ function hasBackgroundStyle($el) {
   return /(?:^|;)\s*background(?:-color)?\s*:/i.test($el.attr('style') || '');
 }
 
+function hardenAccentSections($) {
+  $('.accent-band[data-section="true"]').each((_, section) => {
+    const $section = $(section);
+    setStyleProp($section, 'background-color', '#ffffff');
+    $section.find('table.outer').first().each((__, table) => {
+      const $table = $(table);
+      $table.attr('bgcolor', '#ef7800');
+      setStyleProp($table, 'background-color', '#ef7800');
+    });
+    $section.find('.section-pad-accent').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#ef7800');
+      setStyleProp($cell, 'background-color', '#ef7800');
+    });
+  });
+}
+
 function hardenSectionBackgrounds($) {
   $('[data-layout="true"]').each((_, layout) => {
     const $layout = $(layout);
@@ -463,7 +480,7 @@ function hardenFooterAlignment($) {
     ensureStyle($block, 'text-align:center;width:100%');
   });
 
-  $('.orange-footer .footer-band-title, .orange-footer .footer-band-address p, .orange-footer .footer-band-contact p').each((_, el) => {
+  $('.orange-footer .footer-band-title, .orange-footer .footer-band-address, .orange-footer .footer-band-contact, .orange-footer p.footer-band-address, .orange-footer p.footer-band-contact').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
     ensureStyle($el, 'text-align:center;width:100%');
@@ -514,6 +531,7 @@ function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const $ = cheerio.load(html, { xml: false }, false);
   hardenTables($);
+  hardenAccentSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
   hardenButtons($);
@@ -601,7 +619,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center-v2';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

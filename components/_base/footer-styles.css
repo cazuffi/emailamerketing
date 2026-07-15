@@ -10,11 +10,15 @@
   margin-bottom: 16px !important;
 }
 .footer-band-address,
-.footer-band-contact {
+.footer-band-contact,
+p.footer-band-address,
+p.footer-band-contact {
   text-align: center;
 }
-.footer-band-address p,
-.footer-band-contact p {
+.footer-band-address,
+.footer-band-contact p,
+p.footer-band-address,
+p.footer-band-contact {
   color: #f4f4f4 !important;
   font-size: 13px !important;
   line-height: 1.65 !important;
@@ -74,10 +78,16 @@
     line-height: 1.3 !important;
     margin-bottom: 14px !important;
   }
-  .footer-band-address p,
-  .footer-band-contact p {
+  p.footer-band-address,
+  p.footer-band-contact {
     font-size: 13px !important;
     line-height: 1.65 !important;
+  }
+  p.footer-band-address {
+    margin: 0 0 10px 0 !important;
+  }
+  p.footer-band-contact {
+    margin: 0 !important;
   }
   .orange-footer .section-pad-accent {
     overflow: visible !important;
