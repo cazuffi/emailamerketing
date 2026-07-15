@@ -3,7 +3,43 @@
    data-container wrappers, and display:block on section tables.
    These rules target the HTML as it exists AFTER that transform. */
 
-/* ---- data-container flex wrappers ---- */
+/* ---- canvas centering (Gmail ignores margin:auto on divs) ---- */
+.email-canvas-outer,
+.email-canvas-cell {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-layout="true"] {
+  width: 100% !important;
+  max-width: 640px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+[data-section="true"] > table.outer {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 100% !important;
+}
+
+/* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
+[data-section="true"] [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
+  flex-basis: auto !important;
+  align-self: auto !important;
+}
+
+.accent-band [data-container="true"] {
+  text-align: left !important;
+}
+
+/* ---- data-container flex wrappers (module-specific) ---- */
 .orange-footer [data-container="true"],
 .footer-legal [data-container="true"],
 .footer-band-content [data-container="true"],

@@ -97,14 +97,20 @@ reprocesses it. Confirmed transformations:
 - Wraps every block in a fixed-pixel-width flex `data-container` div; adds
   `columns-equal-class` and `display:block` to sections; normalizes image
   `max-width` to 100%. The export ships `d365-send-compat.css` to override
-  these transforms (footer centering, three-up stacking, header width).
+  these transforms (canvas centering, flex wrapper neutralization, footer
+  centering, three-up stacking, header width).
+- **Multiple `...` expanders in Gmail** — one inside a module and one for the
+  rest of the email usually means (1) Dynamics split the module into separate
+  `data-editorblocktype` blocks that Gmail collapses, and/or (2) the HTML still
+  exceeds the ~102 KB clip limit. `accent-band` ships headline + body in one
+  Text block to avoid the in-module expander.
 
 ## Verify you pasted the latest export
 
 The first line of Copy HTML must be:
 
 ```html
-<!-- email-marketing/2.0.0+d365-send-compat+css-prune -->
+<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center -->
 ```
 
 If that comment is missing, you are not testing the current build. Run
@@ -118,6 +124,14 @@ message"** (often a `...` control). The export **prunes CSS to modules in your
 campaign** so typical emails stay under the limit. If you stack many modules
 (20+), check size in Studio or run `npm test` — the audit fails when a standard
 fixture exceeds the clip threshold.
+
+## Gmail horizontal alignment
+
+Gmail often ignores `margin: auto` on the `[data-layout="true"]` div, especially
+after Dynamics sets section tables to `display:block; width:640px`. The export
+wraps the layout in a full-width centering table (`email-canvas-outer`) and
+ships CSS to center block-level outer tables and neutralize fixed-width flex
+`data-container` wrappers.
 
 ## Buttons
 

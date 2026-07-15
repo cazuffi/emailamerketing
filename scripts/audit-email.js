@@ -14,13 +14,14 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
   title: 'Audit fixture',
   modules: [
     'header-standard',
+    'accent-band',
     'cta-dual',
     'cta-band-grey',
     'comparison-split',
@@ -57,6 +58,20 @@ assert.match(
   /background-color:\s*#ffffff/i,
   'The email content wrapper must carry an inline white background',
 );
+assert.strictEqual($('.email-canvas-outer').length, 1);
+assert.strictEqual($('.email-canvas-cell').attr('align'), 'center');
+assert.strictEqual($('[data-layout="true"]').parent('.email-canvas-cell').length, 1);
+assert.match(
+  exported,
+  /\.email-canvas-outer[\s\S]*?\[data-layout="true"\][\s\S]*?margin-left:\s*auto !important;/i,
+  'Post-paste CSS must center the layout shell in Gmail',
+);
+assert.match(
+  exported,
+  /\[data-section="true"\] \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
+  'Post-paste CSS must neutralize Dynamics flex data-container wrappers',
+);
+assert.strictEqual($('.accent-band [data-editorblocktype="Text"]').length, 1);
 assert.strictEqual(
   $('.header-standard-section > table.outer').attr('bgcolor'),
   '#ffffff',
