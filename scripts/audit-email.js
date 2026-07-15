@@ -121,10 +121,11 @@ assert.match(
 );
 assert.match(
   getOutlookFallbackCss(),
-  /\.cta-dual-section \.buttonTable,[\s\S]*?\.cta-dual-section \.button-outline-table[\s\S]*?width:\s*284px !important;/i,
-  'Outlook desktop dual CTA tables must use equal fixed widths to avoid Word rounding differences',
+  /\.cta-dual-section \.buttonTable,[\s\S]*?\.cta-dual-section \.button-outline-table[\s\S]*?width:\s*100% !important;/i,
+  'Outlook desktop dual CTA tables must fill their equal-width columns',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
+assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');
 
@@ -188,16 +189,14 @@ for (const key of [
 const dualColumns = $('.cta-dual-section .cta-dual-column');
 assert.strictEqual(dualColumns.length, 2);
 dualColumns.each((_, cell) => {
+  assert.match($(cell).attr('width') || '', /^50%$/);
+  assert.strictEqual($(cell).attr('align'), 'center');
+  assert.strictEqual($(cell).attr('valign'), 'top');
   const style = $(cell).attr('style') || '';
-  assert.match(style, /display:block/i);
-  assert.match(style, /width:100%/i);
-  assert.match(style, /max-width:100%/i);
+  assert.match(style, /width:50%/i);
+  assert.match(style, /text-align:center/i);
 });
-assert.match(
-  exported,
-  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.cta-dual-section \.cta-dual-column[\s\S]*?display:\s*inline-block !important;/i,
-  'Desktop enhancement must restore dual CTA side-by-side layout',
-);
+assert.strictEqual($('.cta-dual-section .cta-dual-table').length, 1);
 assert.match(
   exported,
   /<meta[^>]+name="color-scheme"[^>]+content="light only"/i,
@@ -213,13 +212,22 @@ assert.match(
   /\.header-logo-safe[\s\S]*background-color:\s*#ffffff/i,
   'Header logo must ship with a white safe-area wrapper',
 );
+assert.match(
+  buildEmailHtml({ title: 'subhead audit', modules: ['eyebrow-headline'], annotate: false }),
+  /class="subhead-orange"[^>]*style="[^"]*color:#ef7800/i,
+  'Orange subheadlines must carry inline color for Gmail',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'video audit', modules: ['video-preview'], annotate: false }),
+    { xml: false },
+    false,
+  )('.video-preview-section .video-preview-caption center').length,
+  1,
+  'Video preview play badge must ship inside a centered wrapper',
+);
 
 assert.strictEqual($('.cta-dual-section [data-container]').length, 0);
-assert.match(
-  exported,
-  /<!--\[if mso\]>[\s\S]*?<table[^>]*width="592"[\s\S]*?<td width="296"[\s\S]*?<td width="296"/i,
-  'Dual CTA must include an Outlook desktop ghost table',
-);
 
 const dualCells = $('.cta-dual-section .buttonCell, .cta-dual-section .button-outline-cell');
 assert.strictEqual(dualCells.length, 2);
@@ -390,9 +398,7 @@ $fallback('.three-up-benefits-section .three-up-col').each((_, col) => {
   assert.match(style, /max-width:100%/i, 'No-media three-up columns must stay full width');
 });
 $fallback('.cta-dual-section .cta-dual-column').each((_, col) => {
-  const style = $fallback(col).attr('style') || '';
-  assert.match(style, /display:block/i, 'No-media dual CTA columns must stack in source HTML');
-  assert.match(style, /max-width:100%/i, 'No-media dual CTA columns must stay full width');
+  assert.match($fallback(col).attr('width') || '', /^50%$/, 'No-media dual CTA columns must keep equal table widths');
 });
 
 assert.strictEqual(

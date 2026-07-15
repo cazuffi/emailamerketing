@@ -443,7 +443,19 @@ function hardenFooterAlignment($) {
   $('.footer-legal, .footer-legal p, .footer-legal a, .contentBlockWrapper').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
-    ensureStyle($el, 'text-align:center');
+    ensureStyle($el, 'text-align:center;width:100%');
+  });
+
+  $('.footer-legal [data-editorblocktype], .footer-legal [data-protected]').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'text-align:center;width:100%');
+  });
+
+  $('.video-preview-section .video-preview-caption, .video-preview-section .play-badge-table').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'text-align:center;margin-left:auto;margin-right:auto');
   });
 }
 

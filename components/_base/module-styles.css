@@ -110,6 +110,18 @@
   margin-top: 8px;
 }
 
+.subhead-orange,
+h2.subhead-orange {
+  color: #ef7800 !important;
+}
+
+.video-preview-section .video-preview-caption,
+.video-preview-section .play-badge-table {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 .headline-block-center,
 .headline-block-center h2,
 .headline-block-center h3,

@@ -100,9 +100,18 @@ a.button-outline-link,
   border: 0;
 }
 
-/* Dual CTA — equal-width, equal-height button boxes side by side */
+/* Dual CTA — equal-width table columns side by side */
+.cta-dual-section .cta-dual-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 .cta-dual-section .cta-dual-column {
+  vertical-align: top;
   text-align: center;
+}
+.cta-dual-section .buttonWrapper {
+  margin-left: auto;
+  margin-right: auto;
 }
 .cta-dual-section .buttonTable,
 .cta-dual-section .button-outline-table {
@@ -490,21 +499,6 @@ img.header-logo-img--compact {
     line-height: 1.6 !important;
   }
   .three-up-benefits-section .three-up-cell-last {
-    padding-bottom: 0 !important;
-  }
-
-  .cta-dual-section .cta-dual-row {
-    font-size: 0 !important;
-    line-height: 0 !important;
-  }
-  .cta-dual-section .cta-dual-column {
-    display: inline-block !important;
-    width: 100% !important;
-    max-width: 296px !important;
-    padding: 0 6px !important;
-    vertical-align: top !important;
-  }
-  .cta-dual-section .cta-dual-primary {
     padding-bottom: 0 !important;
   }
 }
