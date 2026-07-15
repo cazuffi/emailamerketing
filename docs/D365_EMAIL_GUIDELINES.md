@@ -73,6 +73,14 @@ The orange footer is also a plain single-column presentation table.
 When you paste the exported HTML into a Dynamics content editor and send, Dynamics
 reprocesses it. Confirmed transformations:
 
+- **Adds `columns-equal-class` to every section** — even modules that did not
+  ship with it. This is editor metadata, not a send bug.
+- **Wraps every `data-editorblocktype` block** in a fixed-width flex container:
+  `style="width:592px; flex:0 0 592px; display:flex; flex-direction:column"`.
+  These left-align content in Gmail mobile unless overridden.
+- **Sets section `table.outer` to `display:block; width:640px`** — breaks browser
+  width alignment unless `.outer { display:table !important }` is present.
+
 - **Flattens `data-editorblocktype="Button"` blocks** into a bare `<a>`, deleting
   the surrounding bulletproof table (and the `<td>` fill Outlook desktop needs).
   The export step now strips this attribute so the table survives. Never rely on
@@ -85,8 +93,20 @@ reprocesses it. Confirmed transformations:
   tables, and normal tables (comparison, divider, footer).
 - Wraps every block in a fixed-pixel-width flex `data-container` div; adds
   `columns-equal-class` and `display:block` to sections; normalizes image
-  `max-width` to 100%. These are non-destructive — the mobile CSS forces
-  `[data-container]` wrappers fluid so they cannot overflow.
+  `max-width` to 100%. The export ships `d365-send-compat.css` to override
+  these transforms (footer centering, three-up stacking, header width).
+
+## Verify you pasted the latest export
+
+The first line of Copy HTML must be:
+
+```html
+<!-- email-marketing/2.0.0+d365-send-compat -->
+```
+
+If that comment is missing, you are not testing the current build. Run
+`git pull`, `npm test`, `npm run build`, rebuild in Studio, and Copy HTML again.
+Do not reuse a saved Dynamics email or an old Studio build file.
 
 ## Buttons
 

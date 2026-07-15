@@ -263,11 +263,16 @@ function hardenSectionBackgrounds($) {
 }
 
 function hardenTypography($) {
+  $('h2').each((_, el) => {
+    const $h2 = $(el);
+    if ($h2.closest('.accent-band').length) return;
+    if ($h2.hasClass('footer-band-title')) return;
+    ensureStyle($h2, 'mso-line-height-rule:exactly');
+    if (!$h2.hasClass('subhead-orange')) $h2.addClass('subhead-orange');
+    setStyleProp($h2, 'color', '#ef7800');
+  });
   $('h1, h3').each((_, el) => {
     ensureStyle($(el), 'font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly');
-  });
-  $('h2').each((_, el) => {
-    ensureStyle($(el), 'mso-line-height-rule:exactly');
   });
   $('p').each((_, el) => {
     ensureStyle($(el), 'mso-line-height-rule:exactly');
@@ -596,6 +601,8 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat';
+
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const flattened = flattenOutlookConditionals(html);
@@ -607,7 +614,7 @@ function sanitizeExportHtml(html) {
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
   normalizeInlineBackgrounds($);
-  return flattenOutlookConditionals($.html());
+  return `<!-- ${BUILD_MARKER} -->\n${flattenOutlookConditionals($.html())}`;
 }
 
 module.exports = { hardenEmailHtml, sanitizeExportHtml };

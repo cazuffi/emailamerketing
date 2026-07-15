@@ -1,3 +1,4 @@
+<!-- email-marketing/2.0.0+d365-send-compat -->
 
 
 
@@ -1626,6 +1627,211 @@ a[x-apple-data-detectors],
   .footer-legal a { font-size: 11px !important; }
 }
 
+/* Dynamics 365 editor/send transform overrides.
+   After paste, Dynamics adds columns-equal-class, fixed-width flex
+   data-container wrappers, and display:block on section tables.
+   These rules target the HTML as it exists AFTER that transform. */
+
+/* ---- data-container flex wrappers ---- */
+.orange-footer [data-container="true"],
+.footer-legal [data-container="true"],
+.footer-band-content [data-container="true"],
+.video-preview-section [data-container="true"],
+.three-up-benefits-section [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  align-self: stretch !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.header-standard-section .header-logo-column [data-container="true"],
+.header-standard-section .header-tagline-column [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.header-standard-section .header-logo-column [data-container="true"] {
+  text-align: center !important;
+}
+
+.header-standard-section .header-tagline-column [data-container="true"] {
+  text-align: center !important;
+}
+
+.cta-dual-section [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  text-align: center !important;
+}
+
+/* ---- three benefits: always stack unless desktop table is active ---- */
+.three-up-benefits-section .three-up-mobile-only {
+  display: table !important;
+  width: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.three-up-benefits-section .three-up-desktop-only {
+  display: none !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  mso-hide: all;
+}
+
+/* Legacy inline-block markup (pre-dual-table exports) */
+.three-up-benefits-section .three-up-col {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 0 20px 0 !important;
+  box-sizing: border-box !important;
+  vertical-align: top !important;
+}
+
+.three-up-benefits-section .three-up-cell-last,
+.three-up-benefits-section .three-up-col:last-child {
+  padding-bottom: 0 !important;
+}
+
+.three-up-benefits-section .three-up-row {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* ---- dual CTA: table markup preferred; legacy div fallback stacks ---- */
+.cta-dual-section .cta-dual-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+.cta-dual-section .cta-dual-table .cta-dual-column {
+  display: table-cell !important;
+  width: 50% !important;
+  max-width: 50% !important;
+  padding: 0 6px !important;
+  vertical-align: top !important;
+}
+
+.cta-dual-section .cta-dual-column {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 0 12px 0 !important;
+  box-sizing: border-box !important;
+}
+
+.cta-dual-section .cta-dual-outline {
+  padding-bottom: 0 !important;
+}
+
+/* ---- video play badge ---- */
+.play-badge-table,
+[data-container="true"] .play-badge-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.video-preview-section [data-editorblocktype="Text"],
+.video-preview-caption {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* ---- footer centering ---- */
+.orange-footer .footer-band-content,
+.orange-footer .footer-band-content center,
+.orange-footer .footer-band-title,
+.orange-footer .footer-band-address,
+.orange-footer .footer-band-address p,
+.orange-footer .footer-band-contact,
+.orange-footer .footer-band-contact p,
+.footer-legal,
+.footer-legal center,
+.footer-legal p,
+.footer-legal a,
+.footer-legal .contentBlockWrapper {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* ---- header white fill (dark mode) ---- */
+.header-standard-section,
+.header-standard-section .outer,
+.header-standard-section .section-pad-tight,
+.header-standard-section .header-logo-column,
+.header-standard-section .header-logo-cell {
+  background-color: #ffffff !important;
+}
+
+.header-standard-section .header-logo-wrap,
+.header-standard-section .imageWrapper {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  background-color: transparent !important;
+}
+
+/* ---- orange subheadline h2 ---- */
+h2.subhead-orange,
+.eyebrow-headline h2,
+.intro-headline h2 {
+  color: #ef7800 !important;
+}
+
+@media only screen and (min-width: 641px) {
+  .header-standard-section .header-logo-column [data-container="true"] {
+    text-align: left !important;
+  }
+
+  .header-standard-section .header-tagline-column [data-container="true"] {
+    text-align: right !important;
+  }
+
+  .three-up-benefits-section .three-up-mobile-only {
+    display: none !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    mso-hide: all;
+  }
+
+  .three-up-benefits-section .three-up-desktop-only {
+    display: table !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .three-up-benefits-section .three-up-desktop-only .three-up-col {
+    display: table-cell !important;
+    width: 33% !important;
+    max-width: 33% !important;
+    padding: 0 6px !important;
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  .cta-dual-section .cta-dual-table .cta-dual-column,
+  .cta-dual-section .cta-dual-column {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 12px 0 !important;
+  }
+
+  .cta-dual-section .cta-dual-outline {
+    padding-bottom: 0 !important;
+  }
+}
+
 </style>
 <!--[if mso]>
 <style type="text/css">
@@ -1894,7 +2100,7 @@ a.button-outline-link {
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" border="0" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt"><tbody><tr>
 <th class="inner" style="padding: 0; font-weight: normal;" role="presentation">
 <div data-editorblocktype="Text"><h1 style="font-weight:bold;mso-ansi-font-weight:bold;mso-line-height-rule:exactly">RockStar® Heavy Duty Connectors with SNAP IN Technology</h1></div>
-<div data-editorblocktype="Text" style="margin-top: 4px;"><h2 style="mso-line-height-rule:exactly">Install up to 60% faster — without compromising reliability</h2></div>
+<div data-editorblocktype="Text" style="margin-top: 4px;"><h2 style="mso-line-height-rule:exactly;color:#ef7800" class="subhead-orange">Install up to 60% faster — without compromising reliability</h2></div>
 </th>
 </tr></tbody></table>
 </th>
@@ -2070,7 +2276,7 @@ a.button-outline-link {
 <td class="footer-band-content" align="center" style="text-align: center; padding: 0; width: 100%;" role="presentation">
 <center style="width: 100%; text-align: center;" align="center">
 <div data-editorblocktype="Text" align="center" style="text-align: center; width: 100%;">
-<h2 class="footer-band-title" align="center" style="color: #ffffff; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 22px; font-weight: bold; margin: 0 0 16px 0; line-height: 1.25; text-align: center; width: 100%;mso-line-height-rule:exactly;mso-ansi-font-weight:bold">Weidmuller USA</h2>
+<h2 class="footer-band-title" align="center" style="color: #ffffff; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 22px; font-weight: bold; margin: 0 0 16px 0; line-height: 1.25; text-align: center; width: 100%;mso-ansi-font-weight:bold">Weidmuller USA</h2>
 </div>
 <div data-editorblocktype="Text" class="footer-band-address" align="center" style="text-align: center; width: 100%;">
 <p align="center" style="margin: 0 0 10px 0; text-align: center; width: 100%; color: #ffffff; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;mso-line-height-rule:exactly">Weidmuller Inc.<br>821 Southlake Blvd.<br>Richmond, VA 23236</p>

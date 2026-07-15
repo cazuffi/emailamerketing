@@ -7,11 +7,14 @@ const path = require('path');
 const { buildEmailHtml, loadManifest, assembleFromSource } = require('./assemble');
 const { hardenEmailHtml, sanitizeExportHtml } = require('./harden-email');
 const { extractFields } = require('./module-fields');
+const { simulateDynamicsPaste } = require('./simulate-dynamics-paste');
 const {
   getOutlookFallbackCss,
   getOutlookSimulationCss,
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
+
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat';
 
 const options = {
   title: 'Audit fixture',
@@ -192,6 +195,36 @@ dualColumns.each((_, cell) => {
   assert.match(style, /text-align:center/i);
 });
 assert.strictEqual($('.cta-dual-section .cta-dual-table').length, 1);
+assert.match(
+  exported,
+  new RegExp(`<!-- ${BUILD_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} -->`),
+  'Export must include a build marker so pasted HTML can be verified',
+);
+assert.match(
+  exported,
+  /d365-send-compat|three-up-benefits-section \[data-container="true"\]/i,
+  'Export must ship Dynamics send-transform CSS overrides',
+);
+assert.match(
+  exported,
+  /color:#ef7800/i,
+  'Export must inline orange color on subheadline h2 elements',
+);
+
+const simulatedDynamics = simulateDynamicsPaste(exported);
+assert.match(simulatedDynamics, /columns-equal-class/i, 'Dynamics simulation must add columns-equal-class');
+assert.match(simulatedDynamics, /data-container="true"/i, 'Dynamics simulation must wrap editor blocks');
+assert.match(
+  exported,
+  /\.three-up-benefits-section \.three-up-col[\s\S]*?display:\s*block !important/i,
+  'Dynamics send CSS must force legacy three-up columns to stack',
+);
+assert.match(
+  exported,
+  /\.orange-footer \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
+  'Dynamics send CSS must center footer containers',
+);
+
 assert.match(
   exported,
   /<meta[^>]+name="color-scheme"[^>]+content="light only"/i,
