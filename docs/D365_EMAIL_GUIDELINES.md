@@ -110,7 +110,7 @@ reprocesses it. Confirmed transformations:
 The first line of Copy HTML must be:
 
 ```html
-<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-layout-v3 -->
+<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v4 -->
 ```
 
 If that comment is missing, you are not testing the current build. Run
@@ -127,10 +127,11 @@ fixture exceeds the clip threshold.
 
 ## Gmail horizontal alignment
 
-Gmail often ignores `margin: auto` on the `[data-layout="true"]` div, especially
-after Dynamics sets section tables to `display:block; width:640px`. The export
-wraps the layout in a full-width centering table (`email-canvas-outer`) and
-ships CSS to center block-level outer tables and neutralize fixed-width flex
+Gmail often ignores `margin: auto` on block-level `[data-layout="true"]` divs.
+After a Dynamics save, the editor adds its own outer `div[data-layout]` with only
+`margin: auto` and nests your content inside. The export centers with
+`body { text-align: center }` plus `div[data-layout] { display: inline-block }`,
+forces `table.outer` back to `display: table`, and neutralizes fixed-width flex
 `data-container` wrappers.
 
 ## Buttons

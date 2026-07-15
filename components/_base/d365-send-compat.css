@@ -3,19 +3,15 @@
    data-container wrappers, and display:block on section tables.
    These rules target the HTML as it exists AFTER that transform. */
 
-/* ---- canvas centering (Gmail ignores margin:auto on divs) ---- */
-.email-canvas-outer,
-.email-canvas-cell {
+/* ---- canvas centering (Gmail ignores margin:auto on block divs) ---- */
+body {
   width: 100% !important;
-  max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-}
-
-.email-canvas-cell {
   text-align: center !important;
 }
 
+body > div[data-layout="true"],
 [data-layout="true"] {
   display: inline-block !important;
   vertical-align: top !important;
@@ -26,14 +22,13 @@
   text-align: left !important;
 }
 
-table.outer {
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
+table.outer,
 [data-section="true"] > table.outer {
   width: 100% !important;
   max-width: 640px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: table !important;
 }
 
 /* Orange accent fill on table cells only — not the section wrapper (Gmail clip
@@ -89,6 +84,15 @@ table.outer {
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+.orange-footer .footer-band-content,
+.orange-footer .footer-band-inner,
+.footer-legal .footer-legal-center,
+.three-up-benefits-section .three-up-stack-cell > table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
 }
 
 .header-standard-section .header-logo-column [data-container="true"],

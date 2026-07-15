@@ -10,6 +10,8 @@ body {
   background-color: #f4f4f4;
   margin: 0;
   padding: 0;
+  width: 100%;
+  text-align: center;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
 }

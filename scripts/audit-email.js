@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-layout-v3';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v4';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -59,9 +59,16 @@ assert.match(
   /background-color:\s*#ffffff/i,
   'The email content wrapper must carry an inline white background',
 );
-assert.strictEqual($('.email-canvas-outer').length, 1);
-assert.strictEqual($('.email-canvas-cell').attr('align'), 'center');
-assert.strictEqual($('[data-layout="true"]').parent('.email-canvas-cell').length, 1);
+assert.match(
+  exported,
+  /body\s*\{[\s\S]*?text-align:\s*center/i,
+  'Body must center the inline-block layout shell for Gmail',
+);
+assert.match(
+  exported,
+  /body\s*>\s*div\[data-layout="true"\][\s\S]*?display:\s*inline-block !important;/i,
+  'Post-paste CSS must center Dynamics outer layout shell',
+);
 assert.match(
   exported,
   /\[data-layout="true"\][\s\S]*?display:\s*inline-block !important;/i,
@@ -166,9 +173,10 @@ assert.match(
   /\.cta-dual-section \.buttonTable,[\s\S]*?\.cta-dual-section \.button-outline-table[\s\S]*?width:\s*100% !important;/i,
   'Outlook desktop dual CTA tables must fill their equal-width columns',
 );
-assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
-assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length, 1);
-assert.strictEqual($('.orange-footer .footer-band-content > center').length, 1);
+assert.strictEqual($('.orange-footer > table > tbody > tr > td.footer-band-content, .orange-footer .footer-band-content').length, 1);
+assert.strictEqual($('.orange-footer .footer-band-content > center').length, 0);
+assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length, 0);
+assert.strictEqual($('.footer-legal .footer-legal-center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '100%');
 
@@ -274,6 +282,18 @@ assert.match(
 const simulatedDynamics = simulateDynamicsPaste(exported);
 assert.match(simulatedDynamics, /columns-equal-class/i, 'Dynamics simulation must add columns-equal-class');
 assert.match(simulatedDynamics, /data-container="true"/i, 'Dynamics simulation must wrap editor blocks');
+assert.strictEqual($('[data-layout="true"]').length, 1, 'Export keeps a single layout shell');
+assert.strictEqual(
+  $('[data-layout="true"]').parent('[data-layout="true"]').length,
+  0,
+  'Export must not nest layout shells before Dynamics save',
+);
+assert.match(simulatedDynamics, /<body[^>]*>/i, 'Dynamics simulation must wrap export in body');
+assert.match(
+  simulatedDynamics,
+  /<div data-layout="true"[^>]*max-width:\s*640px/i,
+  'Dynamics simulation must add the outer layout shell seen after save',
+);
 assert.match(
   exported,
   /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important/i,
