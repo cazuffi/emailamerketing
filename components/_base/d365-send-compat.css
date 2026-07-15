@@ -144,6 +144,51 @@ table.outer,
   width: 100% !important;
 }
 
+.urgency-band[data-section="true"],
+.wrap-section.urgency-band {
+  background-color: #333333 !important;
+}
+
+.urgency-band table.outer,
+.urgency-band .section-pad-tight {
+  background-color: #333333 !important;
+}
+
+.urgency-band .section-pad-tight,
+.urgency-band [data-editorblocktype="Text"],
+.urgency-band [data-editorblocktype="Text"] p {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.urgency-band [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.cta-band-grey[data-section="true"],
+.wrap-section.cta-band-grey {
+  background-color: #f4f4f4 !important;
+}
+
+.cta-band-grey > table.outer,
+.cta-band-grey table.outer,
+.cta-band-grey .cta-band-grey-shell {
+  width: 100% !important;
+  max-width: 640px !important;
+  background-color: #f4f4f4 !important;
+}
+
+.accent-band + .cta-band-grey[data-section="true"] > table.outer,
+.accent-band + .cta-band-grey table.outer {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 /* ---- data-container flex wrappers (module-specific) ---- */
 .orange-footer [data-container="true"],
 .footer-legal [data-container="true"],
@@ -537,6 +582,24 @@ u + .body .accent-band [data-container="true"] {
   max-width: 100% !important;
   display: block !important;
   text-align: left !important;
+}
+
+u + .body .urgency-band [data-container="true"],
+u + .body .urgency-band [data-editorblocktype="Text"],
+u + .body .urgency-band p {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+u + .body .cta-band-grey table.outer,
+u + .body .cta-band-grey .cta-band-grey-shell {
+  width: 100% !important;
+  max-width: 640px !important;
+  background-color: #f4f4f4 !important;
 }
 
 u + .body .three-up-benefits-section .three-up-stack-cell [data-container="true"] {

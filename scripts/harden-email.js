@@ -403,9 +403,63 @@ function unwrapPassengerDivs($) {
 }
 
 function shouldUseSectionGapShim($section) {
-  if ($section.hasClass('accent-band') || $section.hasClass('orange-footer')) return false;
+  if (
+    $section.hasClass('accent-band') ||
+    $section.hasClass('orange-footer') ||
+    $section.hasClass('urgency-band') ||
+    $section.hasClass('cta-band-grey')
+  ) {
+    return false;
+  }
   if ($section.hasClass('divider-line-section') || $section.find('.divider-line-cell').length) return false;
   return true;
+}
+
+function hardenUrgencyBand($) {
+  $('.urgency-band[data-section="true"]').each((_, section) => {
+    const $section = $(section);
+    setStyleProp($section, 'background-color', '#333333');
+    $section.find('table.outer').each((__, table) => {
+      const $table = $(table);
+      $table.attr('bgcolor', '#333333');
+      $table.attr('align', 'center');
+      ensureStyle($table, 'width:100%;max-width:640px;margin-left:auto;margin-right:auto;background-color:#333333');
+    });
+    $section.find('.section-pad-tight').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('bgcolor', '#333333');
+      ensureStyle($cell, 'text-align:center;width:100%;background-color:#333333');
+    });
+    $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] p').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenCtaBandGrey($) {
+  $('.cta-band-grey[data-section="true"]').each((_, section) => {
+    const $section = $(section);
+    setStyleProp($section, 'background-color', '#f4f4f4');
+    $section.find('table.outer').each((__, table) => {
+      const $table = $(table);
+      $table.attr('bgcolor', '#f4f4f4');
+      $table.attr('align', 'center');
+      ensureStyle($table, 'width:100%;max-width:640px;margin-left:auto;margin-right:auto;background-color:#f4f4f4');
+    });
+    $section.find('.cta-band-grey-shell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#f4f4f4');
+      ensureStyle($cell, 'background-color:#f4f4f4;width:100%');
+    });
+  });
 }
 
 function hardenAccentBands($) {
@@ -768,6 +822,8 @@ function hardenEmailHtml(html) {
   hardenOuterTableCentering($);
   hardenAccentSections($);
   hardenAccentBands($);
+  hardenUrgencyBand($);
+  hardenCtaBandGrey($);
   hardenOrangeFooterSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
@@ -861,7 +917,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v8';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -873,6 +929,8 @@ function sanitizeExportHtml(html) {
   hardenButtons($);
   hardenHeaderAlignment($);
   hardenAccentBands($);
+  hardenUrgencyBand($);
+  hardenCtaBandGrey($);
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);

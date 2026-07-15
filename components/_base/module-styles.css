@@ -427,6 +427,11 @@ h2.subhead-orange {
 }
 
 .urgency-band { background-color: #333333; }
+.urgency-band .section-pad-tight,
+.urgency-band [data-editorblocktype="Text"],
+.urgency-band [data-editorblocktype="Text"] p {
+  text-align: center !important;
+}
 .urgency-date {
   font-family: ARIALNB, Arial, Verdana, sans-serif;
   font-size: 14px;

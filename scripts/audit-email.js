@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v8';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -194,6 +194,13 @@ assert.match(
   'Divider must ship an orange spacer image for Gmail iOS',
 );
 assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
+assert.strictEqual($('.cta-band-grey > table.section-gap-shim').length, 0, 'Grey CTA band must not use gap shims');
+assert.strictEqual($('.urgency-band > table.section-gap-shim').length, 0, 'Urgency band must not use gap shims');
+assert.match(
+  buildEmailHtml({ title: 'urgency audit', modules: ['urgency-band'], annotate: false }),
+  /urgency-band[\s\S]*text-align:center/i,
+  'Urgency band must ship centered text styles',
+);
 assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
 assert.strictEqual(
   cheerio.load(
