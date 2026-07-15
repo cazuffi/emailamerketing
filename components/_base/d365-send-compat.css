@@ -145,13 +145,20 @@ table.outer,
   width: 100% !important;
   max-width: 640px !important;
   background-color: #f4f4f4 !important;
-  border-left: 0 !important;
-  border-right: 0 !important;
+}
+
+.cta-band-grey .cta-band-grey-shell {
+  border-left: 4px solid #ef7800 !important;
+  border-right: 4px solid #ffffff !important;
 }
 
 .accent-band + .cta-band-grey[data-section="true"],
 .wrap-section.accent-band + .wrap-section.cta-band-grey {
-  background-color: #f4f4f4 !important;
+  background-color: #ffffff !important;
+}
+
+.accent-band + .cta-band-grey .cta-band-grey-shell {
+  border-left: 4px solid #ffffff !important;
 }
 
 .accent-band + .cta-band-grey[data-section="true"] > table.outer,

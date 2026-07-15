@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v11';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v12';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -514,8 +514,8 @@ const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
 // full-width with the button correctly on the right in a Dynamics send.
 assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
 assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
-assert.doesNotMatch(greyCtaShell.attr('style') || '', /border-left/i, 'Grey CTA must not use a left edge rail');
-assert.doesNotMatch(greyCtaShell.attr('style') || '', /border-right/i, 'Grey CTA must not use a right edge inset');
+assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
+assert.match(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
 assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
@@ -528,8 +528,13 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
-  'Post-paste CSS must keep grey CTA edge rails removed',
+  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*4px solid #ef7800 !important;[\s\S]*?border-right:\s*4px solid #ffffff !important;/i,
+  'Post-paste CSS must keep grey CTA desktop edge rails',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
+  'Mobile grey CTA must remove both desktop edge rails',
 );
 
 assert.strictEqual(

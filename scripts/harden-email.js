@@ -444,10 +444,7 @@ function hardenCtaBandGrey($) {
     $section.find('.cta-band-grey-shell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f4f4f4');
-      removeStyleProp($cell, 'border-left');
-      removeStyleProp($cell, 'border-right');
-      removeStyleProp($cell, 'border');
-      ensureStyle($cell, 'background-color:#f4f4f4;width:100%');
+      ensureStyle($cell, 'background-color:#f4f4f4;width:100%;border-left:4px solid #ef7800;border-right:4px solid #ffffff');
     });
   });
 }
@@ -878,7 +875,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v11';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v12';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

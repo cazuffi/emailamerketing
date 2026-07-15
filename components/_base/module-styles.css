@@ -458,6 +458,8 @@ h2.subhead-orange {
 .cta-band-grey { background-color: #f4f4f4; }
 .cta-band-grey .cta-band-grey-shell {
   padding: 26px 28px !important;
+  border-left: 4px solid #ef7800;
+  border-right: 4px solid #ffffff;
 }
 .cta-band-grey .cta-band-grey-title {
   margin-bottom: 6px !important;
@@ -663,6 +665,8 @@ h2.subhead-orange {
   .accent-band .stack-column { text-align: center !important; }
   .cta-band-grey .cta-band-grey-shell {
     padding: 16px 20px !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
   }
   .cta-band-grey .cta-band-grey-copy-inner {
     padding-left: 0 !important;
