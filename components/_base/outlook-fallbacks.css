@@ -180,9 +180,8 @@ a.button-outline-link {
   margin-right: auto !important;
   display: block !important;
   width: 200px !important;
-  height: 23px !important;
+  height: auto !important;
   max-width: 200px !important;
-  line-height: 23px !important;
   mso-line-height-rule: exactly !important;
 }
 
@@ -191,7 +190,7 @@ a.button-outline-link {
 .header-standard-section .header-logo-column [data-editorblocktype="Image"],
 .header-standard-section .header-logo-column .imageWrapper,
 .header-standard-section .header-logo-wrap {
-  line-height: 23px !important;
+  line-height: normal !important;
   mso-line-height-rule: exactly !important;
   font-size: 15px !important;
   background-color: #ffffff !important;

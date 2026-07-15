@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v15';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v16';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -128,6 +128,8 @@ assert.strictEqual($('.header-standard-section .header-layout-table').length, 1)
 const taglineCell = $('.header-standard-section .header-tagline-cell');
 const logoCell = $('.header-standard-section .header-logo-cell');
 assert.strictEqual(logoCell.attr('align'), 'left');
+assert.strictEqual(logoCell.attr('valign'), 'top');
+assert.match(logoCell.attr('style') || '', /vertical-align:top/i);
 assert.strictEqual(taglineCell.attr('valign'), 'middle');
 assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
 assert.match(
@@ -445,8 +447,8 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-logo-safe[\s\S]*line-height:23px/i,
-  'Header logo shell must span the full header width',
+  /\.header-logo-safe[\s\S]*line-height:\s*normal/i,
+  'Header logo shell must use natural line-height so Outlook does not clip the image',
 );
 assert.match(
   exported,
@@ -494,13 +496,18 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-standard-section \.header-logo-safe[\s\S]*line-height:\s*23px !important/i,
-  'Header logo shell must use explicit line-height for Outlook',
+  /\.header-standard-section \.header-logo-safe[\s\S]*line-height:\s*normal !important/i,
+  'Header logo shell must use natural line-height for Outlook',
 );
 assert.match(
   exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*auto !important/i,
+  'Header logo must scale naturally in Outlook without fixed-height clipping',
+);
+assert.doesNotMatch(
+  exported,
   /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*23px !important/i,
-  'Header logo must ship explicit height for Outlook',
+  'Header logo must not force a fixed 23px height that clips taller assets',
 );
 assert.match(
   getOutlookFallbackCss(),
@@ -778,7 +785,8 @@ for (const moduleId of allModuleIds) {
 
 const headerLogoStyle = $all('.header-standard-section img.header-logo-img').first().attr('style') || '';
 assert.match(headerLogoStyle, /width:200px/i, 'Header logo must use a fixed desktop width for Outlook');
-assert.match(headerLogoStyle, /height:23px/i, 'Header logo must use a fixed desktop height for Outlook');
+assert.match(headerLogoStyle, /height:auto/i, 'Header logo must preserve natural height for Outlook');
+assert.doesNotMatch(headerLogoStyle, /height:23px/i, 'Header logo must not force a fixed 23px height inline');
 
 for (const selector of ['.article-thumb img', '.team-photo img']) {
   const style = $all(selector).first().attr('style') || '';

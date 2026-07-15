@@ -390,7 +390,7 @@ table.outer,
 .header-standard-section .header-logo-column [data-editorblocktype="Image"] {
   display: block !important;
   width: 100% !important;
-  line-height: 23px !important;
+  line-height: normal !important;
   mso-line-height-rule: exactly !important;
   font-size: 15px !important;
   background-color: #ffffff !important;
@@ -399,7 +399,7 @@ table.outer,
 .header-standard-section img.header-logo-img {
   display: block !important;
   width: 200px !important;
-  height: 23px !important;
+  height: auto !important;
   max-width: 200px !important;
   border: 0 !important;
   outline: none !important;

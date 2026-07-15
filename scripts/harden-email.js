@@ -221,11 +221,10 @@ function hardenImages($) {
   $('img.header-logo-img, .header-logo-cell img').each((_, el) => {
     const $img = $(el);
     const w = Number($img.attr('width')) || 200;
-    const h = Number($img.attr('height')) || 23;
     $img.attr('width', String(w));
-    $img.attr('height', String(h));
-    ensureStyle($img, `display:block;width:${w}px;height:${h}px;mso-line-height-rule:exactly`);
-    removeStyleProp($img, 'max-width');
+    $img.removeAttr('height');
+    removeStyleProp($img, 'height');
+    ensureStyle($img, `display:block;width:${w}px;max-width:${w}px;height:auto;mso-line-height-rule:exactly`);
   });
 }
 
@@ -711,8 +710,8 @@ function hardenHeaderAlignment($) {
     $section.find('.header-logo-column, .header-logo-cell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('align', 'left');
-      $cell.attr('valign', 'middle');
-      ensureStyle($cell, 'background-color:#ffffff;vertical-align:middle;text-align:left;line-height:23px;mso-line-height-rule:exactly');
+      $cell.attr('valign', 'top');
+      ensureStyle($cell, 'background-color:#ffffff;vertical-align:top;text-align:left;line-height:normal;mso-line-height-rule:exactly');
     });
     $section.find('.header-logo-table, .header-logo-safe, .header-logo-wrap, .header-logo-column .imageWrapper, .header-logo-column [data-editorblocktype="Image"]').each((__, wrap) => {
       const $wrap = $(wrap);
@@ -721,14 +720,14 @@ function hardenHeaderAlignment($) {
       removeStyleProp($wrap, 'font-size');
       ensureStyle(
         $wrap,
-        'display:block;width:100%;text-align:left;line-height:23px;mso-line-height-rule:exactly;font-size:15px;background-color:#ffffff',
+        'display:block;width:100%;text-align:left;line-height:normal;mso-line-height-rule:exactly;font-size:15px;background-color:#ffffff',
       );
     });
     $section.find('.header-logo-safe td, .header-logo-table td').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('align', 'left');
-      $cell.attr('valign', 'middle');
-      ensureStyle($cell, 'padding:0;margin:0;line-height:23px;mso-line-height-rule:exactly;font-size:15px;background-color:#ffffff');
+      $cell.attr('valign', 'top');
+      ensureStyle($cell, 'padding:0;margin:0;line-height:normal;mso-line-height-rule:exactly;font-size:15px;background-color:#ffffff');
     });
   });
 
@@ -977,7 +976,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v15';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v16';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
