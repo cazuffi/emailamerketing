@@ -9,10 +9,11 @@
 .footer-band-content [data-container="true"],
 .video-preview-section [data-container="true"],
 .three-up-benefits-section [data-container="true"] {
+  display: block !important;
   width: 100% !important;
   max-width: 100% !important;
-  flex: 0 0 100% !important;
-  align-self: stretch !important;
+  flex: none !important;
+  align-self: auto !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -42,39 +43,25 @@
   text-align: center !important;
 }
 
-/* ---- three benefits: always stack unless desktop table is active ---- */
-.three-up-benefits-section .three-up-mobile-only {
-  display: table !important;
+/* ---- three benefits: single stacked table for non-MSO (no duplicate desktop markup) ---- */
+.three-up-benefits-section .three-up-stack-table {
   width: 100% !important;
-  max-height: none !important;
-  overflow: visible !important;
+  border-collapse: collapse !important;
 }
 
-.three-up-benefits-section .three-up-desktop-only {
-  display: none !important;
-  max-height: 0 !important;
-  overflow: hidden !important;
-  mso-hide: all;
-}
-
-/* Legacy inline-block markup (pre-dual-table exports) */
-.three-up-benefits-section .three-up-col {
+.three-up-benefits-section .three-up-stack-cell {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
-  padding: 0 0 20px 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   box-sizing: border-box !important;
-  vertical-align: top !important;
+  text-align: center !important;
 }
 
 .three-up-benefits-section .three-up-cell-last,
-.three-up-benefits-section .three-up-col:last-child {
+.three-up-benefits-section .three-up-stack-cell:last-child {
   padding-bottom: 0 !important;
-}
-
-.three-up-benefits-section .three-up-row {
-  font-size: inherit !important;
-  line-height: inherit !important;
 }
 
 /* ---- dual CTA: table markup preferred; legacy div fallback stacks ---- */
@@ -165,27 +152,6 @@ h2.subhead-orange,
 
   .header-standard-section .header-tagline-column [data-container="true"] {
     text-align: right !important;
-  }
-
-  .three-up-benefits-section .three-up-mobile-only {
-    display: none !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-    mso-hide: all;
-  }
-
-  .three-up-benefits-section .three-up-desktop-only {
-    display: table !important;
-    width: 100% !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .three-up-benefits-section .three-up-desktop-only .three-up-col {
-    display: table-cell !important;
-    width: 33% !important;
-    max-width: 33% !important;
-    padding: 0 6px !important;
   }
 }
 

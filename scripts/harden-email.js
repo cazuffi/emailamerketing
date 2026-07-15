@@ -484,7 +484,7 @@ function hardenFooterAlignment($) {
   $('.orange-footer [data-container], .footer-legal [data-container]').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
-    ensureStyle($el, 'text-align:center;width:100%');
+    ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
   });
 
   $('.video-preview-section .video-preview-caption, .video-preview-section .play-badge-table').each((_, el) => {

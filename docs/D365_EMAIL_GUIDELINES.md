@@ -44,6 +44,9 @@ The orange footer is also a plain single-column presentation table.
   `cta-dual`) must stack with `display:block;width:100%;max-width:100%` inline.
   Gmail mobile often ignores `@media` queries, so never rely on
   `display:inline-block` in source for stacking.
+- **`three-up-benefits` ships one stacked table only.** Do not duplicate a second
+  desktop table in the HTML — Gmail renders both copies when `display:none` or MSO
+  conditionals fail.
 - Use `@media (min-width: 481px)` as a desktop enhancement to restore
   side-by-side columns. Outlook desktop still uses MSO ghost tables.
 - Use a desktop layout that remains readable if mobile stacking is ignored.
