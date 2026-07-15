@@ -126,37 +126,32 @@ assert.match(
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td > center').length, 1);
 assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length, 1);
+assert.strictEqual($('.orange-footer .footer-band-content > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '576');
 
 const benefitTitleCells = $('.three-up-benefits-section .three-up-title-cell');
-assert.strictEqual(benefitTitleCells.length, 3);
+assert.strictEqual(benefitTitleCells.length, 6);
 benefitTitleCells.each((_, cell) => {
   assert.strictEqual($(cell).attr('height'), '42');
   assert.strictEqual($(cell).attr('valign'), 'top');
 });
 
-// Three benefits stack in source HTML (display:block) so Gmail and other
-// clients that ignore @media still get a clean single-column layout.
-const benefitColumns = $('.three-up-benefits-section .three-up-col');
-assert.strictEqual(benefitColumns.length, 3);
-benefitColumns.each((_, col) => {
-  const style = $(col).attr('style') || '';
-  assert.match(style, /display:block/i);
-  assert.match(style, /width:100%/i);
-  assert.match(style, /max-width:100%/i);
-});
+assert.strictEqual($('.three-up-benefits-section .three-up-mobile-only').length, 1);
+assert.strictEqual($('.three-up-benefits-section .three-up-desktop-only').length, 1);
+assert.strictEqual($('.three-up-benefits-section .three-up-mobile-only > tbody > tr').length, 3);
+assert.strictEqual($('.three-up-benefits-section .three-up-desktop-only > tbody > tr > td.three-up-col').length, 3);
 assert.match(
   exported,
-  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.three-up-benefits-section \.three-up-col[\s\S]*?display:\s*inline-block !important;/i,
-  'Desktop enhancement must restore three-up side-by-side layout',
+  /\.three-up-benefits-section \.three-up-mobile-only\s*\{[\s\S]*?display:\s*table !important;/i,
+  'Three benefits must default to the mobile stack table',
+);
+assert.match(
+  exported,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.three-up-benefits-section \.three-up-desktop-only\s*\{[\s\S]*?display:\s*table !important;/i,
+  'Desktop clients must swap in the three-column table at 641px+',
 );
 assert.strictEqual($('.three-up-benefits-section [data-container]').length, 0);
-assert.match(
-  buildEmailHtml({ title: 'three-up ghost', modules: ['three-up-benefits'], annotate: false }),
-  /<!--\[if mso\]>[\s\S]*?<table[^>]*width="592"[\s\S]*?<td width="197"[\s\S]*?<td width="197"[\s\S]*?<td width="197"/i,
-  'Three benefits must include an Outlook desktop ghost table',
-);
 
 const eventCard = $('.event-details-section .event-details-card');
 const eventRows = $('.event-details-section .event-details-row');
@@ -209,8 +204,13 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-logo-safe[\s\S]*background-color:\s*#ffffff/i,
-  'Header logo must ship with a white safe-area wrapper',
+  /\.header-logo-wrap[\s\S]*width:100%/i,
+  'Header logo wrapper must span the full header width',
+);
+assert.match(
+  exported,
+  /\.header-standard-section[\s\S]*background-color:\s*#ffffff/i,
+  'Header section must ship with an explicit white background',
 );
 assert.match(
   buildEmailHtml({ title: 'subhead audit', modules: ['eyebrow-headline'], annotate: false }),
@@ -392,11 +392,13 @@ const allModulesNoMedia = buildEmailHtml({
 });
 const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
 
-$fallback('.three-up-benefits-section .three-up-col').each((_, col) => {
-  const style = $fallback(col).attr('style') || '';
-  assert.match(style, /display:block/i, 'No-media three-up columns must stack in source HTML');
-  assert.match(style, /max-width:100%/i, 'No-media three-up columns must stay full width');
-});
+$fallback('.three-up-benefits-section .three-up-mobile-only > tbody > tr').each(() => {});
+assert.strictEqual(
+  $fallback('.three-up-benefits-section .three-up-mobile-only > tbody > tr').length,
+  3,
+  'No-media three-up must keep the stacked mobile table',
+);
+assert.strictEqual($fallback('.three-up-benefits-section .three-up-desktop-only').length, 1);
 $fallback('.cta-dual-section .cta-dual-column').each((_, col) => {
   assert.match($fallback(col).attr('width') || '', /^50%$/, 'No-media dual CTA columns must keep equal table widths');
 });

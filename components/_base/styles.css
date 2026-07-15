@@ -247,6 +247,27 @@ img.header-logo-img--compact {
   }
 }
 
+/* Three benefits: mobile stack is the default; desktop table swaps in at 641px+ */
+.three-up-benefits-section .three-up-desktop-only {
+  display: none !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  mso-hide: all;
+}
+.three-up-benefits-section .three-up-mobile-only {
+  display: table !important;
+  width: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.header-standard-section .header-logo-wrap {
+  display: block;
+  width: 100%;
+  text-align: center;
+  line-height: 0;
+}
+
 .orange-footer .footer-band-content,
 .orange-footer [data-editorblocktype="Text"],
 .orange-footer .footer-band-title,
@@ -337,8 +358,10 @@ img.header-logo-img--compact {
   }
   .header-standard-section .header-logo-column,
   .header-standard-section .header-logo-column [data-editorblocktype="Image"],
-  .header-standard-section .header-logo-column .imageWrapper {
+  .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-wrap {
     text-align: center !important;
+    width: 100% !important;
   }
   .header-standard-section .header-logo-cell,
   .header-standard-section .header-tagline-cell {
@@ -479,27 +502,35 @@ img.header-logo-img--compact {
   .buttonWrapper { text-align: center !important; width: 100% !important; }
   .imageWrapper img:not(.header-logo-img) { width: 100% !important; max-width: 100% !important; height: auto !important; }
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
+  .orange-footer .footer-band-content,
+  .orange-footer .footer-band-content center,
+  .orange-footer .footer-band-title,
+  .orange-footer .footer-band-address,
+  .orange-footer .footer-band-address p,
+  .orange-footer .footer-band-contact,
+  .orange-footer .footer-band-contact p,
+  .footer-legal,
+  .footer-legal center,
+  .footer-legal p,
+  .footer-legal a,
+  .contentBlockWrapper {
+    text-align: center !important;
+    width: 100% !important;
+  }
 }
 
-/* Desktop enhancement: side-by-side columns only when there is room.
-   Source HTML stacks with display:block so Gmail and other clients that
-   ignore @media still get a clean single-column layout. */
-@media only screen and (min-width: 481px) {
-  .three-up-benefits-section .three-up-row {
-    font-size: 0 !important;
-    line-height: 0 !important;
+@media only screen and (min-width: 641px) {
+  .three-up-benefits-section .three-up-mobile-only {
+    display: none !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    mso-hide: all;
   }
-  .three-up-benefits-section .three-up-col {
-    display: inline-block !important;
+  .three-up-benefits-section .three-up-desktop-only {
+    display: table !important;
     width: 100% !important;
-    max-width: 190px !important;
-    padding: 0 6px !important;
-    vertical-align: top !important;
-    font-size: 15px !important;
-    line-height: 1.6 !important;
-  }
-  .three-up-benefits-section .three-up-cell-last {
-    padding-bottom: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 }
 

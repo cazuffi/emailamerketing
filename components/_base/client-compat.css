@@ -118,9 +118,35 @@ body,
 }
 
 .header-logo-safe,
-[data-ogsc] .header-logo-safe,
-[data-ogsb] .header-logo-safe {
+.header-logo-wrap,
+[data-ogsc] .header-logo-wrap,
+[data-ogsb] .header-logo-wrap {
+  background-color: transparent !important;
+}
+
+[data-ogsc] .header-standard-section,
+[data-ogsc] .header-standard-section .outer,
+[data-ogsc] .header-standard-section td,
+[data-ogsb] .header-standard-section,
+[data-ogsb] .header-standard-section .outer,
+[data-ogsb] .header-standard-section td {
   background-color: #ffffff !important;
+}
+
+[data-ogsc] .orange-footer .footer-band-content,
+[data-ogsc] .orange-footer .footer-band-content center,
+[data-ogsc] .orange-footer .footer-band-title,
+[data-ogsc] .orange-footer .footer-band-address p,
+[data-ogsc] .orange-footer .footer-band-contact p,
+[data-ogsb] .orange-footer .footer-band-content,
+[data-ogsb] .orange-footer .footer-band-content center,
+[data-ogsb] .orange-footer .footer-band-title,
+[data-ogsb] .orange-footer .footer-band-address p,
+[data-ogsb] .orange-footer .footer-band-contact p,
+[data-ogsc] .footer-legal center,
+[data-ogsb] .footer-legal center {
+  text-align: center !important;
+  width: 100% !important;
 }
 
 [data-ogsc] .imageWrapper img,

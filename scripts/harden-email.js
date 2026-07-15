@@ -394,6 +394,30 @@ function normalizeText(value) {
 }
 
 function hardenHeaderAlignment($) {
+  $('.header-standard-section').each((_, section) => {
+    const $section = $(section);
+    $section.attr('style', `${$section.attr('style') || ''};background-color:#ffffff`.replace(/^;/, ''));
+    ensureStyle($section, 'background-color:#ffffff');
+    $section.find('table.outer').each((__, table) => {
+      $(table).attr('bgcolor', '#ffffff');
+      ensureStyle($(table), 'background-color:#ffffff');
+    });
+    $section.find('.section-pad-tight, .header-logo-column, .header-logo-cell').each((__, cell) => {
+      const $cell = $(cell);
+      if ($cell.hasClass('header-logo-column') || $cell.hasClass('header-logo-cell')) {
+        ensureStyle($cell, 'background-color:#ffffff');
+      } else {
+        $cell.attr('bgcolor', '#ffffff');
+        ensureStyle($cell, 'background-color:#ffffff');
+      }
+    });
+    $section.find('.header-logo-wrap').each((__, wrap) => {
+      const $wrap = $(wrap);
+      $wrap.attr('align', 'center');
+      ensureStyle($wrap, 'display:block;width:100%;text-align:center;line-height:0;background-color:transparent');
+    });
+  });
+
   $('.header-tagline-cell').each((_, el) => {
     const $cell = $(el);
     $cell.attr('align', 'right');
@@ -422,10 +446,10 @@ function hardenHeaderAlignment($) {
 }
 
 function hardenFooterAlignment($) {
-  $('.orange-footer .section-pad-accent, .orange-footer .footer-band-content').each((_, el) => {
+  $('.orange-footer .section-pad-accent, .orange-footer .footer-band-content, .orange-footer center').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
-    ensureStyle($el, 'text-align:center');
+    ensureStyle($el, 'text-align:center;width:100%');
   });
 
   $('.orange-footer [data-editorblocktype="Text"]').each((_, el) => {
@@ -440,13 +464,19 @@ function hardenFooterAlignment($) {
     ensureStyle($el, 'text-align:center;width:100%');
   });
 
-  $('.footer-legal, .footer-legal p, .footer-legal a, .contentBlockWrapper').each((_, el) => {
+  $('.footer-legal, .footer-legal center, .footer-legal p, .footer-legal a, .contentBlockWrapper').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
     ensureStyle($el, 'text-align:center;width:100%');
   });
 
   $('.footer-legal [data-editorblocktype], .footer-legal [data-protected]').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'text-align:center;width:100%');
+  });
+
+  $('.orange-footer [data-container], .footer-legal [data-container]').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
     ensureStyle($el, 'text-align:center;width:100%');
