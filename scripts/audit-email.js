@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v12';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -193,15 +193,22 @@ assert.match(
   /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAC|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAC[^"]*"[^>]*class="divider-line-img"/i,
   'Divider must ship an orange spacer image for Gmail iOS',
 );
-assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
-assert.strictEqual($('.cta-band-grey > table.section-gap-shim').length, 0, 'Grey CTA band must not use gap shims');
-assert.strictEqual($('.urgency-band > table.section-gap-shim').length, 0, 'Urgency band must not use gap shims');
+assert.strictEqual($('table.section-gap-shim').length, 0, 'Export must not inject section gap shims');
+assert.match(
+  exported,
+  /\[data-section="true"\][\s\S]*margin:\s*0 !important/i,
+  'Export must zero section wrapper margins for Gmail',
+);
+assert.match(
+  exported,
+  /\[data-section="true"\] > table\.outer[\s\S]*display:\s*table !important/i,
+  'Export must force display:table on section outer tables for Gmail',
+);
 assert.match(
   buildEmailHtml({ title: 'urgency audit', modules: ['urgency-band'], annotate: false }),
   /urgency-band[\s\S]*text-align:center/i,
   'Urgency band must ship centered text styles',
 );
-assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
 assert.strictEqual(
   cheerio.load(
     buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
@@ -219,6 +226,24 @@ assert.strictEqual(
   )('.section-heading-section .section-heading-center').length,
   1,
   'Section heading must use an inner centering table',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-table').length,
+  1,
+  'Section heading must use a full-width divider rule',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-img').length,
+  1,
+  'Section heading divider must ship the Gmail-safe spacer image',
 );
 assert.match(
   exported,
@@ -249,11 +274,6 @@ assert.strictEqual(
   (articleStackExport.match(/article-stack-cta-link/g) || []).length,
   1,
   'Article stack must export one CTA when only one story has showCta enabled',
-);
-assert.match(
-  exported,
-  /\[data-section="true"\][\s\S]*line-height:\s*0 !important/i,
-  'Export must collapse Gmail gaps between section tables',
 );
 
 const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
@@ -508,7 +528,12 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
+  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*4px solid #ef7800 !important;[\s\S]*?border-right:\s*4px solid #ffffff !important;/i,
+  'Post-paste CSS must keep grey CTA desktop edge rails',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
   'Mobile grey CTA must remove both desktop edge rails',
 );
 

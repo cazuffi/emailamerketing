@@ -24,7 +24,6 @@ body > div[data-layout="true"],
 
 table.outer,
 [data-section="true"] > table.outer,
-[data-section="true"] > table.section-gap-shim table.outer,
 .accent-band table.outer,
 .orange-footer table.outer {
   width: 100% !important;
@@ -38,8 +37,6 @@ table.outer,
 [data-section="true"] {
   margin: 0 !important;
   padding: 0 !important;
-  line-height: 0 !important;
-  font-size: 0 !important;
 }
 
 [data-section="true"] > table.outer {
@@ -47,39 +44,7 @@ table.outer,
   margin-bottom: 0 !important;
   line-height: normal !important;
   font-size: 15px !important;
-}
-
-/* Dynamics display:block on table.outer creates phantom gaps in Gmail iOS.
-   The shim table stays display:table; the outer table nests inside its td. */
-[data-section="true"] > table.section-gap-shim {
-  margin: 0 !important;
-  padding: 0 !important;
-  border-collapse: collapse !important;
-  width: 100% !important;
   display: table !important;
-}
-
-[data-section="true"] > table.section-gap-shim > tbody > tr > td,
-[data-section="true"] > table.section-gap-shim > tr > td {
-  padding: 0 !important;
-  margin: 0 !important;
-  line-height: normal !important;
-  font-size: 15px !important;
-  text-align: left !important;
-  width: 100% !important;
-}
-
-[data-section="true"] > table.section-gap-shim table.outer {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  width: 100% !important;
-  max-width: 640px !important;
-  display: table !important;
-}
-
-.divider-line-section[data-section="true"] {
-  line-height: normal !important;
-  font-size: 15px !important;
 }
 
 .eyebrow-headline + [data-section="true"] > table.outer,
@@ -96,7 +61,6 @@ table.outer,
 }
 
 .accent-band > table.outer,
-.accent-band > table.section-gap-shim table.outer,
 .accent-band table.outer,
 .accent-band .section-pad-accent {
   background-color: #ef7800 !important;
@@ -181,6 +145,20 @@ table.outer,
   width: 100% !important;
   max-width: 640px !important;
   background-color: #f4f4f4 !important;
+}
+
+.cta-band-grey .cta-band-grey-shell {
+  border-left: 4px solid #ef7800 !important;
+  border-right: 4px solid #ffffff !important;
+}
+
+.accent-band + .cta-band-grey[data-section="true"],
+.wrap-section.accent-band + .wrap-section.cta-band-grey {
+  background-color: #ffffff !important;
+}
+
+.accent-band + .cta-band-grey .cta-band-grey-shell {
+  border-left: 4px solid #ffffff !important;
 }
 
 .accent-band + .cta-band-grey[data-section="true"] > table.outer,
@@ -286,7 +264,6 @@ table.outer,
 .section-heading-section center,
 .section-heading-section .section-heading-center,
 .section-heading-section .section-heading-center td,
-.section-heading-section .section-rule-table,
 .section-heading-section [data-editorblocktype="Text"],
 .section-heading-section [data-editorblocktype="Text"] h2,
 .section-heading-section h2 {
@@ -294,16 +271,22 @@ table.outer,
   width: 100% !important;
 }
 
+.section-heading-section .divider-line-table,
+.section-heading-section .divider-line-cell,
+.section-heading-section .divider-line-img {
+  width: 100% !important;
+  max-width: 640px !important;
+}
+
+.section-heading-section .divider-line-table {
+  margin: 0 auto 12px auto !important;
+}
+
 .section-heading-section [data-container="true"] {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
   text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-.section-heading-section .section-rule-table {
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -571,7 +554,7 @@ u + .body .divider-line-img {
 
 u + .body .accent-band table.outer,
 u + .body .three-up-benefits-section table.outer,
-u + .body [data-section="true"] table.section-gap-shim table.outer {
+u + .body [data-section="true"] > table.outer {
   width: 100% !important;
   max-width: 640px !important;
   display: table !important;
@@ -620,7 +603,13 @@ u + .body .section-heading-section h2 {
   margin-right: auto !important;
 }
 
-u + .body .section-heading-section .section-rule-table {
+u + .body .section-heading-section .divider-line-table,
+u + .body .section-heading-section .divider-line-img {
+  width: 100% !important;
+  max-width: 640px !important;
+}
+
+u + .body .section-heading-section .divider-line-table {
   margin-left: auto !important;
   margin-right: auto !important;
 }

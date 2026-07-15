@@ -402,19 +402,6 @@ function unwrapPassengerDivs($) {
   });
 }
 
-function shouldUseSectionGapShim($section) {
-  if (
-    $section.hasClass('accent-band') ||
-    $section.hasClass('orange-footer') ||
-    $section.hasClass('urgency-band') ||
-    $section.hasClass('cta-band-grey')
-  ) {
-    return false;
-  }
-  if ($section.hasClass('divider-line-section') || $section.find('.divider-line-cell').length) return false;
-  return true;
-}
-
 function hardenUrgencyBand($) {
   $('.urgency-band[data-section="true"]').each((_, section) => {
     const $section = $(section);
@@ -457,7 +444,7 @@ function hardenCtaBandGrey($) {
     $section.find('.cta-band-grey-shell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f4f4f4');
-      ensureStyle($cell, 'background-color:#f4f4f4;width:100%');
+      ensureStyle($cell, 'background-color:#f4f4f4;width:100%;border-left:4px solid #ef7800;border-right:4px solid #ffffff');
     });
   });
 }
@@ -508,37 +495,10 @@ function hardenThreeUpBenefits($) {
 function hardenSectionGaps($) {
   $('[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    if ($section.hasClass('divider-line-section')) {
-      ensureStyle($section, 'margin:0;padding:0;display:block');
-      return;
-    }
-    ensureStyle($section, 'margin:0;padding:0;line-height:0;font-size:0;display:block');
-    $section.children('table.section-gap-shim').each((__, shim) => {
-      const $shim = $(shim);
-      ensureStyle($shim, 'margin:0;padding:0;border-collapse:collapse;width:100%');
-      $shim.find('> tbody > tr > td, > tr > td').first().each((___, cell) => {
-        ensureStyle($(cell), 'padding:0;margin:0;line-height:normal;font-size:15px;mso-line-height-rule:exactly');
-      });
-    });
+    ensureStyle($section, 'margin:0;padding:0;display:block');
     $section.children('table.outer').each((__, table) => {
       ensureStyle($(table), 'margin-top:0;margin-bottom:0;line-height:normal;font-size:15px');
     });
-  });
-}
-
-function wrapSectionGapShims($) {
-  $('[data-section="true"]').each((_, section) => {
-    const $section = $(section);
-    if (!shouldUseSectionGapShim($section)) return;
-    if ($section.children('table.section-gap-shim').length) return;
-    const $outer = $section.children('table.outer').first();
-    if (!$outer.length) return;
-
-    const $shim = $(
-      '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="section-gap-shim" role="presentation" style="margin:0;padding:0;border-collapse:collapse;width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt"><tbody><tr><td align="left" width="100%" style="padding:0;margin:0;line-height:normal;font-size:15px;mso-line-height-rule:exactly;text-align:left;width:100%;"></td></tr></tbody></table>',
-    );
-    $shim.find('td').first().append($outer);
-    $section.append($shim);
   });
 }
 
@@ -711,10 +671,9 @@ function hardenSectionHeadings($) {
     $section.find('center').each((__, el) => {
       ensureStyle($(el), 'width:100%;text-align:center');
     });
-    $section.find('.section-rule-table').each((__, table) => {
+    $section.find('.divider-line-table').each((__, table) => {
       const $table = $(table);
-      $table.attr('align', 'center');
-      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+      ensureStyle($table, 'margin:0 auto 12px auto;width:100%');
     });
     $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2').each((__, el) => {
       const $el = $(el);
@@ -837,7 +796,6 @@ function hardenEmailHtml(html) {
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenBodyTextSections($);
-  wrapSectionGapShims($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -917,7 +875,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v12';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -934,7 +892,6 @@ function sanitizeExportHtml(html) {
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
-  wrapSectionGapShims($);
   hardenSectionGaps($);
   hardenBodyTextSections($);
   unwrapPassengerDivs($);
