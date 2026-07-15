@@ -178,6 +178,9 @@ a.button-outline-link,
 .section-pad { padding: 20px 24px !important; }
 .section-pad-tight { padding: 16px 24px !important; }
 .section-pad-accent { padding: 28px 32px !important; }
+.section-pad-compact { padding: 12px 24px !important; }
+.section-pad-compact-bottom { padding: 20px 24px 12px 24px !important; }
+.section-pad-divider { padding: 4px 24px !important; }
 
 img {
   border: 0;

@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v5';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v6';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -85,7 +85,9 @@ assert.match(
   'Post-paste CSS must neutralize Dynamics flex data-container wrappers',
 );
 assert.strictEqual($('.accent-band [data-editorblocktype="Text"]').length, 1);
-assert.strictEqual($('.orange-footer [data-editorblocktype="Text"]').length, 1);
+assert.strictEqual($('.orange-footer [data-editorblocktype="Text"]').length, 0);
+assert.ok($('.orange-footer center').length >= 1, 'Orange footer must use center wrapper for iOS Gmail');
+assert.strictEqual($('.footer-legal [data-editorblocktype="Content"]').length, 0);
 assert.strictEqual($('.three-up-benefits-section [data-editorblocktype="Text"]').length, 3);
 assert.doesNotMatch(
   $('.orange-footer').first().attr('style') || '',
@@ -103,7 +105,7 @@ assert.match(
   'Accent band table must carry the orange fill',
 );
 assert.strictEqual(
-  $('.header-standard-section > table.outer').attr('bgcolor'),
+  $('.header-standard-section table.outer').first().attr('bgcolor'),
   '#ffffff',
   'Neutral sections must have a table-level white fallback',
 );
@@ -174,8 +176,8 @@ assert.match(
   'Outlook desktop dual CTA tables must fill their equal-width columns',
 );
 assert.strictEqual($('.orange-footer > table > tbody > tr > td.footer-band-content, .orange-footer .footer-band-content').length, 1);
-assert.strictEqual($('.orange-footer .footer-band-content > center').length, 0);
-assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length, 0);
+assert.strictEqual($('.orange-footer .footer-band-content > center').length, 1);
+assert.strictEqual($('.footer-legal center').length, 1);
 assert.strictEqual($('.footer-legal .footer-legal-center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '100%');
@@ -183,8 +185,18 @@ assert.strictEqual($('.orange-footer .footer-band-text-table').length, 1);
 assert.strictEqual($('.footer-legal .footer-legal-text-table').length, 1);
 assert.match(
   buildEmailHtml({ title: 'divider audit', modules: ['divider-line'], annotate: false }),
-  /class="divider-line-cell"[^>]*style="[^"]*border-top:2px solid #ef7800/i,
-  'Divider must ship border-top fill for Gmail',
+  /class="divider-line-cell"[^>]*style="[^"]*border-top:4px solid #ef7800/i,
+  'Divider must ship 4px border-top fill for Gmail',
+);
+assert.match(
+  buildEmailHtml({ title: 'divider audit', modules: ['divider-line'], annotate: false }),
+  /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAE|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAE[^"]*"[^>]*class="divider-line-img"/i,
+  'Divider must ship an orange spacer image for Gmail iOS',
+);
+assert.match(
+  exported,
+  /section-gap-shim/i,
+  'Export must wrap sections in gap shims for Gmail iOS',
 );
 assert.match(
   exported,
@@ -214,8 +226,8 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.orange-footer \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
-  'Footer data-container wrappers must override Dynamics flex layout',
+  /\.orange-footer \[data-container="true"\][\s\S]*?display:\s*inline-block !important;/i,
+  'Footer data-container wrappers must shrink-wrap for Gmail iOS centering',
 );
 
 const exportBytes = Buffer.byteLength(exported, 'utf8');

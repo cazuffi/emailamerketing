@@ -46,6 +46,30 @@ table.outer,
   font-size: 15px !important;
 }
 
+/* Dynamics display:block on table.outer creates phantom gaps in Gmail iOS.
+   The shim table stays display:table; the outer table nests inside its td. */
+[data-section="true"] > table.section-gap-shim {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-collapse: collapse !important;
+  width: 100% !important;
+  display: table !important;
+}
+
+[data-section="true"] > table.section-gap-shim > tbody > tr > td,
+[data-section="true"] > table.section-gap-shim > tr > td {
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: normal !important;
+  font-size: 15px !important;
+  text-align: center !important;
+}
+
+[data-section="true"] > table.section-gap-shim table.outer {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 .eyebrow-headline + [data-section="true"] > table.outer,
 [data-section="true"].eyebrow-headline + [data-section="true"] > table.outer,
 [data-section="true"] + [data-section="true"] > table.outer {
@@ -96,8 +120,8 @@ table.outer,
 .footer-band-content [data-container="true"],
 .video-preview-section [data-container="true"],
 .three-up-benefits-section [data-container="true"] {
-  display: block !important;
-  width: 100% !important;
+  display: inline-block !important;
+  width: auto !important;
   max-width: 100% !important;
   flex: none !important;
   align-self: center !important;
@@ -281,6 +305,38 @@ h2.subhead-orange,
   line-height: 1.35 !important;
 }
 
+.body-text-section [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.body-text-section .section-pad-compact {
+  padding: 12px 24px !important;
+}
+
+.body-text-section [data-editorblocktype="Text"] p {
+  margin: 0 !important;
+}
+
+.body-text-section [data-editorblocktype="Text"] p + p {
+  margin-top: 12px !important;
+}
+
+.section-pad-compact {
+  padding: 12px 24px !important;
+}
+
+.section-pad-compact-bottom {
+  padding: 20px 24px 12px 24px !important;
+}
+
+.section-pad-divider {
+  padding: 4px 24px !important;
+}
+
 .eyebrow-h2-section [data-container="true"] + [data-container="true"] {
   margin-top: 0 !important;
 }
@@ -343,10 +399,9 @@ h2.subhead-orange,
   .orange-footer [data-container="true"],
   .footer-legal [data-container="true"],
   .orange-footer [data-editorblocktype="Text"],
-  .footer-legal [data-editorblocktype="Content"],
-  .footer-legal .contentBlockWrapper {
-    display: block !important;
-    width: 100% !important;
+  .footer-legal [data-editorblocktype="Content"] {
+    display: inline-block !important;
+    width: auto !important;
     max-width: 100% !important;
     min-width: 0 !important;
     flex: none !important;
@@ -372,10 +427,10 @@ h2.subhead-orange,
 /* Gmail app (web + mobile) — override fixed-width Dynamics data-container inline styles */
 u + .body .orange-footer [data-container="true"],
 u + .body .footer-legal [data-container="true"] {
-  width: 100% !important;
+  width: auto !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  display: block !important;
+  display: inline-block !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -390,11 +445,27 @@ u + .body .footer-legal-text-table td {
   margin-right: auto !important;
 }
 
+u + .body .divider-line-img {
+  display: block !important;
+  width: 100% !important;
+  max-width: 640px !important;
+  height: 4px !important;
+  min-height: 4px !important;
+}
+
 .divider-line-cell {
-  border-top: 2px solid #ef7800 !important;
+  border-top: 4px solid #ef7800 !important;
   background-color: #ef7800 !important;
-  height: 2px !important;
-  line-height: 2px !important;
-  font-size: 1px !important;
+  height: 4px !important;
+  line-height: 4px !important;
+  font-size: 0 !important;
   padding: 0 !important;
+}
+
+.divider-line-img {
+  display: block !important;
+  width: 100% !important;
+  max-width: 640px !important;
+  height: 4px !important;
+  min-height: 4px !important;
 }
