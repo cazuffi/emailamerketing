@@ -174,15 +174,27 @@ a.button-outline-link {
   text-align: left !important;
 }
 
-.header-standard-section .header-logo-column img {
+.header-standard-section .header-logo-column img,
+.header-standard-section img.header-logo-img {
   margin-left: 0 !important;
   margin-right: auto !important;
   display: block !important;
   width: 200px !important;
+  height: 23px !important;
   max-width: 200px !important;
-  height: auto !important;
-  line-height: normal !important;
+  line-height: 23px !important;
   mso-line-height-rule: exactly !important;
+}
+
+.header-standard-section .header-logo-table,
+.header-standard-section .header-logo-safe,
+.header-standard-section .header-logo-column [data-editorblocktype="Image"],
+.header-standard-section .header-logo-column .imageWrapper,
+.header-standard-section .header-logo-wrap {
+  line-height: 23px !important;
+  mso-line-height-rule: exactly !important;
+  font-size: 15px !important;
+  background-color: #ffffff !important;
 }
 
 .intro-headline [data-container="true"],

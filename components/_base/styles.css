@@ -231,7 +231,9 @@ img.header-logo-img--compact {
 
   .header-standard-section .header-logo-column,
   .header-standard-section .header-logo-column [data-editorblocktype="Image"],
-  .header-standard-section .header-logo-column .imageWrapper {
+  .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-table,
+  .header-standard-section .header-logo-safe {
     text-align: center !important;
   }
 
@@ -279,11 +281,21 @@ img.header-logo-img--compact {
   }
 }
 
+.header-standard-section .header-logo-table,
+.header-standard-section .header-logo-safe {
+  display: block;
+  width: 100%;
+  text-align: left;
+  line-height: 23px;
+  mso-line-height-rule: exactly;
+}
+
 .header-standard-section .header-logo-wrap {
   display: block;
   width: 100%;
   text-align: center;
-  line-height: 0;
+  line-height: 23px;
+  mso-line-height-rule: exactly;
 }
 
 .orange-footer .footer-band-content,
@@ -394,6 +406,8 @@ img.header-logo-img--compact {
   .header-standard-section .header-logo-column,
   .header-standard-section .header-logo-column [data-editorblocktype="Image"],
   .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-table,
+  .header-standard-section .header-logo-safe,
   .header-standard-section .header-logo-wrap {
     text-align: center !important;
     width: 100% !important;
