@@ -387,8 +387,53 @@ table.outer,
 .header-standard-section .imageWrapper {
   display: block !important;
   width: 100% !important;
-  text-align: center !important;
+  line-height: normal !important;
+  mso-line-height-rule: exactly !important;
   background-color: transparent !important;
+}
+
+/* ---- left-aligned intro / headline / feature copy ---- */
+.intro-headline [data-container="true"],
+.eyebrow-headline [data-container="true"],
+.headline-block-section [data-container="true"],
+.eyebrow-h2-section [data-container="true"],
+.headline-h3-section [data-container="true"],
+.headline-h4-section [data-container="true"],
+.body-text-section [data-container="true"],
+.comparison-heading-section [data-container="true"],
+.feature-stack-text,
+.feature-stack-text [data-container="true"],
+.image-split-copy,
+.image-split-copy [data-container="true"] {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
+}
+
+.intro-headline [data-editorblocktype="Text"],
+.eyebrow-headline [data-editorblocktype="Text"],
+.headline-block-section [data-editorblocktype="Text"],
+.eyebrow-h2-section [data-editorblocktype="Text"],
+.headline-h3-section [data-editorblocktype="Text"],
+.headline-h4-section [data-editorblocktype="Text"],
+.feature-stack-text [data-editorblocktype="Text"],
+.image-split-copy [data-editorblocktype="Text"],
+.intro-headline h1,
+.intro-headline h2,
+.eyebrow-headline h1,
+.eyebrow-headline h2,
+.eyebrow-headline .eyebrow-label,
+.headline-block-section h2,
+.headline-block-section .headline-lead,
+.eyebrow-h2-section h2,
+.eyebrow-h2-section .eyebrow-label,
+.eyebrow-h2-section .headline-lead,
+.feature-stack-text h3,
+.feature-stack-text p,
+.image-split-copy h3,
+.image-split-copy p {
+  text-align: left !important;
 }
 
 /* ---- orange subheadline h2 ---- */
@@ -471,7 +516,9 @@ h2.subhead-orange,
 }
 
 @media only screen and (min-width: 641px) {
-  .header-standard-section .header-logo-column [data-container="true"] {
+  .header-standard-section .header-logo-column [data-container="true"],
+  .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-wrap {
     text-align: left !important;
   }
 

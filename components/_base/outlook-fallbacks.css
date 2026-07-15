@@ -177,12 +177,35 @@ a.button-outline-link {
 .header-standard-section .header-logo-column img {
   margin-left: 0 !important;
   margin-right: auto !important;
+  display: block !important;
+  width: 200px !important;
+  max-width: 200px !important;
+  height: auto !important;
+  line-height: normal !important;
+  mso-line-height-rule: exactly !important;
 }
 
-.header-standard-section .header-tagline-cell,
-.header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
-.header-standard-section .header-tagline {
-  text-align: right !important;
+.intro-headline [data-container="true"],
+.eyebrow-headline [data-container="true"],
+.headline-block-section [data-container="true"],
+.eyebrow-h2-section [data-container="true"],
+.feature-stack-text,
+.feature-stack-text [data-container="true"] {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.intro-headline h1,
+.intro-headline h2,
+.eyebrow-headline h1,
+.eyebrow-headline h2,
+.eyebrow-headline .eyebrow-label,
+.headline-block-section h2,
+.headline-block-section .headline-lead,
+.feature-stack-text h3,
+.feature-stack-text p {
+  text-align: left !important;
 }
 
 .cta-dual-section .cta-dual-column {
@@ -190,6 +213,12 @@ a.button-outline-link {
   max-width: 50% !important;
   padding: 0 6px !important;
   vertical-align: top !important;
+}
+
+.header-standard-section .header-tagline-cell,
+.header-standard-section .header-tagline-cell [data-editorblocktype="Text"],
+.header-standard-section .header-tagline {
+  text-align: right !important;
 }
 
 .cta-dual-section .buttonWrapper,

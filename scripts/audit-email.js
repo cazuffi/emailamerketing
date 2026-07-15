@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v13';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v14';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -477,6 +477,31 @@ assert.strictEqual(
   1,
   'Intro headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
 );
+assert.match(
+  exported,
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Intro headline must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.headline-block-section h2[\s\S]*text-align:\s*left !important/i,
+  'Headline H2 block must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.feature-stack-text p[\s\S]*text-align:\s*left !important/i,
+  'Feature module copy must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section \.header-logo-wrap[\s\S]*line-height:\s*normal !important/i,
+  'Header logo wrapper must not use zero line-height in Outlook',
+);
+assert.match(
+  getOutlookFallbackCss(),
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Outlook desktop fallback must keep intro headlines left-aligned',
+);
 assert.strictEqual(
   cheerio.load(
     buildEmailHtml({ title: 'video audit', modules: ['video-preview'], annotate: false }),
@@ -747,7 +772,7 @@ for (const moduleId of allModuleIds) {
 }
 
 const headerLogoStyle = $all('.header-standard-section img.header-logo-img').first().attr('style') || '';
-assert.match(headerLogoStyle, /width:100%/i, 'Header logo must shrink inside its source column');
+assert.match(headerLogoStyle, /width:200px/i, 'Header logo must use a fixed desktop width for Outlook');
 assert.match(headerLogoStyle, /max-width:200px/i, 'Header logo must retain its desktop cap');
 
 for (const selector of ['.article-thumb img', '.team-photo img']) {

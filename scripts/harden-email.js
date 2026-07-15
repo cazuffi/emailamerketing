@@ -221,12 +221,10 @@ function hardenImages($) {
   $('img.header-logo-img, .header-logo-cell img').each((_, el) => {
     const $img = $(el);
     const w = Number($img.attr('width')) || 200;
-    ensureStyle($img, `width:${w}px;max-width:${w}px;height:auto`);
-    if (!$img.attr('height')) {
-      const srcW = 400;
-      const srcH = 45;
-      $img.attr('height', String(Math.round((srcH / srcW) * w)));
-    }
+    const h = Number($img.attr('height')) || Math.round((23 / 200) * w);
+    $img.attr('width', String(w));
+    $img.attr('height', String(h));
+    ensureStyle($img, `display:block;width:${w}px;max-width:${w}px;height:auto;mso-line-height-rule:exactly`);
   });
 }
 
@@ -655,6 +653,46 @@ function normalizeText(value) {
     .trim();
 }
 
+function hardenLeftAlignedTextSections($) {
+  const sectionSelectors = [
+    '.intro-headline',
+    '.eyebrow-headline',
+    '.headline-block-section',
+    '.eyebrow-h2-section',
+    '.headline-h3-section',
+    '.headline-h4-section',
+    '.body-text-section',
+    '.comparison-heading-section',
+  ];
+
+  sectionSelectors.forEach((selector) => {
+    $(`${selector}[data-section="true"]`).each((_, section) => {
+      const $section = $(section);
+      $section.find('.section-pad, .section-pad-compact, .section-pad-compact-bottom, .section-heading-cell').each((__, cell) => {
+        const $cell = $(cell);
+        $cell.attr('align', 'left');
+        ensureStyle($cell, 'text-align:left');
+      });
+      $section.find('[data-container], [data-editorblocktype="Text"], [data-editorblocktype="Text"] h1, [data-editorblocktype="Text"] h2, [data-editorblocktype="Text"] h3, [data-editorblocktype="Text"] p, h1, h2, h3, p, .eyebrow-label, .headline-lead').each((__, el) => {
+        const $el = $(el);
+        $el.attr('align', 'left');
+        ensureStyle($el, 'text-align:left;width:100%;margin-left:0;margin-right:0');
+      });
+    });
+  });
+
+  $('.feature-stack-text, .image-split-copy').each((_, cell) => {
+    const $cell = $(cell);
+    $cell.attr('align', 'left');
+    ensureStyle($cell, 'text-align:left');
+    $cell.find('[data-container], [data-editorblocktype="Text"], [data-editorblocktype="Text"] h3, [data-editorblocktype="Text"] p, h3, p').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'left');
+      ensureStyle($el, 'text-align:left;width:100%;margin-left:0;margin-right:0');
+    });
+  });
+}
+
 function hardenHeaderAlignment($) {
   $('.header-standard-section').each((_, section) => {
     const $section = $(section);
@@ -675,8 +713,11 @@ function hardenHeaderAlignment($) {
     });
     $section.find('.header-logo-wrap').each((__, wrap) => {
       const $wrap = $(wrap);
-      $wrap.attr('align', 'center');
-      ensureStyle($wrap, 'display:block;width:100%;text-align:center;line-height:0;background-color:transparent');
+      $wrap.attr('align', 'left');
+      ensureStyle(
+        $wrap,
+        'display:block;width:100%;text-align:left;line-height:normal;mso-line-height-rule:exactly;background-color:transparent',
+      );
     });
   });
 
@@ -840,6 +881,7 @@ function hardenEmailHtml(html) {
   hardenDividers($);
   hardenD365Containers($);
   hardenHeaderAlignment($);
+  hardenLeftAlignedTextSections($);
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
@@ -924,7 +966,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v13';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v14';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -935,6 +977,7 @@ function sanitizeExportHtml(html) {
   hardenD365Containers($);
   hardenButtons($);
   hardenHeaderAlignment($);
+  hardenLeftAlignedTextSections($);
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
