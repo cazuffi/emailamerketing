@@ -17,16 +17,22 @@
 }
 
 [data-layout="true"] {
+  display: inline-block !important;
+  vertical-align: top !important;
   width: 100% !important;
   max-width: 640px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: left !important;
+}
+
+table.outer {
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
 [data-section="true"] > table.outer {
   width: 100% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
   max-width: 640px !important;
 }
 
@@ -42,6 +48,16 @@
   background-color: #ef7800 !important;
 }
 
+.orange-footer[data-section="true"],
+.wrap-section.orange-footer {
+  background-color: #ffffff !important;
+}
+
+.orange-footer > table.outer,
+.orange-footer .section-pad-accent {
+  background-color: #ef7800 !important;
+}
+
 /* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
 [data-section="true"] [data-container="true"] {
   display: block !important;
@@ -49,7 +65,9 @@
   max-width: 100% !important;
   flex: none !important;
   flex-basis: auto !important;
-  align-self: auto !important;
+  align-self: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .accent-band [data-container="true"] {
@@ -66,7 +84,8 @@
   width: 100% !important;
   max-width: 100% !important;
   flex: none !important;
-  align-self: auto !important;
+  align-self: center !important;
+  align-items: center !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -96,25 +115,24 @@
   text-align: center !important;
 }
 
-/* ---- three benefits: single stacked table for non-MSO (no duplicate desktop markup) ---- */
+/* ---- three benefits: one table, three columns on desktop ---- */
 .three-up-benefits-section .three-up-stack-table {
   width: 100% !important;
   border-collapse: collapse !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .three-up-benefits-section .three-up-stack-cell {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
   box-sizing: border-box !important;
   text-align: center !important;
+  vertical-align: top !important;
 }
 
-.three-up-benefits-section .three-up-cell-last,
-.three-up-benefits-section .three-up-stack-cell:last-child {
-  padding-bottom: 0 !important;
+.three-up-benefits-section [data-editorblocktype="Text"],
+.three-up-benefits-section [data-editorblocktype="Text"] h3,
+.three-up-benefits-section [data-editorblocktype="Text"] p {
+  text-align: center !important;
 }
 
 /* ---- dual CTA: table markup preferred; legacy div fallback stacks ---- */
@@ -206,6 +224,13 @@ h2.subhead-orange,
   .header-standard-section .header-tagline-column [data-container="true"] {
     text-align: right !important;
   }
+
+  .three-up-benefits-section .three-up-stack-cell {
+    display: table-cell !important;
+    width: 33.33% !important;
+    max-width: 33.33% !important;
+    padding: 0 8px !important;
+  }
 }
 
 @media only screen and (max-width: 640px) {
@@ -218,6 +243,17 @@ h2.subhead-orange,
   }
 
   .cta-dual-section .cta-dual-outline {
+    padding-bottom: 0 !important;
+  }
+
+  .three-up-benefits-section .three-up-stack-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 20px 0 !important;
+  }
+
+  .three-up-benefits-section .three-up-stack-cell:last-child {
     padding-bottom: 0 !important;
   }
 

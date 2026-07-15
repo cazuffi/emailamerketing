@@ -244,6 +244,44 @@ function hasBackgroundStyle($el) {
   return /(?:^|;)\s*background(?:-color)?\s*:/i.test($el.attr('style') || '');
 }
 
+function hardenOrangeFooterSections($) {
+  $('.orange-footer[data-section="true"]').each((_, section) => {
+    const $section = $(section);
+    setStyleProp($section, 'background-color', '#ffffff');
+    $section.find('table.outer').first().each((__, table) => {
+      const $table = $(table);
+      $table.attr('bgcolor', '#ef7800');
+      setStyleProp($table, 'background-color', '#ef7800');
+      ensureStyle($table, 'margin-left:auto;margin-right:auto;width:100%;max-width:640px');
+    });
+    $section.find('.section-pad-accent').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#ef7800');
+      $cell.attr('align', 'center');
+      setStyleProp($cell, 'background-color', '#ef7800');
+      ensureStyle($cell, 'text-align:center;width:100%');
+    });
+  });
+}
+
+function hardenLayoutShell($) {
+  $('[data-layout="true"]').each((_, layout) => {
+    const $layout = $(layout);
+    setStyleProp($layout, 'display', 'inline-block');
+    setStyleProp($layout, 'vertical-align', 'top');
+    setStyleProp($layout, 'text-align', 'left');
+    ensureStyle($layout, 'max-width:640px;width:100%;margin:0 auto;background-color:#ffffff');
+  });
+}
+
+function hardenOuterTableCentering($) {
+  $('table.outer').each((_, table) => {
+    const $table = $(table);
+    $table.attr('align', 'center');
+    ensureStyle($table, 'margin-left:auto;margin-right:auto;width:100%;max-width:640px');
+  });
+}
+
 function hardenAccentSections($) {
   $('.accent-band[data-section="true"]').each((_, section) => {
     const $section = $(section);
@@ -468,6 +506,12 @@ function hardenHeaderAlignment($) {
 }
 
 function hardenFooterAlignment($) {
+  $('.three-up-benefits-section [data-editorblocktype="Text"]').each((_, el) => {
+    const $block = $(el);
+    $block.attr('align', 'center');
+    ensureStyle($block, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
+  });
+
   $('.orange-footer .section-pad-accent, .orange-footer .footer-band-content, .orange-footer center').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
@@ -531,7 +575,10 @@ function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const $ = cheerio.load(html, { xml: false }, false);
   hardenTables($);
+  hardenLayoutShell($);
+  hardenOuterTableCentering($);
   hardenAccentSections($);
+  hardenOrangeFooterSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
   hardenButtons($);
@@ -619,7 +666,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center-v2';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-layout-v3';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

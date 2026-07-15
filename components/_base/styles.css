@@ -153,15 +153,20 @@ a.button-outline-link,
 }
 
 [data-layout="true"] {
+  display: inline-block;
+  vertical-align: top;
   margin: 0 auto;
   background-color: #fff;
   max-width: 640px;
   width: 100%;
+  text-align: left;
 }
 
 .outer {
   width: 100% !important;
   max-width: 640px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   /* Dynamics adds display:block to section tables on send, which breaks table
      layout in web browsers (modules render at inconsistent widths / stick out).
      Outlook Word ignores display, so force table layout back for browsers. */
@@ -247,17 +252,26 @@ img.header-logo-img--compact {
   }
 }
 
-/* Three benefits: non-MSO clients use a single stacked table (no duplicate desktop markup) */
+/* Three benefits: one row on desktop, stacked on mobile (no duplicate markup) */
 .three-up-benefits-section .three-up-stack-table {
   width: 100% !important;
   border-collapse: collapse !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 .three-up-benefits-section .three-up-stack-cell {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
   box-sizing: border-box !important;
   text-align: center !important;
+  vertical-align: top !important;
+}
+
+@media only screen and (min-width: 641px) {
+  .three-up-benefits-section .three-up-stack-cell {
+    display: table-cell !important;
+    width: 33.33% !important;
+    max-width: 33.33% !important;
+    padding: 0 8px !important;
+  }
 }
 
 .header-standard-section .header-logo-wrap {
@@ -316,6 +330,23 @@ img.header-logo-img--compact {
     width: 100% !important;
     max-width: 100% !important;
     flex-basis: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .three-up-benefits-section .three-up-stack-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 20px 0 !important;
+  }
+  .three-up-benefits-section .three-up-stack-cell:last-child {
+    padding-bottom: 0 !important;
+  }
+  .three-up-benefits-section [data-container="true"],
+  .three-up-benefits-section [data-editorblocktype="Text"] {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   .section-pad { padding: 16px 20px !important; }
   .section-pad-tight { padding: 14px 20px !important; }
@@ -502,12 +533,12 @@ img.header-logo-img--compact {
   .imageWrapper img:not(.header-logo-img) { width: 100% !important; max-width: 100% !important; height: auto !important; }
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
   .orange-footer .footer-band-content,
-  .orange-footer .footer-band-content center,
+  .orange-footer [data-editorblocktype="Text"],
   .orange-footer .footer-band-title,
   .orange-footer .footer-band-address,
-  .orange-footer .footer-band-address p,
   .orange-footer .footer-band-contact,
-  .orange-footer .footer-band-contact p,
+  .orange-footer p.footer-band-address,
+  .orange-footer p.footer-band-contact,
   .footer-legal,
   .footer-legal center,
   .footer-legal p,
@@ -515,6 +546,11 @@ img.header-logo-img--compact {
   .contentBlockWrapper {
     text-align: center !important;
     width: 100% !important;
+  }
+  .orange-footer [data-container="true"],
+  .footer-legal [data-container="true"] {
+    align-items: center !important;
+    text-align: center !important;
   }
 }
 

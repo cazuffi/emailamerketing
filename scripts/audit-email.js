@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center-v2';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-layout-v3';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -64,8 +64,13 @@ assert.strictEqual($('.email-canvas-cell').attr('align'), 'center');
 assert.strictEqual($('[data-layout="true"]').parent('.email-canvas-cell').length, 1);
 assert.match(
   exported,
-  /\.email-canvas-outer[\s\S]*?\[data-layout="true"\][\s\S]*?margin-left:\s*auto !important;/i,
-  'Post-paste CSS must center the layout shell in Gmail',
+  /\[data-layout="true"\][\s\S]*?display:\s*inline-block !important;/i,
+  'Post-paste CSS must center the layout shell with inline-block',
+);
+assert.match(
+  exported,
+  /table\.outer[\s\S]*?margin-left:\s*auto !important;/i,
+  'Post-paste CSS must center block-level outer tables',
 );
 assert.match(
   exported,
@@ -74,6 +79,12 @@ assert.match(
 );
 assert.strictEqual($('.accent-band [data-editorblocktype="Text"]').length, 1);
 assert.strictEqual($('.orange-footer [data-editorblocktype="Text"]').length, 1);
+assert.strictEqual($('.three-up-benefits-section [data-editorblocktype="Text"]').length, 3);
+assert.doesNotMatch(
+  $('.orange-footer').first().attr('style') || '',
+  /background-color:\s*#ef7800/i,
+  'Orange footer fill must live on the table, not the section wrapper',
+);
 assert.doesNotMatch(
   $('.accent-band').first().attr('style') || '',
   /background-color:\s*#ef7800/i,
@@ -161,19 +172,25 @@ assert.strictEqual($('.orange-footer .footer-band-content > center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '100%');
 
-const benefitTitleCells = $('.three-up-benefits-section .three-up-title-cell');
-assert.strictEqual(benefitTitleCells.length, 3);
-benefitTitleCells.each((_, cell) => {
-  assert.strictEqual($(cell).attr('height'), '42');
-  assert.strictEqual($(cell).attr('valign'), 'top');
+const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
+assert.strictEqual(benefitCells.length, 3);
+benefitCells.each((_, cell) => {
+  assert.strictEqual($(cell).attr('align'), 'center');
+  assert.match($(cell).attr('style') || '', /text-align:\s*center/i);
 });
 assert.strictEqual($('.three-up-benefits-section .three-up-stack-table').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr').length, 3);
+assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr').length, 1);
+assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').length, 3);
 assert.strictEqual($('.three-up-benefits-section .three-up-mobile-only, .three-up-benefits-section .three-up-desktop-only').length, 0);
 assert.match(
   exported,
-  /\.three-up-benefits-section \.three-up-stack-cell\s*\{[\s\S]*?display:\s*block !important;/i,
-  'Three benefits stack cells must default to block layout',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*table-cell !important;/i,
+  'Three benefits must use three columns on desktop',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important;/i,
+  'Three benefits must stack on mobile',
 );
 assert.match(
   exported,
@@ -259,8 +276,8 @@ assert.match(simulatedDynamics, /columns-equal-class/i, 'Dynamics simulation mus
 assert.match(simulatedDynamics, /data-container="true"/i, 'Dynamics simulation must wrap editor blocks');
 assert.match(
   exported,
-  /\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important/i,
-  'Dynamics send CSS must keep three-up benefits stacked',
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important/i,
+  'Dynamics send CSS must stack three-up benefits on mobile',
 );
 assert.match(
   exported,
@@ -468,11 +485,16 @@ const allModulesNoMedia = buildEmailHtml({
 });
 const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
 
-$fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr').each(() => {});
+$fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').each(() => {});
 assert.strictEqual(
   $fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr').length,
+  1,
+  'No-media three-up must keep a single benefits row',
+);
+assert.strictEqual(
+  $fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').length,
   3,
-  'No-media three-up must keep the stacked table',
+  'No-media three-up must keep three benefit cells',
 );
 assert.strictEqual($fallback('.three-up-benefits-section .three-up-desktop-only, .three-up-benefits-section .three-up-mobile-only').length, 0);
 $fallback('.cta-dual-section .cta-dual-column').each((_, col) => {

@@ -110,7 +110,7 @@ reprocesses it. Confirmed transformations:
 The first line of Copy HTML must be:
 
 ```html
-<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-center-v2 -->
+<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-layout-v3 -->
 ```
 
 If that comment is missing, you are not testing the current build. Run
