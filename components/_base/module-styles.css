@@ -236,17 +236,16 @@ h2.subhead-orange {
 }
 
 .divider-line-cell {
-  height: 4px;
+  height: 2px;
   background-color: #ef7800;
-  border-top: 4px solid #ef7800;
 }
 
 .divider-line-img {
   display: block;
   width: 100%;
   max-width: 640px;
-  height: 4px;
-  min-height: 4px;
+  height: 2px;
+  min-height: 2px;
 }
 
 .divider-dots-table { margin: 0 auto; }

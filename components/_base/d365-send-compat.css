@@ -23,7 +23,10 @@ body > div[data-layout="true"],
 }
 
 table.outer,
-[data-section="true"] > table.outer {
+[data-section="true"] > table.outer,
+[data-section="true"] > table.section-gap-shim table.outer,
+.accent-band table.outer,
+.orange-footer table.outer {
   width: 100% !important;
   max-width: 640px !important;
   margin-left: auto !important;
@@ -62,12 +65,21 @@ table.outer,
   margin: 0 !important;
   line-height: normal !important;
   font-size: 15px !important;
-  text-align: center !important;
+  text-align: left !important;
+  width: 100% !important;
 }
 
 [data-section="true"] > table.section-gap-shim table.outer {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+  width: 100% !important;
+  max-width: 640px !important;
+  display: table !important;
+}
+
+.divider-line-section[data-section="true"] {
+  line-height: normal !important;
+  font-size: 15px !important;
 }
 
 .eyebrow-headline + [data-section="true"] > table.outer,
@@ -84,8 +96,15 @@ table.outer,
 }
 
 .accent-band > table.outer,
+.accent-band > table.section-gap-shim table.outer,
+.accent-band table.outer,
 .accent-band .section-pad-accent {
   background-color: #ef7800 !important;
+}
+
+.accent-band .section-pad-accent {
+  text-align: left !important;
+  width: 100% !important;
 }
 
 .orange-footer[data-section="true"],
@@ -111,21 +130,41 @@ table.outer,
 }
 
 .accent-band [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
   text-align: left !important;
+  margin: 0 !important;
+}
+
+.accent-band [data-editorblocktype="Text"],
+.accent-band [data-editorblocktype="Text"] h1,
+.accent-band [data-editorblocktype="Text"] p {
+  text-align: left !important;
+  width: 100% !important;
 }
 
 /* ---- data-container flex wrappers (module-specific) ---- */
 .orange-footer [data-container="true"],
 .footer-legal [data-container="true"],
 .footer-band-content [data-container="true"],
-.video-preview-section [data-container="true"],
-.three-up-benefits-section [data-container="true"] {
+.video-preview-section [data-container="true"] {
   display: inline-block !important;
   width: auto !important;
   max-width: 100% !important;
   flex: none !important;
   align-self: center !important;
   align-items: center !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.three-up-benefits-section [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -173,6 +212,11 @@ table.outer,
 }
 
 /* ---- three benefits: one table, three columns on desktop ---- */
+.three-up-benefits-section .section-pad,
+.three-up-benefits-section .mobile-padding {
+  text-align: center !important;
+}
+
 .three-up-benefits-section .three-up-stack-table {
   width: 100% !important;
   border-collapse: collapse !important;
@@ -449,23 +493,45 @@ u + .body .divider-line-img {
   display: block !important;
   width: 100% !important;
   max-width: 640px !important;
-  height: 4px !important;
-  min-height: 4px !important;
+  height: 2px !important;
+  min-height: 2px !important;
+}
+
+u + .body .accent-band table.outer,
+u + .body .three-up-benefits-section table.outer,
+u + .body [data-section="true"] table.section-gap-shim table.outer {
+  width: 100% !important;
+  max-width: 640px !important;
+  display: table !important;
+}
+
+u + .body .accent-band [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  text-align: left !important;
+}
+
+u + .body .three-up-benefits-section .three-up-stack-cell [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  text-align: center !important;
 }
 
 .divider-line-cell {
-  border-top: 4px solid #ef7800 !important;
   background-color: #ef7800 !important;
-  height: 4px !important;
-  line-height: 4px !important;
+  height: 2px !important;
+  line-height: 2px !important;
   font-size: 0 !important;
   padding: 0 !important;
+  border: 0 !important;
 }
 
 .divider-line-img {
   display: block !important;
   width: 100% !important;
   max-width: 640px !important;
-  height: 4px !important;
-  min-height: 4px !important;
+  height: 2px !important;
+  min-height: 2px !important;
 }

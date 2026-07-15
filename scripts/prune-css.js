@@ -69,6 +69,7 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'section-gap-shim',
   'body-text-section',
   'divider-line-img',
+  'divider-line-section',
   'divider-line-table',
   'stack-column',
   'stack-column-gap',

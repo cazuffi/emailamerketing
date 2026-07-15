@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v6';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v7';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -185,14 +185,16 @@ assert.strictEqual($('.orange-footer .footer-band-text-table').length, 1);
 assert.strictEqual($('.footer-legal .footer-legal-text-table').length, 1);
 assert.match(
   buildEmailHtml({ title: 'divider audit', modules: ['divider-line'], annotate: false }),
-  /class="divider-line-cell"[^>]*style="[^"]*border-top:4px solid #ef7800/i,
-  'Divider must ship 4px border-top fill for Gmail',
+  /class="divider-line-cell"[^>]*style="[^"]*height:2px/i,
+  'Divider must ship 2px height for Gmail',
 );
 assert.match(
   buildEmailHtml({ title: 'divider audit', modules: ['divider-line'], annotate: false }),
-  /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAE|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAE[^"]*"[^>]*class="divider-line-img"/i,
+  /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAC|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAC[^"]*"[^>]*class="divider-line-img"/i,
   'Divider must ship an orange spacer image for Gmail iOS',
 );
+assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
+assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
 assert.match(
   exported,
   /section-gap-shim/i,
