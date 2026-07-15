@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v7';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v8';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -195,10 +195,28 @@ assert.match(
 );
 assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
 assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section center').length,
+  1,
+  'Section heading must wrap rule and title in a center block for Gmail',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .section-heading-center').length,
+  1,
+  'Section heading must use an inner centering table',
+);
 assert.match(
   exported,
-  /section-gap-shim/i,
-  'Export must wrap sections in gap shims for Gmail iOS',
+  /\.section-heading-section \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
+  'Section heading data-container wrappers must center for Gmail',
 );
 assert.match(
   exported,

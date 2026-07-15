@@ -646,6 +646,35 @@ function hardenHeaderAlignment($) {
   });
 }
 
+function hardenSectionHeadings($) {
+  $('.section-heading-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.section-heading-cell, center, .section-heading-center, .section-heading-center td').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('.section-rule-table').each((__, table) => {
+      const $table = $(table);
+      $table.attr('align', 'center');
+      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+    });
+    $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
 function hardenFooterAlignment($) {
   $('.three-up-benefits-section [data-editorblocktype="Text"]').each((_, el) => {
     const $block = $(el);
@@ -748,6 +777,7 @@ function hardenEmailHtml(html) {
   hardenDividers($);
   hardenD365Containers($);
   hardenHeaderAlignment($);
+  hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenBodyTextSections($);
@@ -831,7 +861,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v7';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v8';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -843,6 +873,7 @@ function sanitizeExportHtml(html) {
   hardenButtons($);
   hardenHeaderAlignment($);
   hardenAccentBands($);
+  hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   wrapSectionGapShims($);

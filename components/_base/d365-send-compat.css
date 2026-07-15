@@ -236,6 +236,33 @@ table.outer,
   text-align: center !important;
 }
 
+/* ---- section heading: rule + title must center as one unit ---- */
+.section-heading-section .section-heading-cell,
+.section-heading-section center,
+.section-heading-section .section-heading-center,
+.section-heading-section .section-heading-center td,
+.section-heading-section .section-rule-table,
+.section-heading-section [data-editorblocktype="Text"],
+.section-heading-section [data-editorblocktype="Text"] h2,
+.section-heading-section h2 {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.section-heading-section [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.section-heading-section .section-rule-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 /* ---- dual CTA: table markup preferred; legacy div fallback stacks ---- */
 .cta-dual-section .cta-dual-table {
   width: 100% !important;
@@ -517,6 +544,22 @@ u + .body .three-up-benefits-section .three-up-stack-cell [data-container="true"
   max-width: 100% !important;
   display: block !important;
   text-align: center !important;
+}
+
+u + .body .section-heading-section [data-container="true"],
+u + .body .section-heading-section [data-editorblocktype="Text"],
+u + .body .section-heading-section h2 {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+u + .body .section-heading-section .section-rule-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .divider-line-cell {
