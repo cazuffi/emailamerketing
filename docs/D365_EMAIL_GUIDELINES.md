@@ -40,14 +40,33 @@ The orange footer is also a plain single-column presentation table.
 
 ## Responsive behavior
 
+- **Mobile-first in source HTML.** Critical multi-column modules (`three-up-benefits`,
+  `cta-dual`) must stack with `display:block;width:100%;max-width:100%` inline.
+  Gmail mobile often ignores `@media` queries, so never rely on
+  `display:inline-block` in source for stacking.
+- Use `@media (min-width: 481px)` as a desktop enhancement to restore
+  side-by-side columns. Outlook desktop still uses MSO ghost tables.
 - Use a desktop layout that remains readable if mobile stacking is ignored.
-- Stack columns with targeted classes and `display:block !important`.
+- Stack table columns with `stack-column` and `display:block !important` in CSS.
 - Set both `width:100% !important` and `max-width:100% !important` when stacking.
 - Reset desktop left and right gutters on stacked columns and their inner cells.
 - Center the wrapper, text block, paragraph, and image independently when all
   must center on mobile.
-- Check the 641px desktop preview and 375px mobile preview, then send a Dynamics
-  test email.
+- Check the 641px desktop preview, 375px mobile preview, **No media CSS** preview,
+  then send a Dynamics test email.
+
+## Gmail and Apple Mail
+
+- Export ships `<meta name="color-scheme" content="light only">` to discourage
+  Gmail dark mode from inverting white backgrounds to black.
+- `client-compat.css` includes `[data-ogsc]` / `[data-ogsb]` overrides to lock
+  white content areas and the orange footer when dark mode is active.
+- The header logo sits inside a `.header-logo-safe` white wrapper so transparent
+  PNG logos do not pick up a dark-mode color fill.
+- Footer addresses and phone numbers use `format-detection` meta plus CSS resets
+  for `a[x-apple-data-detectors]` and Gmail auto-links.
+- Yellow search highlights on brand names in Gmail are client-side (user searched
+  the inbox) and cannot be prevented in HTML.
 
 ## What Dynamics does to pasted HTML (verified from a real send)
 

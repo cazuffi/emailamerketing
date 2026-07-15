@@ -11,6 +11,100 @@ td {
   mso-line-height-rule: exactly;
 }
 
+/* Lock light rendering — prevents Gmail/Apple Mail dark mode from inverting
+   the email into a black background with white text and white logo boxes. */
+:root {
+  color-scheme: light only;
+  supported-color-schemes: light only;
+}
+
+body,
+[data-layout="true"] {
+  background-color: #f4f4f4 !important;
+  color: #000000 !important;
+}
+
+[data-layout="true"] {
+  background-color: #ffffff !important;
+}
+
+/* Gmail dark-mode attribute selectors */
+[data-ogsc] body,
+[data-ogsb] body,
+[data-ogsc] [data-layout="true"],
+[data-ogsb] [data-layout="true"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-ogsc] .outer,
+[data-ogsb] .outer,
+[data-ogsc] .section-pad,
+[data-ogsb] .section-pad {
+  background-color: #ffffff !important;
+}
+
+[data-ogsc] h1,
+[data-ogsc] h2,
+[data-ogsc] h3,
+[data-ogsc] h4,
+[data-ogsc] p,
+[data-ogsb] h1,
+[data-ogsb] h2,
+[data-ogsb] h3,
+[data-ogsb] h4,
+[data-ogsb] p {
+  color: inherit !important;
+}
+
+[data-ogsc] .orange-footer,
+[data-ogsc] .orange-footer td,
+[data-ogsc] .orange-footer .outer,
+[data-ogsb] .orange-footer,
+[data-ogsb] .orange-footer td,
+[data-ogsb] .orange-footer .outer {
+  background-color: #ef7800 !important;
+}
+
+[data-ogsc] .footer-band-title,
+[data-ogsb] .footer-band-title {
+  color: #ffffff !important;
+}
+
+[data-ogsc] .footer-band-address p,
+[data-ogsc] .footer-band-contact p,
+[data-ogsb] .footer-band-address p,
+[data-ogsb] .footer-band-contact p {
+  color: #ffffff !important;
+}
+
+[data-ogsc] .accent-band,
+[data-ogsc] .accent-band td,
+[data-ogsb] .accent-band,
+[data-ogsb] .accent-band td {
+  background-color: #ef7800 !important;
+}
+
+[data-ogsc] .accent-band h1,
+[data-ogsc] .accent-band h2,
+[data-ogsc] .accent-band p,
+[data-ogsb] .accent-band h1,
+[data-ogsb] .accent-band h2,
+[data-ogsb] .accent-band p {
+  color: #ffffff !important;
+}
+
+.header-logo-safe,
+[data-ogsc] .header-logo-safe,
+[data-ogsb] .header-logo-safe {
+  background-color: #ffffff !important;
+}
+
+[data-ogsc] .imageWrapper img,
+[data-ogsb] .imageWrapper img {
+  background-color: transparent !important;
+}
+
 /* Intentional small copy — preserve size in all clients */
 .text-small,
 .preheader-text,
@@ -85,9 +179,21 @@ a.button-outline-link {
   mso-ansi-font-weight: bold;
 }
 
-/* Gmail iOS right-gutter fix */
+/* Gmail iOS blend helpers for intentional dark text on light fills */
 u + .body .gmail-blend-screen { background: #000000; mix-blend-mode: screen; }
 u + .body .gmail-blend-difference { background: #000000; mix-blend-mode: difference; }
+
+/* Gmail / Apple auto-link reset for footer addresses and phone numbers */
+a[x-apple-data-detectors],
+.footer-band-address a,
+.footer-band-contact a,
+.footer-legal p a:not([href*="PreferenceCenter"]) {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+}
 
 @media only screen and (max-width: 640px) {
   .disclaimer-text { font-size: 10px !important; }

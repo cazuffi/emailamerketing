@@ -135,16 +135,21 @@ benefitTitleCells.each((_, cell) => {
   assert.strictEqual($(cell).attr('valign'), 'top');
 });
 
-// Three benefits now stack via a media-query-free fluid layout (like the dual
-// CTA), so Outlook mobile — which ignores @media — no longer keeps them cramped.
+// Three benefits stack in source HTML (display:block) so Gmail and other
+// clients that ignore @media still get a clean single-column layout.
 const benefitColumns = $('.three-up-benefits-section .three-up-col');
 assert.strictEqual(benefitColumns.length, 3);
 benefitColumns.each((_, col) => {
   const style = $(col).attr('style') || '';
-  assert.match(style, /display:inline-block/i);
+  assert.match(style, /display:block/i);
   assert.match(style, /width:100%/i);
-  assert.match(style, /max-width:190px/i);
+  assert.match(style, /max-width:100%/i);
 });
+assert.match(
+  exported,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.three-up-benefits-section \.three-up-col[\s\S]*?display:\s*inline-block !important;/i,
+  'Desktop enhancement must restore three-up side-by-side layout',
+);
 assert.strictEqual($('.three-up-benefits-section [data-container]').length, 0);
 assert.match(
   buildEmailHtml({ title: 'three-up ghost', modules: ['three-up-benefits'], annotate: false }),
@@ -184,10 +189,31 @@ const dualColumns = $('.cta-dual-section .cta-dual-column');
 assert.strictEqual(dualColumns.length, 2);
 dualColumns.each((_, cell) => {
   const style = $(cell).attr('style') || '';
-  assert.match(style, /display:inline-block/i);
+  assert.match(style, /display:block/i);
   assert.match(style, /width:100%/i);
-  assert.match(style, /max-width:296px/i);
+  assert.match(style, /max-width:100%/i);
 });
+assert.match(
+  exported,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.cta-dual-section \.cta-dual-column[\s\S]*?display:\s*inline-block !important;/i,
+  'Desktop enhancement must restore dual CTA side-by-side layout',
+);
+assert.match(
+  exported,
+  /<meta[^>]+name="color-scheme"[^>]+content="light only"/i,
+  'Export must lock light color scheme for Gmail dark mode',
+);
+assert.match(
+  exported,
+  /\[data-ogsc\][\s\S]*background-color:\s*#ffffff !important/i,
+  'Gmail dark-mode overrides must preserve white content backgrounds',
+);
+assert.match(
+  exported,
+  /\.header-logo-safe[\s\S]*background-color:\s*#ffffff/i,
+  'Header logo must ship with a white safe-area wrapper',
+);
+
 assert.strictEqual($('.cta-dual-section [data-container]').length, 0);
 assert.match(
   exported,
@@ -357,6 +383,17 @@ const allModulesNoMedia = buildEmailHtml({
   previewCssOff: true,
 });
 const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
+
+$fallback('.three-up-benefits-section .three-up-col').each((_, col) => {
+  const style = $fallback(col).attr('style') || '';
+  assert.match(style, /display:block/i, 'No-media three-up columns must stack in source HTML');
+  assert.match(style, /max-width:100%/i, 'No-media three-up columns must stay full width');
+});
+$fallback('.cta-dual-section .cta-dual-column').each((_, col) => {
+  const style = $fallback(col).attr('style') || '';
+  assert.match(style, /display:block/i, 'No-media dual CTA columns must stack in source HTML');
+  assert.match(style, /max-width:100%/i, 'No-media dual CTA columns must stay full width');
+});
 
 assert.strictEqual(
   $all('[data-studio-field], [data-studio-label], [data-studio-module], [data-studio-repeat]').length,

@@ -2,6 +2,8 @@
 
 
 <title>RockStar® Heavy Duty Connectors — SNAP IN Technology</title>
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="never">
@@ -497,6 +499,43 @@ img.header-logo-img--compact {
   .buttonWrapper { text-align: center !important; width: 100% !important; }
   .imageWrapper img:not(.header-logo-img) { width: 100% !important; max-width: 100% !important; height: auto !important; }
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
+}
+
+/* Desktop enhancement: side-by-side columns only when there is room.
+   Source HTML stacks with display:block so Gmail and other clients that
+   ignore @media still get a clean single-column layout. */
+@media only screen and (min-width: 481px) {
+  .three-up-benefits-section .three-up-row {
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+  .three-up-benefits-section .three-up-col {
+    display: inline-block !important;
+    width: 100% !important;
+    max-width: 190px !important;
+    padding: 0 6px !important;
+    vertical-align: top !important;
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+  .three-up-benefits-section .three-up-cell-last {
+    padding-bottom: 0 !important;
+  }
+
+  .cta-dual-section .cta-dual-row {
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+  .cta-dual-section .cta-dual-column {
+    display: inline-block !important;
+    width: 100% !important;
+    max-width: 296px !important;
+    padding: 0 6px !important;
+    vertical-align: top !important;
+  }
+  .cta-dual-section .cta-dual-primary {
+    padding-bottom: 0 !important;
+  }
 }
 
 @media only screen and (max-width: 400px) {
@@ -1304,6 +1343,100 @@ td {
   mso-line-height-rule: exactly;
 }
 
+/* Lock light rendering — prevents Gmail/Apple Mail dark mode from inverting
+   the email into a black background with white text and white logo boxes. */
+:root {
+  color-scheme: light only;
+  supported-color-schemes: light only;
+}
+
+body,
+[data-layout="true"] {
+  background-color: #f4f4f4 !important;
+  color: #000000 !important;
+}
+
+[data-layout="true"] {
+  background-color: #ffffff !important;
+}
+
+/* Gmail dark-mode attribute selectors */
+[data-ogsc] body,
+[data-ogsb] body,
+[data-ogsc] [data-layout="true"],
+[data-ogsb] [data-layout="true"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-ogsc] .outer,
+[data-ogsb] .outer,
+[data-ogsc] .section-pad,
+[data-ogsb] .section-pad {
+  background-color: #ffffff !important;
+}
+
+[data-ogsc] h1,
+[data-ogsc] h2,
+[data-ogsc] h3,
+[data-ogsc] h4,
+[data-ogsc] p,
+[data-ogsb] h1,
+[data-ogsb] h2,
+[data-ogsb] h3,
+[data-ogsb] h4,
+[data-ogsb] p {
+  color: inherit !important;
+}
+
+[data-ogsc] .orange-footer,
+[data-ogsc] .orange-footer td,
+[data-ogsc] .orange-footer .outer,
+[data-ogsb] .orange-footer,
+[data-ogsb] .orange-footer td,
+[data-ogsb] .orange-footer .outer {
+  background-color: #ef7800 !important;
+}
+
+[data-ogsc] .footer-band-title,
+[data-ogsb] .footer-band-title {
+  color: #ffffff !important;
+}
+
+[data-ogsc] .footer-band-address p,
+[data-ogsc] .footer-band-contact p,
+[data-ogsb] .footer-band-address p,
+[data-ogsb] .footer-band-contact p {
+  color: #ffffff !important;
+}
+
+[data-ogsc] .accent-band,
+[data-ogsc] .accent-band td,
+[data-ogsb] .accent-band,
+[data-ogsb] .accent-band td {
+  background-color: #ef7800 !important;
+}
+
+[data-ogsc] .accent-band h1,
+[data-ogsc] .accent-band h2,
+[data-ogsc] .accent-band p,
+[data-ogsb] .accent-band h1,
+[data-ogsb] .accent-band h2,
+[data-ogsb] .accent-band p {
+  color: #ffffff !important;
+}
+
+.header-logo-safe,
+[data-ogsc] .header-logo-safe,
+[data-ogsb] .header-logo-safe {
+  background-color: #ffffff !important;
+}
+
+[data-ogsc] .imageWrapper img,
+[data-ogsb] .imageWrapper img {
+  background-color: transparent !important;
+}
+
 /* Intentional small copy — preserve size in all clients */
 .text-small,
 .preheader-text,
@@ -1378,9 +1511,21 @@ a.button-outline-link {
   mso-ansi-font-weight: bold;
 }
 
-/* Gmail iOS right-gutter fix */
+/* Gmail iOS blend helpers for intentional dark text on light fills */
 u + .body .gmail-blend-screen { background: #000000; mix-blend-mode: screen; }
 u + .body .gmail-blend-difference { background: #000000; mix-blend-mode: difference; }
+
+/* Gmail / Apple auto-link reset for footer addresses and phone numbers */
+a[x-apple-data-detectors],
+.footer-band-address a,
+.footer-band-contact a,
+.footer-legal p a:not([href*="PreferenceCenter"]) {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+}
 
 @media only screen and (max-width: 640px) {
   .disclaimer-text { font-size: 10px !important; }
@@ -1840,10 +1985,10 @@ a.button-outline-link {
 <h2 class="footer-band-title" align="center" style="color: #ffffff; font-family: ARIALNB, Arial, Verdana, sans-serif; font-size: 22px; font-weight: bold; margin: 0 0 16px 0; line-height: 1.25; text-align: center; width: 100%;mso-line-height-rule:exactly;mso-ansi-font-weight:bold">Weidmuller USA</h2>
 </div>
 <div data-editorblocktype="Text" class="footer-band-address" align="center" style="text-align: center; width: 100%;">
-<p align="center" style="margin: 0 0 10px 0; text-align: center; width: 100%; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;mso-line-height-rule:exactly">Weidmuller Inc.<br>821 Southlake Blvd.<br>Richmond, VA 23236</p>
+<p align="center" style="margin: 0 0 10px 0; text-align: center; width: 100%; color: #ffffff; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;mso-line-height-rule:exactly">Weidmuller Inc.<br>821 Southlake Blvd.<br>Richmond, VA 23236</p>
 </div>
 <div data-editorblocktype="Text" class="footer-band-contact" align="center" style="text-align: center; width: 100%;">
-<p align="center" style="margin: 0; text-align: center; width: 100%; color: #f4f4f4; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;mso-line-height-rule:exactly">Tel: 804 794 2877<br>Tech: 800 894 9343</p>
+<p align="center" style="margin: 0; text-align: center; width: 100%; color: #ffffff; font-family: ARIALN, Arial, Verdana, sans-serif; font-size: 13px; line-height: 1.65;mso-line-height-rule:exactly">Tel: 804 794 2877<br>Tech: 800 894 9343</p>
 </div>
 </td>
 </tr>

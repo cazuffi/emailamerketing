@@ -21,6 +21,11 @@ Follow `docs/D365_EMAIL_GUIDELINES.md` when creating or changing email modules.
 - Keep headers, footers, nested buttons, and data tables free of Dynamics
   designer-column hooks.
 - Ensure desktop fallbacks remain readable when mobile media queries are ignored.
+- Multi-column fluid modules (`three-up-benefits`, `cta-dual`) must stack in
+  source HTML with `display:block;width:100%;max-width:100%`. Use
+  `@media (min-width: 481px)` only as a desktop enhancement.
+- Export must ship `color-scheme: light only` meta and Gmail dark-mode CSS
+  overrides so mobile Gmail does not invert white backgrounds to black.
 - Build buttons from table cells and visible anchors. Do not hide anchors in
   non-MSO conditionals. The export strips `data-editorblocktype="Button"` so
   Dynamics cannot flatten the table into a background-less anchor.

@@ -472,6 +472,43 @@ img.header-logo-img--compact {
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
 }
 
+/* Desktop enhancement: side-by-side columns only when there is room.
+   Source HTML stacks with display:block so Gmail and other clients that
+   ignore @media still get a clean single-column layout. */
+@media only screen and (min-width: 481px) {
+  .three-up-benefits-section .three-up-row {
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+  .three-up-benefits-section .three-up-col {
+    display: inline-block !important;
+    width: 100% !important;
+    max-width: 190px !important;
+    padding: 0 6px !important;
+    vertical-align: top !important;
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+  .three-up-benefits-section .three-up-cell-last {
+    padding-bottom: 0 !important;
+  }
+
+  .cta-dual-section .cta-dual-row {
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+  .cta-dual-section .cta-dual-column {
+    display: inline-block !important;
+    width: 100% !important;
+    max-width: 296px !important;
+    padding: 0 6px !important;
+    vertical-align: top !important;
+  }
+  .cta-dual-section .cta-dual-primary {
+    padding-bottom: 0 !important;
+  }
+}
+
 @media only screen and (max-width: 400px) {
   .section-pad, .mobile-padding { padding: 14px 16px !important; }
   h1 { font-size: 18px !important; }
