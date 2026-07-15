@@ -3,6 +3,13 @@ const path = require('path');
 const { applyOverrides, PREVIEW_INTERACTION_STYLE } = require('./module-fields');
 const { hardenEmailHtml, sanitizeExportHtml } = require('./harden-email');
 const { preparePreviewHtml } = require('./preview-sample');
+const {
+  collectActiveClasses,
+  extractModuleIdsFromSource,
+  minifyCss,
+  pruneStylesheet,
+  PRUNABLE_CSS,
+} = require('./prune-css');
 
 const ROOT = path.join(__dirname, '..');
 const STUDIO_BASE = path.join(ROOT, 'campaigns/_studio');
@@ -10,20 +17,46 @@ const SHELL_PATH = path.join(ROOT, 'templates/_campaign-shell.html');
 const MODULE_PREVIEW_SHELL_PATH = path.join(ROOT, 'templates/_module-preview-shell.html');
 const MANIFEST_PATH = path.join(ROOT, 'components/modules/manifest.json');
 
-function resolveIncludes(content, baseDir, depth = 0) {
+function resolveIncludes(content, baseDir, depth = 0, options = {}) {
   if (depth > 20) throw new Error('Include depth exceeded');
   return content.replace(/<!--\s*@include\s+([^\s]+)\s*-->/g, (_, includePath) => {
     const fullPath = path.resolve(baseDir, includePath);
     if (!fs.existsSync(fullPath)) {
       throw new Error(`Include not found: ${includePath} (resolved: ${fullPath})`);
     }
-    const included = fs.readFileSync(fullPath, 'utf8');
-    return resolveIncludes(included, path.dirname(fullPath), depth + 1);
+    let included = fs.readFileSync(fullPath, 'utf8');
+    if (includePath.endsWith('.css') && options.activeClasses && options.pruneCss) {
+      const basename = path.basename(includePath);
+      if (PRUNABLE_CSS.has(basename)) {
+        included = pruneStylesheet(included, options.activeClasses);
+      }
+    }
+    return resolveIncludes(included, path.dirname(fullPath), depth + 1, options);
   });
 }
 
-function assembleFromSource(sourceContent, baseDir = STUDIO_BASE) {
-  return resolveIncludes(sourceContent, baseDir);
+function extractModulesRegion(sourceContent) {
+  const match = sourceContent.match(/<!-- MODULES:START -->([\s\S]*?)<!-- MODULES:END -->/);
+  return match ? match[1] : '';
+}
+
+function assembleFromSource(sourceContent, baseDir = STUDIO_BASE, options = {}) {
+  let content = sourceContent;
+  let resolveOptions = {};
+  if (!options.fullCss) {
+    const moduleIds = options.moduleIds || extractModuleIdsFromSource(content);
+    const bodyHtml = extractModulesRegion(content);
+    const activeClasses = collectActiveClasses({ moduleIds, bodyHtml });
+    resolveOptions = { activeClasses, pruneCss: true };
+  }
+  let assembled = resolveIncludes(content, baseDir, 0, resolveOptions);
+  if (options.minifyCss) {
+    assembled = assembled.replace(
+      /(<style[^>]*>)([\s\S]*?)(<\/style>)/gi,
+      (_, open, css, close) => `${open}${minifyCss(css)}${close}`,
+    );
+  }
+  return assembled;
 }
 
 function loadManifest() {
@@ -84,7 +117,12 @@ function buildSourceHtml({
 
 function buildEmailHtml(options = {}) {
   const source = buildSourceHtml(options);
-  const assembled = assembleFromSource(source, STUDIO_BASE);
+  const moduleIds = validateModuleIds(options.modules || []);
+  const assembled = assembleFromSource(source, STUDIO_BASE, {
+    moduleIds,
+    fullCss: !!options.fullCss,
+    minifyCss: !options.annotate && !options.fullCss,
+  });
   let hardened = hardenEmailHtml(assembled);
   const isPreview =
     options.libraryPreview || options.previewSample || options.previewOutlookSim || options.previewCssOff;
@@ -106,7 +144,11 @@ function buildEmailHtml(options = {}) {
 
 function buildFile(sourcePath, outputPath) {
   const source = fs.readFileSync(sourcePath, 'utf8');
-  const assembled = assembleFromSource(source, path.dirname(sourcePath));
+  const moduleIds = extractModuleIdsFromSource(source);
+  const assembled = assembleFromSource(source, path.dirname(sourcePath), {
+    moduleIds,
+    minifyCss: true,
+  });
   const hardened = sanitizeExportHtml(hardenEmailHtml(assembled));
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, `${hardened.trimEnd()}\n`);

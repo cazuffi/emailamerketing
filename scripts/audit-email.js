@@ -14,7 +14,8 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune';
+const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
   title: 'Audit fixture',
@@ -151,6 +152,23 @@ assert.match(
   exported,
   /\.orange-footer \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
   'Footer data-container wrappers must override Dynamics flex layout',
+);
+
+const exportBytes = Buffer.byteLength(exported, 'utf8');
+const simulatedBytes = Buffer.byteLength(simulateDynamicsPaste(exported), 'utf8');
+assert.ok(
+  simulatedBytes < GMAIL_CLIP_BYTES,
+  `Audit fixture must stay under Gmail clip limit after Dynamics paste (${simulatedBytes} >= ${GMAIL_CLIP_BYTES})`,
+);
+assert.ok(
+  exportBytes < GMAIL_CLIP_BYTES,
+  `Audit fixture export must stay under Gmail clip limit (${exportBytes} >= ${GMAIL_CLIP_BYTES})`,
+);
+
+const fullCssExport = buildEmailHtml({ ...options, fullCss: true });
+assert.ok(
+  Buffer.byteLength(exported, 'utf8') < Buffer.byteLength(fullCssExport, 'utf8'),
+  'Pruned export must be smaller than full CSS export',
 );
 assert.strictEqual($('.three-up-benefits-section [data-container]').length, 0);
 

@@ -104,12 +104,20 @@ reprocesses it. Confirmed transformations:
 The first line of Copy HTML must be:
 
 ```html
-<!-- email-marketing/2.0.0+d365-send-compat -->
+<!-- email-marketing/2.0.0+d365-send-compat+css-prune -->
 ```
 
 If that comment is missing, you are not testing the current build. Run
 `git pull`, `npm test`, `npm run build`, rebuild in Studio, and Copy HTML again.
 Do not reuse a saved Dynamics email or an old Studio build file.
+
+## Gmail HTML size (clipping)
+
+Gmail truncates emails when the HTML exceeds **~102 KB** and shows **"View entire
+message"** (often a `...` control). The export **prunes CSS to modules in your
+campaign** so typical emails stay under the limit. If you stack many modules
+(20+), check size in Studio or run `npm test` — the audit fails when a standard
+fixture exceeds the clip threshold.
 
 ## Buttons
 
