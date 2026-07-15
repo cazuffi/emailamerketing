@@ -218,6 +218,31 @@ assert.match(
   /\.section-heading-section \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
   'Section heading data-container wrappers must center for Gmail',
 );
+assert.deepStrictEqual(
+  extractFields('article-stack').map((field) => field.key),
+  ['section_title', 'list_articles'],
+  'Article stack must expose section title and per-story controls',
+);
+const articleStackExport = buildEmailHtml({
+  title: 'article stack audit',
+  modules: ['article-stack'],
+  overrides: {
+    0: {
+      list_articles: [
+        { headline: 'Story A', summary: 'Summary A', ctaLabel: 'Read A', ctaHref: 'https://example.com/a', showCta: 'yes' },
+        { headline: 'Story B', summary: 'Summary B', ctaLabel: 'Read B', ctaHref: 'https://example.com/b', showCta: 'no' },
+      ],
+    },
+  },
+  annotate: false,
+});
+assert.match(articleStackExport, /Read A/);
+assert.doesNotMatch(articleStackExport, /Read B/);
+assert.strictEqual(
+  (articleStackExport.match(/article-stack-cta-link/g) || []).length,
+  1,
+  'Article stack must export one CTA when only one story has showCta enabled',
+);
 assert.match(
   exported,
   /\[data-section="true"\][\s\S]*line-height:\s*0 !important/i,

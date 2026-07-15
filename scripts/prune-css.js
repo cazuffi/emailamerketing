@@ -17,6 +17,15 @@ const PRUNABLE_CSS = new Set([
 /** Classes required in every export (footer, buttons, layout shell). */
 const GLOBAL_SCOPE_CLASSES = new Set([
   'accent-band',
+  'article-stack-cell',
+  'article-stack-cta',
+  'article-stack-cta-link',
+  'article-stack-cta-wrap',
+  'article-stack-headline',
+  'article-stack-item',
+  'article-stack-section',
+  'article-stack-story',
+  'article-stack-summary',
   'align-center',
   'align-left',
   'align-right',

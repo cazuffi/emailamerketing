@@ -911,6 +911,11 @@ async function loadEditForm(uid) {
       continue;
     }
 
+    if (field.type === 'article-stack-list') {
+      form.appendChild(renderArticleStackListField(uid, field, current));
+      continue;
+    }
+
     const value = Object.prototype.hasOwnProperty.call(current, field.key)
       ? current[field.key]
       : field.value;
@@ -1296,6 +1301,179 @@ function renderSpecsListField(uid, field, current) {
     syncList();
     const lastLabel = listEl.querySelector('.edit-specs-row:last-child input');
     if (lastLabel) lastLabel.focus();
+  });
+
+  renderItems();
+  wrap.appendChild(addBtn);
+  return wrap;
+}
+
+function renderArticleStackListField(uid, field, current) {
+  const wrap = document.createElement('div');
+  wrap.className = 'edit-field edit-field-list edit-field-article-stack';
+
+  const label = document.createElement('label');
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  const listEl = document.createElement('div');
+  listEl.className = 'edit-list';
+  wrap.appendChild(listEl);
+
+  const hint = document.createElement('div');
+  hint.className = 'edit-field-hint';
+  hint.textContent = 'Add or remove stories · toggle the left-aligned text link per item';
+  wrap.appendChild(hint);
+
+  const items = Array.isArray(current[field.key])
+    ? current[field.key].map((row) => ({
+      headline: row?.headline ?? '',
+      summary: row?.summary ?? '',
+      ctaLabel: row?.ctaLabel ?? 'Read more →',
+      ctaHref: row?.ctaHref ?? '#',
+      showCta: row?.showCta === 'no' ? 'no' : 'yes',
+    }))
+    : field.value.map((row) => ({
+      headline: row?.headline ?? '',
+      summary: row?.summary ?? '',
+      ctaLabel: row?.ctaLabel ?? 'Read more →',
+      ctaHref: row?.ctaHref ?? '#',
+      showCta: row?.showCta === 'no' ? 'no' : 'yes',
+    }));
+
+  function syncList() {
+    if (!state.overrides[uid]) state.overrides[uid] = {};
+    state.overrides[uid][field.key] = items.map((row) => ({ ...row }));
+    syncFieldOverrides(uid);
+  }
+
+  function renderItems() {
+    listEl.innerHTML = '';
+    items.forEach((row, index) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'edit-list-item edit-article-stack-row';
+
+      const rowLabel = document.createElement('span');
+      rowLabel.className = 'edit-list-item-label';
+      rowLabel.textContent = `${field.itemLabel || 'Story'} ${index + 1}`;
+
+      const inputs = document.createElement('div');
+      inputs.className = 'edit-article-stack-inputs';
+
+      const headlineWrap = document.createElement('label');
+      headlineWrap.className = 'edit-specs-input-label';
+      headlineWrap.textContent = 'Headline';
+      const headlineInput = document.createElement('input');
+      headlineInput.type = 'text';
+      headlineInput.value = row.headline;
+      headlineInput.addEventListener('input', () => {
+        items[index].headline = headlineInput.value;
+        syncList();
+      });
+
+      const summaryWrap = document.createElement('label');
+      summaryWrap.className = 'edit-specs-input-label';
+      summaryWrap.textContent = 'Summary';
+      const summaryInput = document.createElement('textarea');
+      summaryInput.rows = 3;
+      summaryInput.value = row.summary;
+      summaryInput.addEventListener('input', () => {
+        items[index].summary = summaryInput.value;
+        syncList();
+      });
+
+      const showCtaWrap = document.createElement('label');
+      showCtaWrap.className = 'edit-specs-input-label';
+      showCtaWrap.textContent = 'Show text link';
+      const showCtaInput = document.createElement('select');
+      ['yes', 'no'].forEach((opt) => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt === 'yes' ? 'Yes' : 'No';
+        if (opt === row.showCta) option.selected = true;
+        showCtaInput.appendChild(option);
+      });
+      showCtaInput.addEventListener('change', () => {
+        items[index].showCta = showCtaInput.value;
+        ctaLabelInput.disabled = showCtaInput.value === 'no';
+        ctaHrefInput.disabled = showCtaInput.value === 'no';
+        syncList();
+      });
+
+      const ctaLabelWrap = document.createElement('label');
+      ctaLabelWrap.className = 'edit-specs-input-label';
+      ctaLabelWrap.textContent = 'Link label';
+      const ctaLabelInput = document.createElement('input');
+      ctaLabelInput.type = 'text';
+      ctaLabelInput.value = row.ctaLabel;
+      ctaLabelInput.disabled = row.showCta === 'no';
+      ctaLabelInput.addEventListener('input', () => {
+        items[index].ctaLabel = ctaLabelInput.value;
+        syncList();
+      });
+
+      const ctaHrefWrap = document.createElement('label');
+      ctaHrefWrap.className = 'edit-specs-input-label';
+      ctaHrefWrap.textContent = 'Link URL';
+      const ctaHrefInput = document.createElement('input');
+      ctaHrefInput.type = 'url';
+      ctaHrefInput.value = row.ctaHref;
+      ctaHrefInput.disabled = row.showCta === 'no';
+      ctaHrefInput.addEventListener('input', () => {
+        items[index].ctaHref = ctaHrefInput.value;
+        syncList();
+      });
+
+      inputs.appendChild(headlineWrap);
+      inputs.appendChild(headlineInput);
+      inputs.appendChild(summaryWrap);
+      inputs.appendChild(summaryInput);
+      inputs.appendChild(showCtaWrap);
+      inputs.appendChild(showCtaInput);
+      inputs.appendChild(ctaLabelWrap);
+      inputs.appendChild(ctaLabelInput);
+      inputs.appendChild(ctaHrefWrap);
+      inputs.appendChild(ctaHrefInput);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn-ghost btn-sm edit-list-remove';
+      removeBtn.textContent = 'Remove';
+      removeBtn.disabled = items.length <= (field.minItems || 1);
+      removeBtn.addEventListener('click', () => {
+        if (items.length <= (field.minItems || 1)) return;
+        items.splice(index, 1);
+        renderItems();
+        syncList();
+      });
+
+      rowEl.appendChild(rowLabel);
+      rowEl.appendChild(inputs);
+      rowEl.appendChild(removeBtn);
+      listEl.appendChild(rowEl);
+    });
+  }
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'btn btn-ghost btn-sm edit-list-add';
+  addBtn.textContent = `+ Add ${(field.itemLabel || 'story').toLowerCase()}`;
+  addBtn.addEventListener('click', () => {
+    if (items.length >= (field.maxItems || 8)) {
+      toast(`Maximum ${field.maxItems || 8} stories`);
+      return;
+    }
+    items.push({
+      headline: '',
+      summary: '',
+      ctaLabel: 'Read more →',
+      ctaHref: '#',
+      showCta: 'yes',
+    });
+    renderItems();
+    syncList();
+    const lastHeadline = listEl.querySelector('.edit-article-stack-row:last-child input');
+    if (lastHeadline) lastHeadline.focus();
   });
 
   renderItems();

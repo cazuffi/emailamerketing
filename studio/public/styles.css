@@ -705,6 +705,23 @@ body {
   font-family: var(--font);
 }
 
+.edit-article-stack-row .edit-article-stack-inputs {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.edit-article-stack-row select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+}
+
 .empty-mode-row {
   display: flex;
   align-items: center;

@@ -66,7 +66,7 @@
     { "id": "team-profile", "file": "team-profile.html", "category": "Social proof", "description": "Photo + name + title + bio" },
     { "id": "social-links", "file": "social-links.html", "category": "Social proof", "description": "LinkedIn, YouTube, Website links" },
     { "id": "article-row", "file": "article-row.html", "category": "Newsletter", "description": "Thumbnail + headline row" },
-    { "id": "article-stack", "file": "article-stack.html", "category": "Newsletter", "description": "Stacked stories with dividers" },
+    { "id": "article-stack", "file": "article-stack.html", "category": "Newsletter", "description": "Stacked stories with optional left-aligned text links" },
     { "id": "image-caption", "file": "image-caption.html", "category": "Media", "description": "Full-width image with caption" },
     { "id": "image-fullbleed", "file": "image-fullbleed.html", "category": "Media", "description": "Edge-to-edge image with optional caption" },
     { "id": "image-hero-text", "file": "image-hero-text.html", "category": "Media", "description": "Full-width hero image + headline and copy (no button)" },

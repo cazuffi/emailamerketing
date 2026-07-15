@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 
 const ROOT = path.join(__dirname, '..');
 const MODULES_DIR = path.join(ROOT, 'components/modules');
+const DIVIDER_PARTIAL_PATH = path.join(ROOT, 'components/_partials/divider-line.html');
 
 function resolveIncludes(content, baseDir, depth = 0) {
   if (depth > 20) throw new Error('Include depth exceeded');
@@ -106,6 +107,7 @@ function eachTextField($, $block, startCount, fn) {
     const $el = $(el);
     if ($el.attr('data-studio-field')) return;
     if (isInsideStudioRepeat($el)) return;
+    if (isInsideArticleStack($el)) return;
     if (shouldSkipEmptyNonParagraph($el)) return;
     const tag = el.tagName.toLowerCase();
     const isSpacer = $el.hasClass('text-spacer');
@@ -253,6 +255,10 @@ function normalizeOverrides(moduleId, overrides = {}) {
 
 function isInsideStudioRepeat($el) {
   return $el.closest('[data-studio-repeat]').length > 0;
+}
+
+function isInsideArticleStack($el) {
+  return $el.closest('[data-studio-article-stack]').length > 0;
 }
 
 const ALIGN_OPTIONS = ['left', 'center', 'right'];
@@ -456,6 +462,121 @@ function extractSpecsRows($, fields) {
   });
 }
 
+function defaultArticleStackItem() {
+  return {
+    headline: '',
+    summary: '',
+    ctaLabel: 'Read more →',
+    ctaHref: '#',
+    showCta: 'yes',
+  };
+}
+
+function readArticleStackItem($item) {
+  const $ctaLink = $item.find('.article-stack-cta-link').first();
+  const $ctaWrap = $item.find('.article-stack-cta-wrap').first();
+  return {
+    headline: normalizeTextValue($item.find('.article-stack-headline').first().text()),
+    summary: normalizeTextValue($item.find('.article-stack-summary').first().text()),
+    ctaLabel: normalizeTextValue($ctaLink.text()) || 'Read more →',
+    ctaHref: $ctaLink.attr('href') || '#',
+    showCta: isElementHidden($ctaWrap) ? 'no' : 'yes',
+  };
+}
+
+function loadArticleStackDividerHtml() {
+  const raw = fs.readFileSync(DIVIDER_PARTIAL_PATH, 'utf8');
+  return resolveIncludes(raw, path.dirname(DIVIDER_PARTIAL_PATH));
+}
+
+function buildArticleStackDividerHtml() {
+  const divider = loadArticleStackDividerHtml().trim();
+  return `<div data-editorblocktype="Divider" class="article-stack-divider" style="margin:16px 0;">${divider}</div>`;
+}
+
+function extractArticleStackRows($, fields) {
+  $('[data-studio-article-stack]').each((_, el) => {
+    const $stack = $(el);
+    const items = [];
+    $stack.children('.article-stack-item').each((__, item) => {
+      items.push(readArticleStackItem($(item)));
+    });
+
+    fields.push({
+      key: 'list_articles',
+      type: 'article-stack-list',
+      label: $stack.attr('data-studio-label') || 'Stacked stories',
+      itemLabel: 'Story',
+      value: items.length ? items : [defaultArticleStackItem()],
+      minItems: Number($stack.attr('data-studio-min') || 1),
+      maxItems: Number($stack.attr('data-studio-max') || 8),
+    });
+  });
+}
+
+function applyArticleStackItem($item, row, index, isLast) {
+  const $story = $item.find('.article-stack-story').first();
+  const $headline = $item.find('.article-stack-headline').first();
+  const $summary = $item.find('.article-stack-summary').first();
+  const $ctaWrap = $item.find('.article-stack-cta-wrap').first();
+  const $ctaLink = $item.find('.article-stack-cta-link').first();
+
+  const storyMargin = index === 0 ? '16px 0 8px 0' : '0 0 8px 0';
+  const ctaMargin = isLast ? '0' : '0 0 8px 0';
+
+  $story.attr('style', mergeInlineStyle($story.attr('style'), 'margin', storyMargin));
+  $story.attr('style', mergeInlineStyle($story.attr('style'), 'text-align', 'left'));
+  $ctaWrap.attr('style', mergeInlineStyle($ctaWrap.attr('style'), 'margin', ctaMargin));
+  $ctaWrap.attr('style', mergeInlineStyle($ctaWrap.attr('style'), 'text-align', 'left'));
+
+  $headline.text(row.headline || '');
+  $summary.text(row.summary || '');
+  $ctaLink.text(row.ctaLabel || 'Read more →');
+  $ctaLink.attr('href', row.ctaHref || '#');
+
+  if (parseToggleValue(row.showCta) === 'no' || (isEmptyOverride(row.ctaLabel) && isEmptyOverride(row.ctaHref))) {
+    hideForEmail($ctaWrap);
+  } else {
+    showForEmail($ctaWrap);
+  }
+
+  if (isEmptyOverride(row.headline) && isEmptyOverride(row.summary)) {
+    hideForEmail($story);
+    hideForEmail($ctaWrap);
+  } else {
+    showForEmail($story);
+  }
+}
+
+function applyArticleStackRows($, normalized) {
+  if (!Object.prototype.hasOwnProperty.call(normalized, 'list_articles')) return;
+
+  const raw = normalized.list_articles;
+  const rows = Array.isArray(raw) ? raw : [raw];
+
+  $('[data-studio-article-stack]').each((_, el) => {
+    const $stack = $(el);
+    const $template = $stack.children('.article-stack-item').first();
+    if (!$template.length) return;
+
+    $stack.empty();
+    const visibleRows = rows.filter(
+      (row) => row && (!isEmptyOverride(row.headline) || !isEmptyOverride(row.summary)),
+    );
+
+    const itemsToRender = visibleRows.length ? visibleRows : [defaultArticleStackItem()];
+
+    itemsToRender.forEach((row, index) => {
+      const $item = $template.clone();
+      applyArticleStackItem($item, row, index, index === itemsToRender.length - 1);
+      $stack.append($item);
+      if (index < itemsToRender.length - 1) {
+        $stack.append(buildArticleStackDividerHtml());
+      }
+    });
+  });
+}
+
 function extractStudioFields($, $block, fields) {
   $block.find('[data-studio-field], [data-studio-repeat]').each((_, el) => {
     const $el = $(el);
@@ -616,7 +737,7 @@ function extractFields(moduleId) {
     }
   });
 
-  $('a.text-link-cta, a.social-link').each((_, el) => {
+  $('a.text-link-cta, a.social-link').not('.article-stack-cta-link').each((_, el) => {
     const $el = $(el);
     fields.push({
       key: `link_${linkCount}_label`,
@@ -634,6 +755,7 @@ function extractFields(moduleId) {
   });
 
   extractSpecsRows($, fields);
+  extractArticleStackRows($, fields);
   extractModuleSettings($, fields);
 
   return fields;
@@ -696,7 +818,7 @@ function tagPreviewFields($) {
     }
   });
 
-  $('a.text-link-cta, a.social-link').each((_, el) => {
+  $('a.text-link-cta, a.social-link').not('.article-stack-cta-link').each((_, el) => {
     const $el = $(el);
     if (isElementHidden($el)) return;
     $el.attr('data-studio-edit', `link_${linkCount}_label`);
@@ -717,6 +839,24 @@ function tagPreviewFields($) {
       $value.attr('data-studio-edit', 'list_specs');
       $value.attr('data-studio-list-index', String(listIndex));
       $value.attr('data-studio-specs-part', 'value');
+      listIndex += 1;
+    });
+  });
+
+  $('[data-studio-article-stack]').each((_, stack) => {
+    let listIndex = 0;
+    $(stack).children('.article-stack-item').each((__, item) => {
+      const $item = $(item);
+      if (isElementHidden($item)) return;
+      $item.find('.article-stack-headline').attr('data-studio-edit', 'list_articles');
+      $item.find('.article-stack-headline').attr('data-studio-list-index', String(listIndex));
+      $item.find('.article-stack-headline').attr('data-studio-article-part', 'headline');
+      $item.find('.article-stack-summary').attr('data-studio-edit', 'list_articles');
+      $item.find('.article-stack-summary').attr('data-studio-list-index', String(listIndex));
+      $item.find('.article-stack-summary').attr('data-studio-article-part', 'summary');
+      $item.find('.article-stack-cta-link').attr('data-studio-edit', 'list_articles');
+      $item.find('.article-stack-cta-link').attr('data-studio-list-index', String(listIndex));
+      $item.find('.article-stack-cta-link').attr('data-studio-article-part', 'cta');
       listIndex += 1;
     });
   });
@@ -817,7 +957,7 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
     }
   });
 
-  $('a.text-link-cta, a.social-link').each((_, el) => {
+  $('a.text-link-cta, a.social-link').not('.article-stack-cta-link').each((_, el) => {
     const $el = $(el);
     const labelKey = `link_${linkCount}_label`;
     const hrefKey = `link_${linkCount}_href`;
@@ -832,6 +972,7 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
 
   applyModuleSettings($, normalized);
   applySpecsRows($, normalized);
+  applyArticleStackRows($, normalized);
 
   collapseOrphanSpacers($);
   collapseEmptyFaqPairs($);
