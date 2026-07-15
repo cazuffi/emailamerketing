@@ -131,8 +131,11 @@ Gmail often ignores `margin: auto` on block-level `[data-layout="true"]` divs.
 After a Dynamics save, the editor adds its own outer `div[data-layout]` with only
 `margin: auto` and nests your content inside. The export centers with
 `body { text-align: center }` plus `div[data-layout] { display: inline-block }`,
-forces `table.outer` back to `display: table`, and neutralizes fixed-width flex
-`data-container` wrappers.
+forces `table.outer` back to `display: table`, collapses Gmail gaps between
+stacked section tables (`line-height: 0` on section wrappers), and neutralizes
+fixed-width flex `data-container` wrappers. Footers use nested centering tables
+so Gmail mobile respects `align="center"` even when Dynamics injects 576px flex
+containers.
 
 ## Buttons
 

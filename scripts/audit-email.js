@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v4';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v5';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -179,6 +179,18 @@ assert.strictEqual($('.footer-legal > table > tbody > tr > td > center').length,
 assert.strictEqual($('.footer-legal .footer-legal-center').length, 1);
 assert.strictEqual($('.orange-footer.columns-equal-class, .orange-footer .tbContainer').length, 0);
 assert.strictEqual($('.orange-footer .footer-band-inner').attr('width'), '100%');
+assert.strictEqual($('.orange-footer .footer-band-text-table').length, 1);
+assert.strictEqual($('.footer-legal .footer-legal-text-table').length, 1);
+assert.match(
+  buildEmailHtml({ title: 'divider audit', modules: ['divider-line'], annotate: false }),
+  /class="divider-line-cell"[^>]*style="[^"]*border-top:2px solid #ef7800/i,
+  'Divider must ship border-top fill for Gmail',
+);
+assert.match(
+  exported,
+  /\[data-section="true"\][\s\S]*line-height:\s*0 !important/i,
+  'Export must collapse Gmail gaps between section tables',
+);
 
 const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
 assert.strictEqual(benefitCells.length, 3);

@@ -357,9 +357,36 @@ function hardenSmallText($) {
 }
 
 const DIVIDER_LINE_STYLE =
-  'height:2px;line-height:2px;font-size:2px;mso-line-height-rule:exactly;background-color:#ef7800;border:0;padding:0';
+  'height:2px;line-height:2px;font-size:1px;mso-line-height-rule:exactly;background-color:#ef7800;border-top:2px solid #ef7800;mso-border-top-alt:2px solid #ef7800;border-left:0;border-right:0;border-bottom:0;padding:0;mso-padding-alt:0';
 const DIVIDER_DOT_STYLE =
   'width:6px;height:6px;background-color:#ef7800;font-size:0;line-height:0;mso-line-height-rule:exactly;padding:0;border:0';
+
+function unwrapPassengerDivs($) {
+  $('[data-editorblocktype="Text"] div, [data-editorblocktype="Content"] div').each((_, el) => {
+    const $div = $(el);
+    if ($div.attr('class') || $div.attr('id') || $div.attr('align') || $div.attr('data-container')) return;
+    const attrs = Object.keys(el.attribs || {}).filter((key) => !key.startsWith('data-'));
+    if (attrs.length > 0) return;
+    const children = $div.children();
+    if (!children.length) {
+      $div.remove();
+      return;
+    }
+    if (children.filter('p, h1, h2, h3, h4').length === children.length) {
+      $div.replaceWith($div.contents());
+    }
+  });
+}
+
+function hardenSectionGaps($) {
+  $('[data-section="true"]').each((_, section) => {
+    const $section = $(section);
+    ensureStyle($section, 'margin:0;padding:0;line-height:0;font-size:0');
+    $section.children('table.outer').each((__, table) => {
+      ensureStyle($(table), 'margin-top:0;margin-bottom:0;line-height:normal;font-size:15px');
+    });
+  });
+}
 
 function isOrangeBorderTop(style) {
   return /border-top:\s*2px\s+solid\s+(#ef7800|rgb\(\s*239\s*,\s*120\s*,\s*0\s*\))/i.test(style || '');
@@ -542,6 +569,17 @@ function hardenFooterAlignment($) {
     ensureStyle($el, 'text-align:center;width:100%');
   });
 
+  $('.orange-footer .footer-band-text-table, .footer-legal .footer-legal-text-table').each((_, el) => {
+    const $table = $(el);
+    $table.attr('align', 'center');
+    ensureStyle($table, 'margin-left:auto;margin-right:auto;width:100%;border-collapse:collapse');
+    $table.find('td').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      ensureStyle($cell, 'text-align:center;padding:0;width:100%');
+    });
+  });
+
   $('.orange-footer [data-container], .footer-legal [data-container]').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
@@ -588,6 +626,7 @@ function hardenEmailHtml(html) {
   hardenD365Containers($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
+  hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
 }
@@ -666,7 +705,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v4';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v5';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -678,6 +717,8 @@ function sanitizeExportHtml(html) {
   hardenButtons($);
   hardenHeaderAlignment($);
   hardenFooterAlignment($);
+  hardenSectionGaps($);
+  unwrapPassengerDivs($);
   normalizeInlineBackgrounds($);
   return `<!-- ${BUILD_MARKER} -->\n${flattenOutlookConditionals($.html())}`;
 }

@@ -238,6 +238,7 @@ h2.subhead-orange {
 .divider-line-cell {
   height: 2px;
   background-color: #ef7800;
+  border-top: 2px solid #ef7800;
 }
 
 .divider-dots-table { margin: 0 auto; }

@@ -31,6 +31,27 @@ table.outer,
   display: table !important;
 }
 
+/* Gmail inserts extra gaps between Dynamics display:block section tables */
+[data-section="true"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+}
+
+[data-section="true"] > table.outer {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: normal !important;
+  font-size: 15px !important;
+}
+
+.eyebrow-headline + [data-section="true"] > table.outer,
+[data-section="true"].eyebrow-headline + [data-section="true"] > table.outer,
+[data-section="true"] + [data-section="true"] > table.outer {
+  margin-top: 0 !important;
+}
+
 /* Orange accent fill on table cells only — not the section wrapper (Gmail clip
    fragments otherwise paint multiple orange bars between collapsed blocks). */
 .accent-band[data-section="true"],
@@ -89,10 +110,18 @@ table.outer,
 .orange-footer .footer-band-content,
 .orange-footer .footer-band-inner,
 .footer-legal .footer-legal-center,
+.footer-band-text-table,
+.footer-legal-text-table,
 .three-up-benefits-section .three-up-stack-cell > table {
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
+}
+
+.footer-band-text-table td,
+.footer-legal-text-table td {
+  text-align: center !important;
+  width: 100% !important;
 }
 
 .header-standard-section .header-logo-column [data-container="true"],
@@ -319,8 +348,53 @@ h2.subhead-orange,
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
     margin-left: auto !important;
     margin-right: auto !important;
     text-align: center !important;
   }
+
+  .footer-band-text-table,
+  .footer-legal-text-table,
+  .footer-band-text-table td,
+  .footer-legal-text-table td,
+  .orange-footer h2,
+  .orange-footer p,
+  .footer-legal p,
+  .footer-legal a {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Gmail app (web + mobile) — override fixed-width Dynamics data-container inline styles */
+u + .body .orange-footer [data-container="true"],
+u + .body .footer-legal [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: block !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+u + .body .footer-band-text-table,
+u + .body .footer-legal-text-table,
+u + .body .footer-band-text-table td,
+u + .body .footer-legal-text-table td {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.divider-line-cell {
+  border-top: 2px solid #ef7800 !important;
+  background-color: #ef7800 !important;
+  height: 2px !important;
+  line-height: 2px !important;
+  font-size: 1px !important;
+  padding: 0 !important;
 }
