@@ -219,6 +219,22 @@ h2.subhead-orange {
   margin: 0;
 }
 
+.view-in-browser-text {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #666666;
+  margin: 0;
+  text-align: center;
+}
+
+.view-in-browser-link {
+  font-family: ARIALN, Arial, Verdana, sans-serif;
+  font-size: 11px;
+  color: #ef7800;
+  text-decoration: underline;
+}
+
 .eyebrow-label {
   font-family: ARIALNB, Arial, Verdana, sans-serif;
   font-size: 11px;
@@ -233,6 +249,10 @@ h2.subhead-orange {
   width: 48px;
   height: 2px;
   background-color: #ef7800;
+}
+
+.section-heading-section .divider-line-table {
+  margin: 0 auto 12px auto;
 }
 
 .divider-line-cell {

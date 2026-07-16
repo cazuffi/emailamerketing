@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v18';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -104,6 +104,16 @@ assert.match(
   /background-color:\s*#ef7800/i,
   'Accent band table must carry the orange fill',
 );
+assert.match(
+  exported,
+  /\.accent-band\[data-section="true"\][\s\S]*background-color:\s*#ef7800 !important/i,
+  'Accent band section wrapper must inherit orange so canvas gutters never flash white',
+);
+assert.match(
+  exported,
+  /\.urgency-band table\.outer[\s\S]*min-width:\s*100% !important/i,
+  'Urgency band must harden full-bleed outer tables',
+);
 assert.strictEqual(
   $('.header-standard-section table.outer').first().attr('bgcolor'),
   '#ffffff',
@@ -117,9 +127,23 @@ assert.strictEqual($('.header-standard-section .tbContainer, .header-standard-se
 assert.strictEqual($('.header-standard-section .header-layout-table').length, 1);
 const taglineCell = $('.header-standard-section .header-tagline-cell');
 const logoCell = $('.header-standard-section .header-logo-cell');
-assert.strictEqual(logoCell.attr('align'), 'center');
+assert.strictEqual(logoCell.attr('align'), 'left');
+assert.strictEqual(logoCell.attr('valign'), 'top');
+assert.match(logoCell.attr('style') || '', /vertical-align:top/i);
 assert.strictEqual(taglineCell.attr('valign'), 'middle');
 assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
+
+const viewBrowserExport = buildEmailHtml({
+  title: 'view in browser audit',
+  modules: ['view-in-browser-bar'],
+  annotate: false,
+});
+const $viewBrowser = cheerio.load(viewBrowserExport, { xml: false }, false);
+assert.strictEqual($viewBrowser('.view-in-browser-section [data-editorblocktype="Text"]').length, 1);
+assert.strictEqual($viewBrowser('.view-in-browser-link').length, 1);
+assert.match($viewBrowser('.view-in-browser-link').attr('style') || '', /color:#ef7800/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /text-align:center/i);
+
 assert.match(
   exported,
   /\.header-standard-section \.header-tagline-cell \[data-editorblocktype="Text"\]\s*\{\s*text-align:\s*center !important;/i,
@@ -127,7 +151,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-safe\s*\{[\s\S]*?text-align:\s*center !important;/i,
   'Mobile header logo wrappers must center across the email',
 );
 assert.match(
@@ -137,7 +161,7 @@ assert.match(
 );
 assert.match(
   noMediaPreview,
-  /\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  /\.header-standard-section \.header-logo-safe\s*\{[\s\S]*?text-align:\s*center !important;/i,
   'No-media fallback must center the logo across the email',
 );
 assert.match(
@@ -193,15 +217,22 @@ assert.match(
   /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAC|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAC[^"]*"[^>]*class="divider-line-img"/i,
   'Divider must ship an orange spacer image for Gmail iOS',
 );
-assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
-assert.strictEqual($('.cta-band-grey > table.section-gap-shim').length, 0, 'Grey CTA band must not use gap shims');
-assert.strictEqual($('.urgency-band > table.section-gap-shim').length, 0, 'Urgency band must not use gap shims');
+assert.strictEqual($('table.section-gap-shim').length, 0, 'Export must not inject section gap shims');
+assert.match(
+  exported,
+  /\[data-section="true"\][\s\S]*margin:\s*0 !important/i,
+  'Export must zero section wrapper margins for Gmail',
+);
+assert.match(
+  exported,
+  /\[data-section="true"\] > table\.outer[\s\S]*display:\s*table !important/i,
+  'Export must force display:table on section outer tables for Gmail',
+);
 assert.match(
   buildEmailHtml({ title: 'urgency audit', modules: ['urgency-band'], annotate: false }),
   /urgency-band[\s\S]*text-align:center/i,
   'Urgency band must ship centered text styles',
 );
-assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
 assert.strictEqual(
   cheerio.load(
     buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
@@ -219,6 +250,24 @@ assert.strictEqual(
   )('.section-heading-section .section-heading-center').length,
   1,
   'Section heading must use an inner centering table',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-table').length,
+  1,
+  'Section heading must use a full-width divider rule',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-img').length,
+  1,
+  'Section heading divider must ship the Gmail-safe spacer image',
 );
 assert.match(
   exported,
@@ -250,10 +299,27 @@ assert.strictEqual(
   1,
   'Article stack must export one CTA when only one story has showCta enabled',
 );
+assert.strictEqual(
+  cheerio.load(articleStackExport, { xml: false }, false)('.article-stack-divider').length,
+  1,
+  'Article stack must export a divider between stories',
+);
+assert.doesNotMatch(
+  articleStackExport,
+  /class="article-stack-divider"[^>]*data-editorblocktype="Divider"/i,
+  'Article stack dividers must not use Dynamics Divider blocks',
+);
 assert.match(
-  exported,
-  /\[data-section="true"\][\s\S]*line-height:\s*0 !important/i,
-  'Export must collapse Gmail gaps between section tables',
+  articleStackExport,
+  /\.article-stack-section \.article-stack-divider[\s\S]*width:\s*100% !important/i,
+  'Article stack dividers must span the full content column',
+);
+assert.strictEqual(
+  cheerio.load(simulateDynamicsPaste(articleStackExport), { xml: false }, false)(
+    '.article-stack-divider',
+  ).parent('[data-container="true"]').length,
+  0,
+  'Dynamics paste must not wrap article stack dividers in fixed-width containers',
 );
 
 const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
@@ -393,8 +459,8 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-logo-wrap[\s\S]*width:100%/i,
-  'Header logo wrapper must span the full header width',
+  /\.header-logo-safe[\s\S]*line-height:\s*normal/i,
+  'Header logo shell must use natural line-height so Outlook does not clip the image',
 );
 assert.match(
   exported,
@@ -424,6 +490,41 @@ assert.strictEqual(
   )('.intro-headline [data-editorblocktype="Text"]').length,
   1,
   'Intro headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
+);
+assert.match(
+  exported,
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Intro headline must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.headline-block-section h2[\s\S]*text-align:\s*left !important/i,
+  'Headline H2 block must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.feature-stack-text p[\s\S]*text-align:\s*left !important/i,
+  'Feature module copy must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section \.header-logo-safe[\s\S]*line-height:\s*normal !important/i,
+  'Header logo shell must use natural line-height for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*auto !important/i,
+  'Header logo must scale naturally in Outlook without fixed-height clipping',
+);
+assert.doesNotMatch(
+  exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*23px !important/i,
+  'Header logo must not force a fixed 23px height that clips taller assets',
+);
+assert.match(
+  getOutlookFallbackCss(),
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Outlook desktop fallback must keep intro headlines left-aligned',
 );
 assert.strictEqual(
   cheerio.load(
@@ -508,7 +609,12 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
+  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*4px solid #ef7800 !important;[\s\S]*?border-right:\s*4px solid #ffffff !important;/i,
+  'Post-paste CSS must keep grey CTA desktop edge rails',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
   'Mobile grey CTA must remove both desktop edge rails',
 );
 
@@ -690,8 +796,9 @@ for (const moduleId of allModuleIds) {
 }
 
 const headerLogoStyle = $all('.header-standard-section img.header-logo-img').first().attr('style') || '';
-assert.match(headerLogoStyle, /width:100%/i, 'Header logo must shrink inside its source column');
-assert.match(headerLogoStyle, /max-width:200px/i, 'Header logo must retain its desktop cap');
+assert.match(headerLogoStyle, /width:200px/i, 'Header logo must use a fixed desktop width for Outlook');
+assert.match(headerLogoStyle, /height:auto/i, 'Header logo must preserve natural height for Outlook');
+assert.doesNotMatch(headerLogoStyle, /height:23px/i, 'Header logo must not force a fixed 23px height inline');
 
 for (const selector of ['.article-thumb img', '.team-photo img']) {
   const style = $all(selector).first().attr('style') || '';
@@ -754,6 +861,7 @@ assert.strictEqual(
 
 $all('[data-layout="true"] > [data-section="true"]').each((_, section) => {
   const $section = $all(section);
+  if ($section.hasClass('accent-band') || $section.hasClass('orange-footer')) return;
   assert.match(
     $section.attr('style') || '',
     /background(?:-color)?\s*:/i,

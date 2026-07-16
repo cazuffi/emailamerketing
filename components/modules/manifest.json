@@ -2,6 +2,7 @@
   "version": 2,
   "modules": [
     { "id": "preheader-bar", "file": "preheader-bar.html", "category": "Header", "description": "Inbox preview text bar (grey strip)" },
+    { "id": "view-in-browser-bar", "file": "view-in-browser-bar.html", "category": "Header", "description": "View in browser link bar (assign D365 View in browser link after paste)" },
     { "id": "header-standard", "file": "header-standard.html", "category": "Header", "description": "Logo left + tagline right with orange pipe" },
     { "id": "header-minimal", "file": "header-minimal.html", "category": "Header", "description": "Centered logo only" },
     { "id": "header-cta", "file": "header-cta.html", "category": "Header", "description": "Logo left + compact CTA button right" },
@@ -38,7 +39,7 @@
     { "id": "urgency-band", "file": "urgency-band.html", "category": "Accent", "description": "Dark band with deadline / urgency message" },
     { "id": "divider-line", "file": "divider-line.html", "category": "Layout", "description": "2px orange horizontal rule" },
     { "id": "divider-dots", "file": "divider-dots.html", "category": "Layout", "description": "Decorative three-dot divider" },
-    { "id": "section-heading", "file": "section-heading.html", "category": "Layout", "description": "Centered section title with orange rule" },
+    { "id": "section-heading", "file": "section-heading.html", "category": "Layout", "description": "Centered section title with full-width orange rule" },
     { "id": "spacer-sm", "file": "spacer-sm.html", "category": "Layout", "description": "Small vertical spacer" },
     { "id": "spacer-lg", "file": "spacer-lg.html", "category": "Layout", "description": "Large vertical spacer" },
     { "id": "feature-left", "file": "feature-left.html", "category": "Feature", "description": "Text left, image right (58/42)" },
