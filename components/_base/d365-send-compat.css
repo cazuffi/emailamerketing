@@ -173,9 +173,23 @@ table.outer,
   background-color: #f4f4f4 !important;
 }
 
-.cta-band-grey .cta-band-grey-shell {
-  border-left: 4px solid #ef7800 !important;
-  border-right: 4px solid #ffffff !important;
+.cta-band-grey .cta-band-grey-rail-left,
+.callout-rail-left,
+.event-details-rail-left,
+.quote-rail-left {
+  width: 4px !important;
+  background-color: #ef7800 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+}
+
+.cta-band-grey .cta-band-grey-rail-right {
+  width: 4px !important;
+  background-color: #ffffff !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  padding: 0 !important;
 }
 
 .accent-band + .cta-band-grey[data-section="true"],
@@ -183,8 +197,30 @@ table.outer,
   background-color: #ffffff !important;
 }
 
-.accent-band + .cta-band-grey .cta-band-grey-shell {
-  border-left: 4px solid #ffffff !important;
+.accent-band + .cta-band-grey .cta-band-grey-rail-left {
+  background-color: #ffffff !important;
+}
+
+.accent-band .section-pad-accent,
+.accent-band .section-pad-accent [data-editorblocktype="Text"] {
+  background-color: #ef7800 !important;
+}
+
+.accent-band .section-pad-accent h1,
+.accent-band .section-pad-accent h2,
+.accent-band .section-pad-accent h3,
+.accent-band .section-pad-accent p,
+.accent-band .section-pad-accent span {
+  color: #ffffff !important;
+}
+
+.orange-footer .section-pad-accent,
+.orange-footer .footer-band-title,
+.orange-footer .footer-band-address,
+.orange-footer .footer-band-contact,
+.orange-footer .footer-band-address p,
+.orange-footer .footer-band-contact p {
+  color: #ffffff !important;
 }
 
 .accent-band + .cta-band-grey[data-section="true"] > table.outer,
@@ -570,6 +606,16 @@ h2.subhead-orange,
 
   .three-up-benefits-section .three-up-stack-cell:last-child {
     padding-bottom: 0 !important;
+  }
+
+  .cta-band-grey .cta-band-grey-rail-left,
+  .cta-band-grey .cta-band-grey-rail-right {
+    width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    overflow: hidden !important;
   }
 
   .orange-footer .section-pad-accent,
