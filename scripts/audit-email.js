@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v17';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -104,6 +104,16 @@ assert.match(
   /background-color:\s*#ef7800/i,
   'Accent band table must carry the orange fill',
 );
+assert.match(
+  exported,
+  /\.accent-band\[data-section="true"\][\s\S]*background-color:\s*#ef7800 !important/i,
+  'Accent band section wrapper must inherit orange so canvas gutters never flash white',
+);
+assert.match(
+  exported,
+  /\.urgency-band table\.outer[\s\S]*min-width:\s*100% !important/i,
+  'Urgency band must harden full-bleed outer tables',
+);
 assert.strictEqual(
   $('.header-standard-section table.outer').first().attr('bgcolor'),
   '#ffffff',
@@ -117,7 +127,9 @@ assert.strictEqual($('.header-standard-section .tbContainer, .header-standard-se
 assert.strictEqual($('.header-standard-section .header-layout-table').length, 1);
 const taglineCell = $('.header-standard-section .header-tagline-cell');
 const logoCell = $('.header-standard-section .header-logo-cell');
-assert.strictEqual(logoCell.attr('align'), 'center');
+assert.strictEqual(logoCell.attr('align'), 'left');
+assert.strictEqual(logoCell.attr('valign'), 'top');
+assert.match(logoCell.attr('style') || '', /vertical-align:top/i);
 assert.strictEqual(taglineCell.attr('valign'), 'middle');
 assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
 assert.match(
@@ -127,7 +139,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-safe\s*\{[\s\S]*?text-align:\s*center !important;/i,
   'Mobile header logo wrappers must center across the email',
 );
 assert.match(
@@ -137,7 +149,7 @@ assert.match(
 );
 assert.match(
   noMediaPreview,
-  /\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  /\.header-standard-section \.header-logo-safe\s*\{[\s\S]*?text-align:\s*center !important;/i,
   'No-media fallback must center the logo across the email',
 );
 assert.match(
@@ -193,15 +205,22 @@ assert.match(
   /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAC|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAC[^"]*"[^>]*class="divider-line-img"/i,
   'Divider must ship an orange spacer image for Gmail iOS',
 );
-assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
-assert.strictEqual($('.cta-band-grey > table.section-gap-shim').length, 0, 'Grey CTA band must not use gap shims');
-assert.strictEqual($('.urgency-band > table.section-gap-shim').length, 0, 'Urgency band must not use gap shims');
+assert.strictEqual($('table.section-gap-shim').length, 0, 'Export must not inject section gap shims');
+assert.match(
+  exported,
+  /\[data-section="true"\][\s\S]*margin:\s*0 !important/i,
+  'Export must zero section wrapper margins for Gmail',
+);
+assert.match(
+  exported,
+  /\[data-section="true"\] > table\.outer[\s\S]*display:\s*table !important/i,
+  'Export must force display:table on section outer tables for Gmail',
+);
 assert.match(
   buildEmailHtml({ title: 'urgency audit', modules: ['urgency-band'], annotate: false }),
   /urgency-band[\s\S]*text-align:center/i,
   'Urgency band must ship centered text styles',
 );
-assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
 assert.strictEqual(
   cheerio.load(
     buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
@@ -219,6 +238,24 @@ assert.strictEqual(
   )('.section-heading-section .section-heading-center').length,
   1,
   'Section heading must use an inner centering table',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-table').length,
+  1,
+  'Section heading must use a full-width divider rule',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-img').length,
+  1,
+  'Section heading divider must ship the Gmail-safe spacer image',
 );
 assert.match(
   exported,
@@ -250,10 +287,27 @@ assert.strictEqual(
   1,
   'Article stack must export one CTA when only one story has showCta enabled',
 );
+assert.strictEqual(
+  cheerio.load(articleStackExport, { xml: false }, false)('.article-stack-divider').length,
+  1,
+  'Article stack must export a divider between stories',
+);
+assert.doesNotMatch(
+  articleStackExport,
+  /class="article-stack-divider"[^>]*data-editorblocktype="Divider"/i,
+  'Article stack dividers must not use Dynamics Divider blocks',
+);
 assert.match(
-  exported,
-  /\[data-section="true"\][\s\S]*line-height:\s*0 !important/i,
-  'Export must collapse Gmail gaps between section tables',
+  articleStackExport,
+  /\.article-stack-section \.article-stack-divider[\s\S]*width:\s*100% !important/i,
+  'Article stack dividers must span the full content column',
+);
+assert.strictEqual(
+  cheerio.load(simulateDynamicsPaste(articleStackExport), { xml: false }, false)(
+    '.article-stack-divider',
+  ).parent('[data-container="true"]').length,
+  0,
+  'Dynamics paste must not wrap article stack dividers in fixed-width containers',
 );
 
 const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
@@ -305,9 +359,14 @@ const eventRows = $('.event-details-section .event-details-row');
 assert.strictEqual(eventCard.length, 1);
 assert.strictEqual(eventRows.length, 5);
 assert.match(
+  $('.event-details-section .event-details-rail-left').attr('style') || '',
+  /background-color:#ef7800/i,
+  'Event details card must use a forward-safe orange rail column',
+);
+assert.doesNotMatch(
   $('.event-details-section .event-details-shell').attr('style') || '',
   /border-left:4px solid #ef7800/i,
-  'Event details card must use a Word-safe td accent border',
+  'Event details shell must not rely on border-left accents',
 );
 eventRows.each((_, row) => {
   assert.strictEqual($(row).find('.event-details-label').attr('width'), '28%');
@@ -393,8 +452,8 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-logo-wrap[\s\S]*width:100%/i,
-  'Header logo wrapper must span the full header width',
+  /\.header-logo-safe[\s\S]*line-height:\s*normal/i,
+  'Header logo shell must use natural line-height so Outlook does not clip the image',
 );
 assert.match(
   exported,
@@ -424,6 +483,41 @@ assert.strictEqual(
   )('.intro-headline [data-editorblocktype="Text"]').length,
   1,
   'Intro headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
+);
+assert.match(
+  exported,
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Intro headline must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.headline-block-section h2[\s\S]*text-align:\s*left !important/i,
+  'Headline H2 block must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.feature-stack-text p[\s\S]*text-align:\s*left !important/i,
+  'Feature module copy must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section \.header-logo-safe[\s\S]*line-height:\s*normal !important/i,
+  'Header logo shell must use natural line-height for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*auto !important/i,
+  'Header logo must scale naturally in Outlook without fixed-height clipping',
+);
+assert.doesNotMatch(
+  exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*23px !important/i,
+  'Header logo must not force a fixed 23px height that clips taller assets',
+);
+assert.match(
+  getOutlookFallbackCss(),
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Outlook desktop fallback must keep intro headlines left-aligned',
 );
 assert.strictEqual(
   cheerio.load(
@@ -490,12 +584,18 @@ const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
 const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
 const greyCtaShell = $('.cta-band-grey .cta-band-grey-shell');
 const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
+const greyCtaLeftRail = $('.cta-band-grey .cta-band-grey-rail-left');
+const greyCtaRightRail = $('.cta-band-grey .cta-band-grey-rail-right');
 // Grey CTA keeps the Dynamics editable-column layout (68/32) so it renders
 // full-width with the button correctly on the right in a Dynamics send.
 assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
 assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
-assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
-assert.match(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
+assert.strictEqual(greyCtaLeftRail.length, 1);
+assert.strictEqual(greyCtaRightRail.length, 1);
+assert.strictEqual(greyCtaLeftRail.attr('bgcolor'), '#ef7800');
+assert.strictEqual(greyCtaRightRail.attr('bgcolor'), '#ffffff');
+assert.doesNotMatch(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
+assert.doesNotMatch(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
 assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
@@ -508,9 +608,46 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
-  'Mobile grey CTA must remove both desktop edge rails',
+  /\.cta-band-grey \.cta-band-grey-rail-left[\s\S]*?background-color:\s*#ef7800 !important;/i,
+  'Post-paste CSS must keep grey CTA forward-safe left rail',
 );
+assert.match(
+  exported,
+  /\.cta-band-grey \.cta-band-grey-rail-right[\s\S]*?background-color:\s*#ffffff !important;/i,
+  'Post-paste CSS must keep grey CTA forward-safe right rail',
+);
+assert.match(
+  exported,
+  /\.accent-band \.section-pad-accent p[\s\S]*?color:\s*#ffffff !important;/i,
+  'Accent band copy must ship forward-safe white text',
+);
+assert.match(
+  exported,
+  /\.orange-footer \.footer-band-title[\s\S]*?color:\s*#ffffff !important;/i,
+  'Orange footer copy must ship forward-safe white text',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-band-grey \.cta-band-grey-rail-left[\s\S]*?width:\s*0 !important;[\s\S]*?\.cta-band-grey \.cta-band-grey-rail-right[\s\S]*?width:\s*0 !important;/i,
+  'Mobile grey CTA must collapse forward-safe edge rails',
+);
+const accentGreyExport = buildEmailHtml({
+  title: 'accent grey adjacency',
+  modules: ['accent-band', 'cta-band-grey'],
+  annotate: false,
+});
+const $accentGrey = cheerio.load(accentGreyExport, { xml: false }, false);
+assert.strictEqual(
+  $accentGrey('.accent-band + .cta-band-grey .cta-band-grey-rail-left').attr('bgcolor'),
+  '#ffffff',
+  'Grey CTA after accent band must use a white left rail',
+);
+
+const calloutExport = buildEmailHtml({ title: 'callout rail audit', modules: ['callout-box'], annotate: false });
+const $callout = cheerio.load(calloutExport, { xml: false }, false);
+assert.strictEqual($callout('.callout-box .callout-rail-left').length, 1);
+assert.strictEqual($callout('.callout-box .callout-rail-left').attr('bgcolor'), '#ef7800');
+assert.doesNotMatch($callout('.callout-body').attr('style') || '', /border-left:4px solid #ef7800/i);
 
 assert.strictEqual(
   $('.specs-table [data-container], .specs-table [data-container-width]').length,
@@ -690,8 +827,9 @@ for (const moduleId of allModuleIds) {
 }
 
 const headerLogoStyle = $all('.header-standard-section img.header-logo-img').first().attr('style') || '';
-assert.match(headerLogoStyle, /width:100%/i, 'Header logo must shrink inside its source column');
-assert.match(headerLogoStyle, /max-width:200px/i, 'Header logo must retain its desktop cap');
+assert.match(headerLogoStyle, /width:200px/i, 'Header logo must use a fixed desktop width for Outlook');
+assert.match(headerLogoStyle, /height:auto/i, 'Header logo must preserve natural height for Outlook');
+assert.doesNotMatch(headerLogoStyle, /height:23px/i, 'Header logo must not force a fixed 23px height inline');
 
 for (const selector of ['.article-thumb img', '.team-photo img']) {
   const style = $all(selector).first().attr('style') || '';
@@ -754,6 +892,7 @@ assert.strictEqual(
 
 $all('[data-layout="true"] > [data-section="true"]').each((_, section) => {
   const $section = $all(section);
+  if ($section.hasClass('accent-band') || $section.hasClass('orange-footer')) return;
   assert.match(
     $section.attr('style') || '',
     /background(?:-color)?\s*:/i,

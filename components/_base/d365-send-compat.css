@@ -24,10 +24,11 @@ body > div[data-layout="true"],
 
 table.outer,
 [data-section="true"] > table.outer,
-[data-section="true"] > table.section-gap-shim table.outer,
 .accent-band table.outer,
+.urgency-band table.outer,
 .orange-footer table.outer {
   width: 100% !important;
+  min-width: 100% !important;
   max-width: 640px !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -38,8 +39,6 @@ table.outer,
 [data-section="true"] {
   margin: 0 !important;
   padding: 0 !important;
-  line-height: 0 !important;
-  font-size: 0 !important;
 }
 
 [data-section="true"] > table.outer {
@@ -47,39 +46,7 @@ table.outer,
   margin-bottom: 0 !important;
   line-height: normal !important;
   font-size: 15px !important;
-}
-
-/* Dynamics display:block on table.outer creates phantom gaps in Gmail iOS.
-   The shim table stays display:table; the outer table nests inside its td. */
-[data-section="true"] > table.section-gap-shim {
-  margin: 0 !important;
-  padding: 0 !important;
-  border-collapse: collapse !important;
-  width: 100% !important;
   display: table !important;
-}
-
-[data-section="true"] > table.section-gap-shim > tbody > tr > td,
-[data-section="true"] > table.section-gap-shim > tr > td {
-  padding: 0 !important;
-  margin: 0 !important;
-  line-height: normal !important;
-  font-size: 15px !important;
-  text-align: left !important;
-  width: 100% !important;
-}
-
-[data-section="true"] > table.section-gap-shim table.outer {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  width: 100% !important;
-  max-width: 640px !important;
-  display: table !important;
-}
-
-.divider-line-section[data-section="true"] {
-  line-height: normal !important;
-  font-size: 15px !important;
 }
 
 .eyebrow-headline + [data-section="true"] > table.outer,
@@ -88,17 +55,27 @@ table.outer,
   margin-top: 0 !important;
 }
 
-/* Orange accent fill on table cells only — not the section wrapper (Gmail clip
-   fragments otherwise paint multiple orange bars between collapsed blocks). */
+/* Full-bleed band wrappers inherit the band color so sub-pixel gutters never
+   flash white when Dynamics shrinks table.outer below the 640px canvas. */
 .accent-band[data-section="true"],
 .wrap-section.accent-band {
-  background-color: #ffffff !important;
+  background-color: #ef7800 !important;
 }
 
 .accent-band > table.outer,
-.accent-band > table.section-gap-shim table.outer,
 .accent-band table.outer,
 .accent-band .section-pad-accent {
+  background-color: #ef7800 !important;
+}
+
+.urgency-band > table.outer,
+.urgency-band table.outer {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+.orange-footer[data-section="true"],
+.wrap-section.orange-footer {
   background-color: #ef7800 !important;
 }
 
@@ -107,14 +84,27 @@ table.outer,
   width: 100% !important;
 }
 
-.orange-footer[data-section="true"],
-.wrap-section.orange-footer {
-  background-color: #ffffff !important;
-}
-
 .orange-footer > table.outer,
 .orange-footer .section-pad-accent {
   background-color: #ef7800 !important;
+}
+
+.article-stack-section .article-stack-divider,
+.article-stack-section .article-stack-divider .divider-line-table,
+.article-stack-section .article-stack-divider .divider-line-cell,
+.article-stack-section .article-stack-divider .divider-line-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+}
+
+.article-stack-section [data-container="true"] .article-stack-divider,
+.article-stack-section .article-stack-divider [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
+  flex-basis: auto !important;
+  display: block !important;
 }
 
 /* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
@@ -181,6 +171,56 @@ table.outer,
   width: 100% !important;
   max-width: 640px !important;
   background-color: #f4f4f4 !important;
+}
+
+.cta-band-grey .cta-band-grey-rail-left,
+.callout-rail-left,
+.event-details-rail-left,
+.quote-rail-left {
+  width: 4px !important;
+  background-color: #ef7800 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+}
+
+.cta-band-grey .cta-band-grey-rail-right {
+  width: 4px !important;
+  background-color: #ffffff !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+}
+
+.accent-band + .cta-band-grey[data-section="true"],
+.wrap-section.accent-band + .wrap-section.cta-band-grey {
+  background-color: #ffffff !important;
+}
+
+.accent-band + .cta-band-grey .cta-band-grey-rail-left {
+  background-color: #ffffff !important;
+}
+
+.accent-band .section-pad-accent,
+.accent-band .section-pad-accent [data-editorblocktype="Text"] {
+  background-color: #ef7800 !important;
+}
+
+.accent-band .section-pad-accent h1,
+.accent-band .section-pad-accent h2,
+.accent-band .section-pad-accent h3,
+.accent-band .section-pad-accent p,
+.accent-band .section-pad-accent span {
+  color: #ffffff !important;
+}
+
+.orange-footer .section-pad-accent,
+.orange-footer .footer-band-title,
+.orange-footer .footer-band-address,
+.orange-footer .footer-band-contact,
+.orange-footer .footer-band-address p,
+.orange-footer .footer-band-contact p {
+  color: #ffffff !important;
 }
 
 .accent-band + .cta-band-grey[data-section="true"] > table.outer,
@@ -286,7 +326,6 @@ table.outer,
 .section-heading-section center,
 .section-heading-section .section-heading-center,
 .section-heading-section .section-heading-center td,
-.section-heading-section .section-rule-table,
 .section-heading-section [data-editorblocktype="Text"],
 .section-heading-section [data-editorblocktype="Text"] h2,
 .section-heading-section h2 {
@@ -294,16 +333,22 @@ table.outer,
   width: 100% !important;
 }
 
+.section-heading-section .divider-line-table,
+.section-heading-section .divider-line-cell,
+.section-heading-section .divider-line-img {
+  width: 100% !important;
+  max-width: 640px !important;
+}
+
+.section-heading-section .divider-line-table {
+  margin: 0 auto 12px auto !important;
+}
+
 .section-heading-section [data-container="true"] {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
   text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-.section-heading-section .section-rule-table {
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -375,11 +420,70 @@ table.outer,
 }
 
 .header-standard-section .header-logo-wrap,
-.header-standard-section .imageWrapper {
+.header-standard-section .imageWrapper,
+.header-standard-section .header-logo-table,
+.header-standard-section .header-logo-safe,
+.header-standard-section .header-logo-column [data-editorblocktype="Image"] {
   display: block !important;
   width: 100% !important;
-  text-align: center !important;
-  background-color: transparent !important;
+  line-height: normal !important;
+  mso-line-height-rule: exactly !important;
+  font-size: 15px !important;
+  background-color: #ffffff !important;
+}
+
+.header-standard-section img.header-logo-img {
+  display: block !important;
+  width: 200px !important;
+  height: auto !important;
+  max-width: 200px !important;
+  border: 0 !important;
+  outline: none !important;
+  text-decoration: none !important;
+}
+
+/* ---- left-aligned intro / headline / feature copy ---- */
+.intro-headline [data-container="true"],
+.eyebrow-headline [data-container="true"],
+.headline-block-section [data-container="true"],
+.eyebrow-h2-section [data-container="true"],
+.headline-h3-section [data-container="true"],
+.headline-h4-section [data-container="true"],
+.body-text-section [data-container="true"],
+.comparison-heading-section [data-container="true"],
+.feature-stack-text,
+.feature-stack-text [data-container="true"],
+.image-split-copy,
+.image-split-copy [data-container="true"] {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
+}
+
+.intro-headline [data-editorblocktype="Text"],
+.eyebrow-headline [data-editorblocktype="Text"],
+.headline-block-section [data-editorblocktype="Text"],
+.eyebrow-h2-section [data-editorblocktype="Text"],
+.headline-h3-section [data-editorblocktype="Text"],
+.headline-h4-section [data-editorblocktype="Text"],
+.feature-stack-text [data-editorblocktype="Text"],
+.image-split-copy [data-editorblocktype="Text"],
+.intro-headline h1,
+.intro-headline h2,
+.eyebrow-headline h1,
+.eyebrow-headline h2,
+.eyebrow-headline .eyebrow-label,
+.headline-block-section h2,
+.headline-block-section .headline-lead,
+.eyebrow-h2-section h2,
+.eyebrow-h2-section .eyebrow-label,
+.eyebrow-h2-section .headline-lead,
+.feature-stack-text h3,
+.feature-stack-text p,
+.image-split-copy h3,
+.image-split-copy p {
+  text-align: left !important;
 }
 
 /* ---- orange subheadline h2 ---- */
@@ -462,7 +566,9 @@ h2.subhead-orange,
 }
 
 @media only screen and (min-width: 641px) {
-  .header-standard-section .header-logo-column [data-container="true"] {
+  .header-standard-section .header-logo-column [data-container="true"],
+  .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-wrap {
     text-align: left !important;
   }
 
@@ -502,6 +608,16 @@ h2.subhead-orange,
     padding-bottom: 0 !important;
   }
 
+  .cta-band-grey .cta-band-grey-rail-left,
+  .cta-band-grey .cta-band-grey-rail-right {
+    width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    overflow: hidden !important;
+  }
+
   .orange-footer .section-pad-accent,
   .orange-footer .footer-band-content,
   .orange-footer .footer-band-inner,
@@ -538,6 +654,18 @@ h2.subhead-orange,
     margin-left: auto !important;
     margin-right: auto !important;
   }
+
+  .header-standard-section .header-logo-column,
+  .header-standard-section .header-logo-column [data-editorblocktype="Image"],
+  .header-standard-section .header-logo-table,
+  .header-standard-section .header-logo-safe {
+    text-align: center !important;
+  }
+
+  .header-standard-section img.header-logo-img {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
 }
 
 /* Gmail app (web + mobile) — override fixed-width Dynamics data-container inline styles */
@@ -570,11 +698,22 @@ u + .body .divider-line-img {
 }
 
 u + .body .accent-band table.outer,
+u + .body .urgency-band table.outer,
+u + .body .orange-footer table.outer,
 u + .body .three-up-benefits-section table.outer,
-u + .body [data-section="true"] table.section-gap-shim table.outer {
+u + .body [data-section="true"] > table.outer {
   width: 100% !important;
+  min-width: 100% !important;
   max-width: 640px !important;
   display: table !important;
+}
+
+u + .body .article-stack-section .article-stack-divider,
+u + .body .article-stack-section .article-stack-divider .divider-line-table,
+u + .body .article-stack-section .article-stack-divider .divider-line-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
 }
 
 u + .body .accent-band [data-container="true"] {
@@ -620,7 +759,13 @@ u + .body .section-heading-section h2 {
   margin-right: auto !important;
 }
 
-u + .body .section-heading-section .section-rule-table {
+u + .body .section-heading-section .divider-line-table,
+u + .body .section-heading-section .divider-line-img {
+  width: 100% !important;
+  max-width: 640px !important;
+}
+
+u + .body .section-heading-section .divider-line-table {
   margin-left: auto !important;
   margin-right: auto !important;
 }
