@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v16';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v18';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -132,6 +132,18 @@ assert.strictEqual(logoCell.attr('valign'), 'top');
 assert.match(logoCell.attr('style') || '', /vertical-align:top/i);
 assert.strictEqual(taglineCell.attr('valign'), 'middle');
 assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
+
+const viewBrowserExport = buildEmailHtml({
+  title: 'view in browser audit',
+  modules: ['view-in-browser-bar'],
+  annotate: false,
+});
+const $viewBrowser = cheerio.load(viewBrowserExport, { xml: false }, false);
+assert.strictEqual($viewBrowser('.view-in-browser-section [data-editorblocktype="Text"]').length, 1);
+assert.strictEqual($viewBrowser('.view-in-browser-link').length, 1);
+assert.match($viewBrowser('.view-in-browser-link').attr('style') || '', /color:#ef7800/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /text-align:center/i);
+
 assert.match(
   exported,
   /\.header-standard-section \.header-tagline-cell \[data-editorblocktype="Text"\]\s*\{\s*text-align:\s*center !important;/i,
