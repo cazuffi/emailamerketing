@@ -992,6 +992,57 @@ function hardenD365Containers($) {
   });
 }
 
+function hardenIntroCentered($) {
+  $('.mod-intro-centered').each((_, section) => {
+    const $section = $(section);
+    $section.find('.intro-centered-cell, center, .intro-centered-inner, .intro-centered-inner td').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h1, [data-editorblocktype="Text"] h2, [data-editorblocktype="Text"] p, h1, h2, p').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('.intro-centered-cell').each((__, cell) => {
+      const $cell = $(cell);
+      const $text = $cell.find('[data-editorblocktype="Text"]').first();
+      if ($text.length && !$text.closest('center').length) {
+        $cell.children('[data-editorblocktype="Text"]').wrapAll('<center></center>');
+      }
+    });
+  });
+}
+
+function hardenImageSplitColumns($) {
+  $('.image-split-text-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('width', '50%');
+      ensureStyle($cell, 'width:50%;max-width:50%;box-sizing:border-box');
+    });
+    $section.find('.image-split-copy, .image-split-media').each((__, cell) => {
+      const $cell = $(cell);
+      if (!$cell.attr('width')) $cell.attr('width', '50%');
+      ensureStyle($cell, 'width:50%;max-width:50%;box-sizing:border-box');
+    });
+    $section.find('.image-split-copy [data-container], .image-split-media [data-container]').each((__, el) => {
+      const $el = $(el);
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+    });
+  });
+}
+
 function hardenInsetImages($) {
   $('.image-edge-section.image-edge-inset').each((_, section) => {
     const $section = $(section);
@@ -1020,7 +1071,14 @@ function hardenViewInBrowser($) {
       const $cell = $(cell);
       $cell.attr('align', 'center');
       $cell.attr('bgcolor', '#ffffff');
-      ensureStyle($cell, 'text-align:center;background-color:#ffffff');
+      ensureStyle($cell, 'text-align:center;background-color:#ffffff;padding:12px 24px 16px 24px');
+      const $text = $cell.find('[data-editorblocktype="Text"]').first();
+      if ($text.length && !$text.closest('center').length) {
+        $text.wrap('<center></center>');
+      }
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
     });
     $section.find('[data-editorblocktype="Text"]').each((__, block) => {
       const $block = $(block);
@@ -1049,7 +1107,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v23';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v24';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1068,6 +1126,8 @@ function sanitizeExportHtml(html) {
   hardenCtaBandGrey($);
   hardenFullBleedBands($);
   hardenSectionHeadings($);
+  hardenIntroCentered($);
+  hardenImageSplitColumns($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenArticleStackDividers($);

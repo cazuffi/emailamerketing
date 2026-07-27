@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v23';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v24';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -144,6 +144,8 @@ assert.strictEqual($viewBrowser('.view-in-browser-link').length, 1);
 assert.match($viewBrowser('.view-in-browser-link').attr('style') || '', /color:#ef7800/i);
 assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /text-align:center/i);
 assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /background-color:#ffffff/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /padding:12px 24px 16px 24px/i);
+assert.strictEqual($viewBrowser('.view-in-browser-section center').length, 1, 'View in browser must wrap link in a center block for Gmail');
 assert.match(
   viewBrowserExport,
   /\.view-in-browser-section \.view-in-browser-cell[\s\S]*?background-color:\s*#ffffff !important;/i,
@@ -153,6 +155,55 @@ assert.match(
   viewBrowserExport,
   /\.view-in-browser-section \.view-in-browser-link[\s\S]*?text-align:\s*center !important;/i,
   'View in browser link must stay center-aligned after export',
+);
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \+ \.header-standard-section \.section-pad-tight[\s\S]*?padding-top:\s*24px !important;/i,
+  'Header must gain extra top padding when it follows the view-in-browser bar',
+);
+assert.match(
+  viewBrowserExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.view-in-browser-section center[\s\S]*?text-align:\s*center !important;/i,
+  'Mobile view-in-browser center wrapper must stay centered after export',
+);
+
+const introCenteredExport = buildEmailHtml({
+  title: 'intro centered audit',
+  modules: ['intro-centered'],
+  annotate: false,
+});
+const $introCentered = cheerio.load(introCenteredExport, { xml: false }, false);
+assert.strictEqual($introCentered('.mod-intro-centered center').length, 1, 'Intro centered must wrap copy in a center block for Gmail');
+assert.strictEqual($introCentered('.mod-intro-centered .intro-centered-inner').length, 1);
+assert.match($introCentered('.intro-centered-cell').attr('style') || '', /text-align:center/i);
+assert.match(
+  introCenteredExport,
+  /\.mod-intro-centered \[data-container="true"\][\s\S]*?text-align:\s*center !important;/i,
+  'Intro centered must override Dynamics left-align on data-container wrappers',
+);
+assert.match(
+  introCenteredExport,
+  /u \+ \.body \.mod-intro-centered \[data-container="true"\][\s\S]*?text-align:\s*center !important;/i,
+  'Gmail must force intro centered data-container blocks to center',
+);
+
+const imageSplitExport = buildEmailHtml({
+  title: 'image split audit',
+  modules: ['image-split-text-right'],
+  annotate: false,
+});
+const $imageSplit = cheerio.load(imageSplitExport, { xml: false }, false);
+assert.strictEqual($imageSplit('.image-split-copy').length, 1);
+assert.match($imageSplit('.image-split-copy').attr('style') || '', /width:50%/i, 'Image split copy column must ship at 50% width');
+assert.match(
+  imageSplitExport,
+  /\.image-split-text-section \.image-split-copy[\s\S]*?width:\s*50% !important;/i,
+  'Exported CSS must preserve 50% width on image split copy column',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.image-split-text-section \.image-split-copy[\s\S]*?width:\s*100% !important;/i,
+  'Mobile image split copy column must expand to full width',
 );
 
 const heroFullInsetFields = extractFields('hero-full');

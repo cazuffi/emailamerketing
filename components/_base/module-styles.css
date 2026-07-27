@@ -131,8 +131,11 @@ h2.subhead-orange {
 }
 
 .mod-intro-centered { text-align: center; }
+.mod-intro-centered .intro-centered-cell,
+.mod-intro-centered [data-editorblocktype="Text"],
 .mod-intro-centered h1,
-.mod-intro-centered h2 { text-align: center; }
+.mod-intro-centered h2,
+.mod-intro-centered p { text-align: center; }
 
 .three-up-cell { vertical-align: top; text-align: center; padding: 0 8px; }
 
@@ -244,9 +247,19 @@ h2.subhead-orange {
 
 .view-in-browser-section [data-editorblocktype="Text"],
 .view-in-browser-section .view-in-browser-text,
-.view-in-browser-section .view-in-browser-link {
+.view-in-browser-section .view-in-browser-link,
+.view-in-browser-section center {
   text-align: center !important;
   width: 100%;
+}
+
+.view-in-browser-section .view-in-browser-cell {
+  padding-top: 12px !important;
+  padding-bottom: 16px !important;
+}
+
+.view-in-browser-section + .header-standard-section .section-pad-tight {
+  padding-top: 24px !important;
 }
 
 .image-edge-section.image-edge-inset .image-edge-cell {
