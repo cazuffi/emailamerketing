@@ -992,6 +992,21 @@ function hardenD365Containers($) {
   });
 }
 
+function hardenInsetImages($) {
+  $('.image-edge-section.image-edge-inset').each((_, section) => {
+    const $section = $(section);
+    $section.find('.image-edge-cell').each((__, cell) => {
+      const $cell = $(cell);
+      setStyleProp($cell, 'padding-left', '24px');
+      setStyleProp($cell, 'padding-right', '24px');
+      ensureStyle($cell, 'box-sizing:border-box');
+    });
+    $section.find('.image-edge-subtext-wrap').each((__, wrap) => {
+      setStyleProp($(wrap), 'padding', '8px 0 0 0');
+    });
+  });
+}
+
 function hardenViewInBrowser($) {
   $('.view-in-browser-section').each((_, section) => {
     const $section = $(section);
@@ -1034,7 +1049,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v22';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v23';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1046,6 +1061,7 @@ function sanitizeExportHtml(html) {
   hardenButtons($);
   hardenHeaderAlignment($);
   hardenViewInBrowser($);
+  hardenInsetImages($);
   hardenLeftAlignedTextSections($);
   hardenAccentBands($);
   hardenUrgencyBand($);

@@ -356,6 +356,47 @@ function readShowButtonFromSection($section) {
   return isElementHidden($btn) ? 'no' : 'yes';
 }
 
+function readInsetImageFromSection($section) {
+  return $section.hasClass('image-edge-inset') ? 'yes' : 'no';
+}
+
+const IMAGE_EDGE_INSET_PADDING = '24px';
+const IMAGE_EDGE_INSET_PADDING_MOBILE = '20px';
+
+function applyInsetImageSetting($section, insetImage) {
+  const value = parseToggleValue(insetImage, 'no');
+  const $cells = $section.find('.image-edge-cell');
+
+  if (value === 'yes') {
+    $section.addClass('image-edge-inset');
+    $cells.each((index) => {
+      const $cell = $cells.eq(index);
+      let style = $cell.attr('style') || '';
+      style = mergeInlineStyle(style, 'padding-left', IMAGE_EDGE_INSET_PADDING);
+      style = mergeInlineStyle(style, 'padding-right', IMAGE_EDGE_INSET_PADDING);
+      style = mergeInlineStyle(style, 'box-sizing', 'border-box');
+      style = mergeInlineStyle(style, 'padding-top', '0');
+      style = mergeInlineStyle(style, 'padding-bottom', '0');
+      $cell.attr('style', style);
+    });
+    $section.find('.image-edge-subtext-wrap').each((index) => {
+      const $wrap = $section.find('.image-edge-subtext-wrap').eq(index);
+      $wrap.attr('style', mergeInlineStyle($wrap.attr('style') || '', 'padding', '8px 0 0 0'));
+    });
+    return;
+  }
+
+  $section.removeClass('image-edge-inset');
+  $cells.each((index) => {
+    const $cell = $cells.eq(index);
+    $cell.attr('style', mergeInlineStyle($cell.attr('style') || '', 'padding', '0'));
+  });
+  $section.find('.image-edge-subtext-wrap').each((index) => {
+    const $wrap = $section.find('.image-edge-subtext-wrap').eq(index);
+    $wrap.attr('style', mergeInlineStyle($wrap.attr('style') || '', 'padding', '8px 24px 0 24px'));
+  });
+}
+
 function extractModuleSettings($, fields) {
   $('[data-studio-setting]').each((_, el) => {
     const $el = $(el);
@@ -376,6 +417,16 @@ function extractModuleSettings($, fields) {
         type: 'toggle',
         label: $el.attr('data-studio-setting-label') || 'Show button',
         value: readShowButtonFromSection($el),
+        options: TOGGLE_OPTIONS,
+      });
+      return;
+    }
+    if (key === 'insetImage') {
+      fields.unshift({
+        key: 'insetImage',
+        type: 'toggle',
+        label: $el.attr('data-studio-setting-label') || 'Inset image (side spacing)',
+        value: readInsetImageFromSection($el),
         options: TOGGLE_OPTIONS,
       });
     }
@@ -427,6 +478,11 @@ function applyModuleSettings($, normalized) {
   if (Object.prototype.hasOwnProperty.call(normalized, 'showButton')) {
     $('[data-studio-setting="showButton"]').each((_, el) => {
       applyShowButtonSetting($(el), normalized.showButton);
+    });
+  }
+  if (Object.prototype.hasOwnProperty.call(normalized, 'insetImage')) {
+    $('[data-studio-setting="insetImage"]').each((_, el) => {
+      applyInsetImageSetting($(el), normalized.insetImage);
     });
   }
 }

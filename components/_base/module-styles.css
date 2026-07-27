@@ -249,6 +249,17 @@ h2.subhead-orange {
   width: 100%;
 }
 
+.image-edge-section.image-edge-inset .image-edge-cell {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  box-sizing: border-box !important;
+}
+
+.image-edge-section.image-edge-inset .image-edge-subtext-wrap {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 .eyebrow-label {
   font-family: ARIALNB, Arial, Verdana, sans-serif;
   font-size: 11px;
@@ -736,6 +747,11 @@ h2.subhead-orange {
   .two-up-text-section .two-up-text-col [data-editorblocktype="Text"],
   .two-up-text-section .two-up-text-col h3,
   .two-up-text-section .two-up-text-col p { text-align: left !important; }
+
+  .image-edge-section.image-edge-inset .image-edge-cell {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
 
   .mod-intro-centered h1,
   .mod-intro-centered h2,

@@ -456,6 +456,17 @@ table.outer,
   margin-right: auto !important;
 }
 
+.image-edge-section.image-edge-inset .image-edge-cell {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  box-sizing: border-box !important;
+}
+
+.image-edge-section.image-edge-inset .image-edge-subtext-wrap {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* ---- left-aligned intro / headline / feature copy ---- */
 .intro-headline [data-container="true"],
 .eyebrow-headline [data-container="true"],
@@ -681,6 +692,11 @@ h2.subhead-orange,
     margin-left: auto !important;
     margin-right: auto !important;
   }
+
+  .image-edge-section.image-edge-inset .image-edge-cell {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
 }
 
 /* Gmail app (web + mobile) — override fixed-width Dynamics data-container inline styles */
@@ -798,6 +814,12 @@ u + .body .view-in-browser-section .view-in-browser-link {
   width: 100% !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+u + .body .image-edge-section.image-edge-inset .image-edge-cell {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  box-sizing: border-box !important;
 }
 
 u + .body .cta-primary-center .buttonTable,

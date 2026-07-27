@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v22';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v23';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -153,6 +153,31 @@ assert.match(
   viewBrowserExport,
   /\.view-in-browser-section \.view-in-browser-link[\s\S]*?text-align:\s*center !important;/i,
   'View in browser link must stay center-aligned after export',
+);
+
+const heroFullInsetFields = extractFields('hero-full');
+assert(
+  heroFullInsetFields.some((field) => field.key === 'insetImage' && field.type === 'toggle'),
+  'Edge-touching image modules must expose insetImage toggle',
+);
+
+const insetHeroExport = buildEmailHtml({
+  title: 'Inset hero audit',
+  modules: ['hero-full'],
+  overrides: { 0: { insetImage: 'yes' } },
+  annotate: false,
+});
+const $insetHero = cheerio.load(insetHeroExport, { xml: false }, false);
+assert.strictEqual($insetHero('.image-edge-inset').length, 1, 'Inset toggle must add image-edge-inset class');
+assert.match(
+  $insetHero('.image-edge-cell').attr('style') || '',
+  /padding-left:24px/i,
+  'Inset hero must apply 24px horizontal padding on the image cell',
+);
+assert.match(
+  insetHeroExport,
+  /\.image-edge-section\.image-edge-inset \.image-edge-cell[\s\S]*?padding-left:\s*24px !important;/i,
+  'Exported CSS must preserve inset image side spacing',
 );
 
 assert.match(
