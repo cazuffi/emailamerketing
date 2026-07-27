@@ -451,6 +451,17 @@ table.outer,
   align-self: stretch !important;
 }
 
+.two-up-text-section .two-up-text-col,
+.two-up-text-section .two-up-text-col [data-container="true"],
+.two-up-text-section .two-up-text-col [data-editorblocktype="Text"],
+.two-up-text-section .two-up-text-col h3,
+.two-up-text-section .two-up-text-col p {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
+}
+
 .intro-headline [data-editorblocktype="Text"],
 .eyebrow-headline [data-editorblocktype="Text"],
 .headline-block-section [data-editorblocktype="Text"],

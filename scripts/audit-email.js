@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v20';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v21';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -738,6 +738,15 @@ assert.doesNotMatch(
   /class="caption-text image-subtext"/,
   'Empty image subtext must be omitted on export',
 );
+
+const twoUpTextExport = buildEmailHtml({
+  title: 'Two-up text audit',
+  modules: ['two-up-text'],
+  overrides: {},
+  annotate: false,
+});
+const $twoUpText = cheerio.load(twoUpTextExport, { xml: false }, false);
+assert.strictEqual($twoUpText('.two-up-text-section .two-up-text-col').length, 2, 'Two-up text must render two 50/50 columns');
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern

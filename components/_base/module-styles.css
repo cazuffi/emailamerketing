@@ -718,6 +718,11 @@ h2.subhead-orange {
   .card-stack { text-align: left !important; }
   .card-stack .imageWrapper { text-align: center !important; }
 
+  .two-up-text-section .two-up-text-col,
+  .two-up-text-section .two-up-text-col [data-editorblocktype="Text"],
+  .two-up-text-section .two-up-text-col h3,
+  .two-up-text-section .two-up-text-col p { text-align: left !important; }
+
   .mod-intro-centered h1,
   .mod-intro-centered h2,
   .mod-intro-centered p { text-align: center !important; }
