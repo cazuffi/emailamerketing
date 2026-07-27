@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v24';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v25';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -146,6 +146,17 @@ assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /text-al
 assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /background-color:#ffffff/i);
 assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /padding:12px 24px 16px 24px/i);
 assert.strictEqual($viewBrowser('.view-in-browser-section center').length, 1, 'View in browser must wrap link in a center block for Gmail');
+assert.strictEqual($viewBrowser('.view-in-browser-center-table').length, 1, 'View in browser must use a centering table for Gmail');
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \[data-container="true"\][\s\S]*?display:\s*inline-block !important;[\s\S]*?width:\s*auto !important;/i,
+  'View in browser data-container must use inline-block auto width like the footer',
+);
+assert.match(
+  viewBrowserExport,
+  /u \+ \.body \.view-in-browser-section \[data-container="true"\][\s\S]*?display:\s*inline-block !important;/i,
+  'Gmail must center view-in-browser data-container blocks with inline-block',
+);
 assert.match(
   viewBrowserExport,
   /\.view-in-browser-section \.view-in-browser-cell[\s\S]*?background-color:\s*#ffffff !important;/i,
@@ -175,17 +186,22 @@ const introCenteredExport = buildEmailHtml({
 const $introCentered = cheerio.load(introCenteredExport, { xml: false }, false);
 assert.strictEqual($introCentered('.mod-intro-centered center').length, 1, 'Intro centered must wrap copy in a center block for Gmail');
 assert.strictEqual($introCentered('.mod-intro-centered .intro-centered-inner').length, 1);
+assert.strictEqual($introCentered('.mod-intro-centered .intro-centered-inner tr').length, 3, 'Intro centered must use one table row per text block for Dynamics paste');
 assert.match($introCentered('.intro-centered-cell').attr('style') || '', /text-align:center/i);
 assert.match(
   introCenteredExport,
-  /\.mod-intro-centered \[data-container="true"\][\s\S]*?text-align:\s*center !important;/i,
-  'Intro centered must override Dynamics left-align on data-container wrappers',
+  /\.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*inline-block !important;[\s\S]*?width:\s*auto !important;/i,
+  'Intro centered data-container must use inline-block auto width like the footer',
 );
 assert.match(
   introCenteredExport,
-  /u \+ \.body \.mod-intro-centered \[data-container="true"\][\s\S]*?text-align:\s*center !important;/i,
-  'Gmail must force intro centered data-container blocks to center',
+  /u \+ \.body \.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*inline-block !important;/i,
+  'Gmail must center intro data-container blocks with inline-block',
 );
+const introCenteredPasted = simulateDynamicsPaste(introCenteredExport);
+const $introPasted = cheerio.load(introCenteredPasted, { xml: false }, false);
+assert.strictEqual($introPasted('.mod-intro-centered [data-container="true"]').length, 3);
+assert.strictEqual($introPasted('.mod-intro-centered .intro-centered-inner td[align="center"]').length, 3);
 
 const imageSplitExport = buildEmailHtml({
   title: 'image split audit',
@@ -834,6 +850,20 @@ const twoUpTextExport = buildEmailHtml({
 });
 const $twoUpText = cheerio.load(twoUpTextExport, { xml: false }, false);
 assert.strictEqual($twoUpText('.two-up-text-section .two-up-text-col').length, 2, 'Two-up text must render two 50/50 columns');
+assert.strictEqual($twoUpText('.two-up-text-col-right').length, 1);
+assert.match($twoUpText('.two-up-text-col-left').attr('style') || '', /padding-right:12px/i);
+assert.match($twoUpText('.two-up-text-col-right').attr('style') || '', /border-left:1px solid #e8e8e8/i);
+assert.match($twoUpText('.two-up-text-shell').attr('style') || '', /padding-bottom:28px/i);
+assert.match(
+  twoUpTextExport,
+  /\.two-up-text-section \.two-up-text-col[\s\S]*?width:\s*50% !important;/i,
+  'Two-up text columns must ship at 50% width on desktop',
+);
+assert.match(
+  twoUpTextExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.two-up-text-section \.two-up-text-col-right[\s\S]*?border-left:\s*0 !important;/i,
+  'Mobile two-up text must drop the divider when stacked',
+);
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern

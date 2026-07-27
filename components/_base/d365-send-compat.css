@@ -448,13 +448,24 @@ table.outer,
 }
 
 .view-in-browser-section [data-container="true"],
-.view-in-browser-section center {
+.view-in-browser-section center,
+.view-in-browser-section .view-in-browser-center-table,
+.view-in-browser-section .view-in-browser-center-table td {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+.view-in-browser-section [data-container="true"] {
+  display: inline-block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: none !important;
+  vertical-align: top !important;
 }
 
 .view-in-browser-section .view-in-browser-cell {
@@ -483,12 +494,19 @@ table.outer,
 }
 
 .mod-intro-centered [data-container="true"] {
-  display: block !important;
-  width: 100% !important;
+  display: inline-block !important;
+  width: auto !important;
   max-width: 100% !important;
+  min-width: 0 !important;
+  flex: none !important;
+  vertical-align: top !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+.mod-intro-centered .intro-centered-inner td {
+  text-align: center !important;
 }
 
 /* ---- image split 50/50 columns ---- */
@@ -549,6 +567,22 @@ table.outer,
   margin-left: 0 !important;
   margin-right: 0 !important;
   align-self: stretch !important;
+}
+
+.two-up-text-section .tbContainer.multi > tbody > tr > td.stack-column,
+.two-up-text-section .tbContainer.multi > tr > td.stack-column,
+.two-up-text-section .two-up-text-col {
+  width: 50% !important;
+  max-width: 50% !important;
+  box-sizing: border-box !important;
+}
+
+.two-up-text-section .two-up-text-col-right {
+  border-left: 1px solid #e8e8e8 !important;
+}
+
+.two-up-text-section .two-up-text-shell {
+  padding-bottom: 28px !important;
 }
 
 .intro-headline [data-editorblocktype="Text"],
@@ -753,6 +787,8 @@ h2.subhead-orange,
   }
 
   .view-in-browser-section center,
+  .view-in-browser-section .view-in-browser-center-table,
+  .view-in-browser-section .view-in-browser-center-table td,
   .view-in-browser-section [data-container="true"],
   .view-in-browser-section [data-editorblocktype="Text"],
   .view-in-browser-section .view-in-browser-text,
@@ -765,6 +801,14 @@ h2.subhead-orange,
     margin-right: auto !important;
   }
 
+  .view-in-browser-section [data-container="true"] {
+    display: inline-block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    flex: none !important;
+  }
+
+  .mod-intro-centered .intro-centered-inner td,
   .mod-intro-centered [data-container="true"],
   .mod-intro-centered [data-editorblocktype="Text"],
   .mod-intro-centered h1,
@@ -776,6 +820,13 @@ h2.subhead-orange,
     text-align: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
+  }
+
+  .mod-intro-centered [data-container="true"] {
+    display: inline-block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    flex: none !important;
   }
 
   .image-split-text-section .tbContainer.multi > tbody > tr > td.stack-column,
@@ -790,6 +841,25 @@ h2.subhead-orange,
 
   .image-split-text-section .image-split-copy {
     padding: 20px !important;
+  }
+
+  .two-up-text-section .tbContainer.multi > tbody > tr > td.stack-column,
+  .two-up-text-section .tbContainer.multi > tr > td.stack-column,
+  .two-up-text-section .two-up-text-col {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .two-up-text-section .two-up-text-col-left {
+    padding-right: 0 !important;
+  }
+
+  .two-up-text-section .two-up-text-col-right {
+    padding-left: 0 !important;
+    border-left: 0 !important;
+    padding-top: 16px !important;
   }
 }
 
@@ -901,6 +971,8 @@ u + .body .view-in-browser-section .view-in-browser-cell {
 }
 
 u + .body .view-in-browser-section center,
+u + .body .view-in-browser-section .view-in-browser-center-table,
+u + .body .view-in-browser-section .view-in-browser-center-table td,
 u + .body .view-in-browser-section [data-container="true"],
 u + .body .view-in-browser-section [data-editorblocktype="Text"],
 u + .body .view-in-browser-section .view-in-browser-text,
@@ -913,6 +985,14 @@ u + .body .view-in-browser-section .view-in-browser-link {
   margin-right: auto !important;
 }
 
+u + .body .view-in-browser-section [data-container="true"] {
+  width: auto !important;
+  min-width: 0 !important;
+  display: inline-block !important;
+  flex: none !important;
+}
+
+u + .body .mod-intro-centered .intro-centered-inner td,
 u + .body .mod-intro-centered [data-container="true"],
 u + .body .mod-intro-centered [data-editorblocktype="Text"],
 u + .body .mod-intro-centered h1,
@@ -924,6 +1004,13 @@ u + .body .mod-intro-centered p {
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+u + .body .mod-intro-centered [data-container="true"] {
+  width: auto !important;
+  min-width: 0 !important;
+  display: inline-block !important;
+  flex: none !important;
 }
 
 u + .body .image-split-text-section .stack-column,

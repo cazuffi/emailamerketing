@@ -1011,14 +1011,30 @@ function hardenIntroCentered($) {
     $section.find('[data-container]').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'center');
-      ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
+      ensureStyle($el, 'display:inline-block;width:auto;max-width:100%;min-width:0;flex:none;text-align:center;margin-left:auto;margin-right:auto;vertical-align:top');
     });
-    $section.find('.intro-centered-cell').each((__, cell) => {
+  });
+}
+
+function hardenTwoUpTextColumns($) {
+  $('.two-up-text-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
       const $cell = $(cell);
-      const $text = $cell.find('[data-editorblocktype="Text"]').first();
-      if ($text.length && !$text.closest('center').length) {
-        $cell.children('[data-editorblocktype="Text"]').wrapAll('<center></center>');
-      }
+      $cell.attr('width', '50%');
+      ensureStyle($cell, 'width:50%;max-width:50%;box-sizing:border-box;vertical-align:top');
+    });
+    $section.find('.two-up-text-col-left').each((__, cell) => {
+      ensureStyle($(cell), 'padding-right:12px');
+    });
+    $section.find('.two-up-text-col-right').each((__, cell) => {
+      ensureStyle($(cell), 'padding-left:12px;border-left:1px solid #e8e8e8;mso-border-left-alt:1px solid #e8e8e8');
+    });
+    $section.find('.two-up-text-shell').each((__, cell) => {
+      ensureStyle($(cell), 'padding-bottom:28px');
+    });
+    $section.find('.two-up-text-col [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
     });
   });
 }
@@ -1073,9 +1089,16 @@ function hardenViewInBrowser($) {
       $cell.attr('bgcolor', '#ffffff');
       ensureStyle($cell, 'text-align:center;background-color:#ffffff;padding:12px 24px 16px 24px');
       const $text = $cell.find('[data-editorblocktype="Text"]').first();
-      if ($text.length && !$text.closest('center').length) {
-        $text.wrap('<center></center>');
+      if ($text.length && !$text.closest('.view-in-browser-center-table').length) {
+        $text.wrap(
+          '<table align="center" cellpadding="0" cellspacing="0" border="0" width="100%" class="view-in-browser-center-table" role="presentation" style="margin:0 auto;width:100%;border-collapse:collapse;"><tbody><tr><td align="center" style="text-align:center;padding:0;width:100%;"></td></tr></tbody></table>',
+        );
       }
+    });
+    $section.find('.view-in-browser-center-table, .view-in-browser-center-table td').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0 auto');
     });
     $section.find('center').each((__, el) => {
       ensureStyle($(el), 'width:100%;text-align:center');
@@ -1084,6 +1107,11 @@ function hardenViewInBrowser($) {
       const $block = $(block);
       $block.attr('align', 'center');
       ensureStyle($block, 'text-align:center;width:100%');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:inline-block;width:auto;max-width:100%;min-width:0;flex:none;text-align:center;margin-left:auto;margin-right:auto;vertical-align:top');
     });
     $section.find('.view-in-browser-text').each((__, text) => {
       const $text = $(text);
@@ -1107,7 +1135,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v24';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v25';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1128,6 +1156,7 @@ function sanitizeExportHtml(html) {
   hardenSectionHeadings($);
   hardenIntroCentered($);
   hardenImageSplitColumns($);
+  hardenTwoUpTextColumns($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenArticleStackDividers($);

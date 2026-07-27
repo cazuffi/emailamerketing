@@ -248,7 +248,9 @@ h2.subhead-orange {
 .view-in-browser-section [data-editorblocktype="Text"],
 .view-in-browser-section .view-in-browser-text,
 .view-in-browser-section .view-in-browser-link,
-.view-in-browser-section center {
+.view-in-browser-section center,
+.view-in-browser-section .view-in-browser-center-table,
+.view-in-browser-section .view-in-browser-center-table td {
   text-align: center !important;
   width: 100%;
 }
@@ -271,6 +273,14 @@ h2.subhead-orange {
 .image-edge-section.image-edge-inset .image-edge-subtext-wrap {
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+.two-up-text-section .two-up-text-col-right {
+  border-left: 1px solid #e8e8e8;
+}
+
+.two-up-text-section .two-up-text-shell {
+  padding-bottom: 28px !important;
 }
 
 .eyebrow-label {
@@ -760,6 +770,11 @@ h2.subhead-orange {
   .two-up-text-section .two-up-text-col [data-editorblocktype="Text"],
   .two-up-text-section .two-up-text-col h3,
   .two-up-text-section .two-up-text-col p { text-align: left !important; }
+
+  .two-up-text-section .two-up-text-col-right {
+    border-left: 0 !important;
+    padding-top: 16px !important;
+  }
 
   .image-edge-section.image-edge-inset .image-edge-cell {
     padding-left: 20px !important;
