@@ -432,6 +432,30 @@ table.outer,
   text-decoration: none !important;
 }
 
+/* ---- view in browser: white bar, centered orange link ---- */
+.view-in-browser-section,
+.view-in-browser-section .outer,
+.view-in-browser-section .view-in-browser-cell {
+  background-color: #ffffff !important;
+}
+
+.view-in-browser-section .view-in-browser-cell,
+.view-in-browser-section [data-editorblocktype="Text"],
+.view-in-browser-section .view-in-browser-text,
+.view-in-browser-section .view-in-browser-link {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.view-in-browser-section [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 /* ---- left-aligned intro / headline / feature copy ---- */
 .intro-headline [data-container="true"],
 .eyebrow-headline [data-container="true"],
@@ -757,6 +781,21 @@ u + .body .section-heading-section .divider-line-img {
 }
 
 u + .body .section-heading-section .divider-line-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+u + .body .view-in-browser-section .outer,
+u + .body .view-in-browser-section .view-in-browser-cell {
+  background-color: #ffffff !important;
+}
+
+u + .body .view-in-browser-section [data-container="true"],
+u + .body .view-in-browser-section [data-editorblocktype="Text"],
+u + .body .view-in-browser-section .view-in-browser-text,
+u + .body .view-in-browser-section .view-in-browser-link {
+  text-align: center !important;
+  width: 100% !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }

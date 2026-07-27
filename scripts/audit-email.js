@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v21';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v22';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -143,6 +143,17 @@ assert.strictEqual($viewBrowser('.view-in-browser-section [data-editorblocktype=
 assert.strictEqual($viewBrowser('.view-in-browser-link').length, 1);
 assert.match($viewBrowser('.view-in-browser-link').attr('style') || '', /color:#ef7800/i);
 assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /text-align:center/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /background-color:#ffffff/i);
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \.view-in-browser-cell[\s\S]*?background-color:\s*#ffffff !important;/i,
+  'View in browser bar must use a white background after export',
+);
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \.view-in-browser-link[\s\S]*?text-align:\s*center !important;/i,
+  'View in browser link must stay center-aligned after export',
+);
 
 assert.match(
   exported,

@@ -992,6 +992,40 @@ function hardenD365Containers($) {
   });
 }
 
+function hardenViewInBrowser($) {
+  $('.view-in-browser-section').each((_, section) => {
+    const $section = $(section);
+    $section.attr('style', mergeStyle($section.attr('style') || '', 'background-color:#ffffff'));
+    $section.find('table.outer').each((__, table) => {
+      const $table = $(table);
+      $table.attr('bgcolor', '#ffffff');
+      ensureStyle($table, 'background-color:#ffffff');
+    });
+    $section.find('.view-in-browser-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('bgcolor', '#ffffff');
+      ensureStyle($cell, 'text-align:center;background-color:#ffffff');
+    });
+    $section.find('[data-editorblocktype="Text"]').each((__, block) => {
+      const $block = $(block);
+      $block.attr('align', 'center');
+      ensureStyle($block, 'text-align:center;width:100%');
+    });
+    $section.find('.view-in-browser-text').each((__, text) => {
+      const $text = $(text);
+      $text.attr('align', 'center');
+      ensureStyle($text, 'text-align:center;width:100%');
+      removeStyleProp($text, 'color');
+    });
+    $section.find('.view-in-browser-link').each((__, link) => {
+      const $link = $(link);
+      $link.attr('align', 'center');
+      ensureStyle($link, 'display:inline-block;text-align:center;color:#ef7800;text-decoration:underline');
+    });
+  });
+}
+
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
@@ -1000,7 +1034,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v21';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v22';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1011,6 +1045,7 @@ function sanitizeExportHtml(html) {
   hardenD365Containers($);
   hardenButtons($);
   hardenHeaderAlignment($);
+  hardenViewInBrowser($);
   hardenLeftAlignedTextSections($);
   hardenAccentBands($);
   hardenUrgencyBand($);
