@@ -147,6 +147,26 @@ a.button-outline-link,
 
 .buttonWrapper { margin: 4px 0 0 0; }
 .buttonTable { border-collapse: separate; }
+
+/* Centered CTAs — text-align on the wrapper does not center block-level button tables */
+.cta-primary-center .buttonWrapper[align="center"],
+.cta-outline-center .buttonWrapper[align="center"],
+.buttonWrapper[align="center"]:not(.cta-dual-section .buttonWrapper):not(.cta-band-grey .buttonWrapper) {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.cta-primary-center .buttonTable,
+.cta-primary-center .button-outline-table,
+.cta-outline-center .buttonTable,
+.cta-outline-center .button-outline-table,
+.buttonWrapper[align="center"] > .buttonTable,
+.buttonWrapper[align="center"] > .button-outline-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 .buttonCell {
   background-color: #ef7800;
   border-radius: 0;

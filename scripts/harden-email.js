@@ -127,6 +127,17 @@ function hardenButtons($) {
     });
   });
 
+  $('.buttonWrapper[align="center"], .cta-primary-center .buttonWrapper, .cta-outline-center .buttonWrapper').each((_, el) => {
+    const $wrap = $(el);
+    if ($wrap.closest('.cta-dual-section, .cta-band-grey, .compact-button-column').length) return;
+    $wrap.attr('align', 'center');
+    ensureStyle($wrap, 'text-align:center;display:block;margin-left:auto;margin-right:auto');
+    $wrap.find('.buttonTable, .button-outline-table').first().each((__, table) => {
+      const $table = $(table);
+      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+    });
+  });
+
   $('.cta-band-grey .cta-band-grey-button .buttonWrapper').each((_, el) => {
     const $wrap = $(el);
     setStyleProp($wrap, 'width', '100%');
@@ -976,7 +987,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v18';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v19';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

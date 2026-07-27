@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v18';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v19';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -679,6 +679,27 @@ const $overriddenButton = cheerio.load(overriddenButtonExport, { xml: false }, f
 const overriddenAnchor = $overriddenButton('.buttonCell a.button-primary');
 assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-cta');
 assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
+
+const centerCtaExport = buildEmailHtml({
+  title: 'Center CTA audit',
+  modules: ['cta-primary-center'],
+  overrides: {},
+  annotate: false,
+});
+const $centerCta = cheerio.load(centerCtaExport, { xml: false }, false);
+assert.strictEqual($centerCta('.cta-primary-center').length, 1, 'Center CTA section must carry cta-primary-center class');
+const centerWrap = $centerCta('.cta-primary-center .buttonWrapper');
+assert.strictEqual(centerWrap.attr('align'), 'center');
+assert.match(centerWrap.attr('style') || '', /margin-left:auto/i, 'Center CTA wrapper must auto-margin for block-level table centering');
+assert.match(centerWrap.attr('style') || '', /margin-right:auto/i);
+const centerTable = centerWrap.find('.buttonTable').first();
+assert.match(centerTable.attr('style') || '', /margin-left:auto/i, 'Center CTA button table must auto-margin');
+assert.match(centerTable.attr('style') || '', /margin-right:auto/i);
+assert.match(
+  centerCtaExport,
+  /\.cta-primary-center \.buttonTable[\s\S]*?margin-left:\s*auto !important;/i,
+  'Exported CSS must center block-level button tables in cta-primary-center',
+);
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern

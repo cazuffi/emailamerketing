@@ -53,6 +53,8 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'cta-band-grey-shell',
   'cta-band-grey-title',
   'cta-button-block',
+  'cta-outline-center',
+  'cta-primary-center',
   'disclaimer-text',
   'emptyContainer',
   'email-canvas-cell',
