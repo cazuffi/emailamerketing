@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v19';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v20';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -699,6 +699,44 @@ assert.match(
   centerCtaExport,
   /\.cta-primary-center \.buttonTable[\s\S]*?margin-left:\s*auto !important;/i,
   'Exported CSS must center block-level button tables in cta-primary-center',
+);
+
+const heroFullFields = extractFields('hero-full');
+assert(
+  heroFullFields.some((field) => field.key === 'image_0_caption' && field.hideWhenEmpty),
+  'Image modules must expose optional image subtext field',
+);
+const twoUpFields = extractFields('two-up-cards');
+assert(twoUpFields.some((field) => field.key === 'image_0_caption'), 'Two-up cards must expose subtext for first image');
+assert(twoUpFields.some((field) => field.key === 'image_1_caption'), 'Two-up cards must expose subtext for second image');
+
+const subtextExport = buildEmailHtml({
+  title: 'Image subtext audit',
+  modules: ['team-profile'],
+  overrides: {
+    0: {
+      image_0_caption: 'Alex Müller\nProduct Manager, Connectivity',
+    },
+  },
+  annotate: false,
+});
+const $subtext = cheerio.load(subtextExport, { xml: false }, false);
+assert.match(
+  $subtext('.image-subtext').html() || '',
+  /Alex Müller<br>Product Manager, Connectivity/i,
+  'Multiline image subtext must render line breaks',
+);
+
+const emptySubtextExport = buildEmailHtml({
+  title: 'Empty image subtext audit',
+  modules: ['hero-full'],
+  overrides: {},
+  annotate: false,
+});
+assert.doesNotMatch(
+  emptySubtextExport,
+  /class="caption-text image-subtext"/,
+  'Empty image subtext must be omitted on export',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);

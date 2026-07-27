@@ -373,6 +373,19 @@ function hardenSmallText($) {
   });
 }
 
+function hardenEmptyImageSubtext($) {
+  $('.image-subtext').each((_, el) => {
+    const $subtext = $(el);
+    const text = ($subtext.text() || '').replace(/\u00a0/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+    if (text) return;
+    ensureStyle($subtext, 'display:none;mso-hide:all;font-size:0;line-height:0;max-height:0;margin:0;padding:0;overflow:hidden;height:0');
+    const $block = $subtext.closest('.image-subtext-block');
+    if ($block.length) {
+      ensureStyle($block, 'display:none;mso-hide:all;font-size:0;line-height:0;max-height:0;margin:0;padding:0;overflow:hidden;height:0');
+    }
+  });
+}
+
 const DIVIDER_LINE_STYLE =
   'height:2px;line-height:2px;font-size:0;mso-line-height-rule:exactly;background-color:#ef7800;padding:0;border:0;mso-padding-alt:0';
 const DIVIDER_IMG_STYLE =
@@ -987,7 +1000,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v19';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v20';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1009,6 +1022,7 @@ function sanitizeExportHtml(html) {
   hardenArticleStackDividers($);
   hardenSectionGaps($);
   hardenBodyTextSections($);
+  hardenEmptyImageSubtext($);
   unwrapPassengerDivs($);
   normalizeInlineBackgrounds($);
   return `<!-- ${BUILD_MARKER} -->\n${flattenOutlookConditionals($.html())}`;
