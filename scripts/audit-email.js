@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v30';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v31';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -213,8 +213,8 @@ const imageSplitExport = buildEmailHtml({
 });
 const $imageSplit = cheerio.load(imageSplitExport, { xml: false }, false);
 assert.strictEqual($imageSplit('.image-split-copy').length, 1);
-assert.match($imageSplit('.image-split-copy').attr('style') || '', /display:block/i, 'Image split copy must stack by default in source HTML');
-assert.match($imageSplit('.image-split-copy').attr('style') || '', /width:100%/i, 'Image split copy must ship full-width inline for no-media clients');
+assert.match($imageSplit('.image-split-copy').attr('style') || '', /display:inline-block/i, 'Image split copy must use inline-block for desktop no-media clients');
+assert.match($imageSplit('.image-split-copy').attr('style') || '', /max-width:320px/i, 'Image split copy must cap column width for side-by-side desktop layout');
 assert.doesNotMatch($imageSplit('.image-split-copy').attr('width') || '', /50%/i, 'Image split copy must not ship width="50%"');
 assert.match(
   imageSplitExport,
@@ -243,14 +243,9 @@ const insetHeroExport = buildEmailHtml({
 const $insetHero = cheerio.load(insetHeroExport, { xml: false }, false);
 assert.strictEqual($insetHero('.image-edge-inset').length, 1, 'Inset toggle must add image-edge-inset class');
 assert.match(
-  $insetHero('.image-edge-cell').attr('style') || '',
-  /padding-left:24px/i,
-  'Inset hero must apply 24px horizontal padding on the image cell',
-);
-assert.match(
   insetHeroExport,
-  /\.image-edge-section\.image-edge-inset \.image-edge-cell[\s\S]*?padding-left:\s*24px !important;/i,
-  'Exported CSS must preserve inset image side spacing',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-edge-section\.image-edge-inset \.image-edge-cell[\s\S]*?padding-left:\s*24px !important;/i,
+  'Exported CSS must apply inset image side spacing on desktop only',
 );
 
 assert.match(
@@ -941,8 +936,8 @@ const accentBandCtaExport = buildEmailHtml({
 const $accentBandCta = cheerio.load(accentBandCtaExport, { xml: false }, false);
 assert.strictEqual($accentBandCta('.accent-band-copy').length, 1);
 assert.strictEqual($accentBandCta('.accent-band-cta').length, 1);
-assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /display:block/i, 'Accent band copy must stack by default in source HTML');
-assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /width:100%/i, 'Accent band copy must ship full-width inline for no-media clients');
+assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /display:inline-block/i, 'Accent band copy must use inline-block for desktop no-media clients');
+assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /max-width:416px/i, 'Accent band copy must cap column width for side-by-side desktop layout');
 assert.doesNotMatch($accentBandCta('.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must not ship width="65%"');
 assert.doesNotMatch($accentBandCta('.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must not ship width="35%"');
 assert.match(
@@ -958,7 +953,30 @@ assert.match(
 assert.match(accentBandCtaExport, /<!--\[if mso\][\s\S]*?accent-band-copy/i, 'Accent band must ship MSO desktop column wrapper');
 const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
 const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
-assert.match($accentBandCtaPasted('.accent-band-copy').attr('style') || '', /width:100%/i, 'Dynamics paste must keep accent band copy full-width inline');
+assert.match($accentBandCtaPasted('.accent-band-copy').attr('style') || '', /max-width:416px/i, 'Dynamics paste must keep accent band copy desktop max-width inline');
+
+const statsThreeExport = buildEmailHtml({
+  title: 'Stats three audit',
+  modules: ['stats-three'],
+  annotate: false,
+});
+const $statsThree = cheerio.load(statsThreeExport, { xml: false }, false);
+assert.strictEqual($statsThree('.stats-three-section').length, 1);
+assert.strictEqual($statsThree('.stat-stack').length, 3);
+assert.doesNotMatch($statsThree('.stat-stack').first().attr('width') || '', /33%/i, 'Stats must not ship width="33%" on stack cells');
+assert.match($statsThree('.stat-stack').first().attr('style') || '', /display:inline-block/i, 'Stats must use inline-block for desktop no-media clients');
+assert.match($statsThree('.stat-stack').first().attr('style') || '', /max-width:200px/i, 'Stats must cap column width for desktop three-up layout');
+assert.match(statsThreeExport, /<!--\[if mso\][\s\S]*?stat-stack/i, 'Stats three must ship MSO desktop column wrapper');
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?width:\s*100% !important;/i,
+  'Mobile stats must stack to full width',
+);
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-edge-section\.image-edge-inset \.image-edge-cell[\s\S]*?padding-left:\s*24px !important;/i,
+  'Desktop inset images must keep side spacing via min-width media query',
+);
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern

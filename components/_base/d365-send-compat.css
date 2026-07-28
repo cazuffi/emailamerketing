@@ -511,6 +511,18 @@ table.outer,
     padding-top: 0 !important;
     text-align: right !important;
   }
+
+  .stats-three-section .stat-stack {
+    display: inline-block !important;
+    width: 33.33% !important;
+    max-width: 200px !important;
+  }
+
+  .image-edge-section.image-edge-inset .image-edge-cell {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    box-sizing: border-box !important;
+  }
 }
 
 .image-split-text-section [data-container="true"] {
@@ -519,12 +531,6 @@ table.outer,
   display: block !important;
   flex: none !important;
   align-self: stretch !important;
-}
-
-.image-edge-section.image-edge-inset .image-edge-cell {
-  padding-left: 24px !important;
-  padding-right: 24px !important;
-  box-sizing: border-box !important;
 }
 
 .image-edge-section.image-edge-inset .image-edge-subtext-wrap {
@@ -762,11 +768,6 @@ h2.subhead-orange,
     margin-right: auto !important;
   }
 
-  .image-edge-section.image-edge-inset .image-edge-cell {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-
   .view-in-browser-section center,
   .view-in-browser-section .view-in-browser-center-table,
   .view-in-browser-section .view-in-browser-center-table td,
@@ -787,11 +788,15 @@ h2.subhead-orange,
     margin-right: auto !important;
   }
 
+  .stats-three-section .stat-stack{display:block!important;width:100%!important;max-width:100%!important;padding-bottom:20px!important}
+  .stats-three-section .stat-stack:last-child{padding-bottom:0!important}
+  .stats-three-section .stat-number{font-size:32px!important}
+  .stats-three-section .stat-label{font-size:13px!important}
+
   .image-split-text-section .image-split-stack {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
-    min-width: 100% !important;
   }
 
   .image-split-text-section .image-split-stack.image-split-copy {
@@ -1018,10 +1023,9 @@ u + .body .image-split-text-section [data-container="true"] {
   flex: none !important;
 }
 
-u + .body .image-edge-section.image-edge-inset .image-edge-cell {
-  padding-left: 24px !important;
-  padding-right: 24px !important;
-  box-sizing: border-box !important;
+u + .body .image-edge-section.image-edge-inset .image-edge-subtext-wrap {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 u + .body .cta-primary-center .buttonTable,

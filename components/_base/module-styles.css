@@ -266,12 +266,6 @@ h2.subhead-orange {
   padding-top: 24px !important;
 }
 
-.image-edge-section.image-edge-inset .image-edge-cell {
-  padding-left: 24px !important;
-  padding-right: 24px !important;
-  box-sizing: border-box !important;
-}
-
 .image-edge-section.image-edge-inset .image-edge-subtext-wrap {
   padding-left: 0 !important;
   padding-right: 0 !important;
@@ -777,11 +771,6 @@ h2.subhead-orange {
     border-left: 0 !important;
     border-top: 1px solid #e8e8e8 !important;
     padding-top: 16px !important;
-  }
-
-  .image-edge-section.image-edge-inset .image-edge-cell {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
   }
 
   .mod-intro-centered h1,
