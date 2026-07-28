@@ -465,8 +465,7 @@ table.outer,
 .view-in-browser-section center,
 .view-in-browser-section .view-in-browser-center-table,
 .view-in-browser-section .view-in-browser-center-table td,
-.view-in-browser-section [data-editorblocktype="Text"],
-.view-in-browser-section .view-in-browser-text,
+.view-in-browser-section .view-in-browser-text-cell,
 .view-in-browser-section .view-in-browser-link {
   text-align: center !important;
   width: 100% !important;
@@ -502,13 +501,23 @@ table.outer,
 }
 
 /* ---- image split 50/50 columns ---- */
-.image-split-text-section .tbContainer.multi > tbody > tr > td.stack-column,
-.image-split-text-section .tbContainer.multi > tr > td.stack-column,
-.image-split-text-section .image-split-copy,
-.image-split-text-section .image-split-media {
-  width: 50% !important;
-  max-width: 50% !important;
-  box-sizing: border-box !important;
+@media only screen and (min-width: 641px) {
+  .two-up-text-section .tbContainer.multi > tbody > tr > td.stack-column,
+  .two-up-text-section .tbContainer.multi > tr > td.stack-column,
+  .two-up-text-section .two-up-text-col {
+    width: 50% !important;
+    max-width: 50% !important;
+    box-sizing: border-box !important;
+  }
+
+  .image-split-text-section .tbContainer.multi > tbody > tr > td.stack-column,
+  .image-split-text-section .tbContainer.multi > tr > td.stack-column,
+  .image-split-text-section .image-split-copy,
+  .image-split-text-section .image-split-media {
+    width: 50% !important;
+    max-width: 50% !important;
+    box-sizing: border-box !important;
+  }
 }
 
 .image-split-text-section .image-split-copy [data-container="true"],
@@ -559,14 +568,6 @@ table.outer,
   margin-left: 0 !important;
   margin-right: 0 !important;
   align-self: stretch !important;
-}
-
-.two-up-text-section .tbContainer.multi > tbody > tr > td.stack-column,
-.two-up-text-section .tbContainer.multi > tr > td.stack-column,
-.two-up-text-section .two-up-text-col {
-  width: 50% !important;
-  max-width: 50% !important;
-  box-sizing: border-box !important;
 }
 
 .two-up-text-section .two-up-text-col-right {
@@ -781,8 +782,7 @@ h2.subhead-orange,
   .view-in-browser-section center,
   .view-in-browser-section .view-in-browser-center-table,
   .view-in-browser-section .view-in-browser-center-table td,
-  .view-in-browser-section [data-editorblocktype="Text"],
-  .view-in-browser-section .view-in-browser-text,
+  .view-in-browser-section .view-in-browser-text-cell,
   .view-in-browser-section .view-in-browser-link {
     text-align: center !important;
     margin-left: auto !important;
@@ -944,18 +944,37 @@ u + .body .view-in-browser-section .view-in-browser-cell {
 u + .body .view-in-browser-section center,
 u + .body .view-in-browser-section .view-in-browser-center-table,
 u + .body .view-in-browser-section .view-in-browser-center-table td,
-u + .body .view-in-browser-section [data-editorblocktype="Text"],
-u + .body .view-in-browser-section .view-in-browser-text,
+u + .body .view-in-browser-section .view-in-browser-text-cell,
 u + .body .view-in-browser-section .view-in-browser-link {
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
-u + .body .view-in-browser-section [data-container="true"] {
-  width: auto !important;
-  min-width: 0 !important;
-  display: inline-block !important;
+u + .body .two-up-text-section .tbContainer.multi > tbody > tr > td.stack-column,
+u + .body .two-up-text-section .tbContainer.multi > tr > td.stack-column,
+u + .body .two-up-text-section .two-up-text-col {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+u + .body .two-up-text-section .two-up-text-col-right {
+  border-left: 0 !important;
+  border-top: 1px solid #e8e8e8 !important;
+  padding-top: 16px !important;
+}
+
+u + .body .two-up-text-section .two-up-text-col-left {
+  padding-right: 0 !important;
+}
+
+u + .body .two-up-text-section .two-up-text-col [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
   flex: none !important;
 }
 

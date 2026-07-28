@@ -98,6 +98,7 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'two-up-text-shell',
   'two-up-text-table',
   'view-in-browser-center-table',
+  'view-in-browser-text-cell',
   'section-pad',
   'section-pad-accent',
   'section-pad-compact',

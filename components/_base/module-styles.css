@@ -248,6 +248,7 @@ h2.subhead-orange {
 .view-in-browser-section [data-editorblocktype="Text"],
 .view-in-browser-section .view-in-browser-text,
 .view-in-browser-section .view-in-browser-link,
+.view-in-browser-section .view-in-browser-text-cell,
 .view-in-browser-section center,
 .view-in-browser-section .view-in-browser-center-table,
 .view-in-browser-section .view-in-browser-center-table td {

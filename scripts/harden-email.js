@@ -948,6 +948,9 @@ function hardenD365Containers($) {
     // Responsive data tables use column classes for mobile stacking, but their
     // cells are not editable D365 layout containers.
     if ($table.hasClass('specs-table')) return;
+    // Responsive two-up / image-split columns stack via CSS — do not mark
+    // layout cells as Dynamics data-container or they pick up fixed widths.
+    if ($table.closest('.two-up-text-section, .image-split-text-section').length) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1026,8 +1029,10 @@ function hardenTwoUpTextColumns($) {
     const $section = $(section);
     $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
       const $cell = $(cell);
-      $cell.attr('width', '50%');
-      ensureStyle($cell, 'width:50%;max-width:50%;box-sizing:border-box;vertical-align:top');
+      $cell.removeAttr('width');
+      removeStyleProp($cell, 'width');
+      removeStyleProp($cell, 'max-width');
+      ensureStyle($cell, 'box-sizing:border-box;vertical-align:top');
     });
     $section.find('.two-up-text-col-left').each((__, cell) => {
       ensureStyle($(cell), 'padding-right:12px');
@@ -1049,13 +1054,17 @@ function hardenImageSplitColumns($) {
     const $section = $(section);
     $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
       const $cell = $(cell);
-      $cell.attr('width', '50%');
-      ensureStyle($cell, 'width:50%;max-width:50%;box-sizing:border-box');
+      $cell.removeAttr('width');
+      removeStyleProp($cell, 'width');
+      removeStyleProp($cell, 'max-width');
+      ensureStyle($cell, 'box-sizing:border-box');
     });
     $section.find('.image-split-copy, .image-split-media').each((__, cell) => {
       const $cell = $(cell);
-      if (!$cell.attr('width')) $cell.attr('width', '50%');
-      ensureStyle($cell, 'width:50%;max-width:50%;box-sizing:border-box');
+      $cell.removeAttr('width');
+      removeStyleProp($cell, 'width');
+      removeStyleProp($cell, 'max-width');
+      ensureStyle($cell, 'box-sizing:border-box');
     });
     $section.find('.image-split-copy [data-container], .image-split-media [data-container]').each((__, el) => {
       const $el = $(el);
@@ -1093,36 +1102,41 @@ function hardenViewInBrowser($) {
       $cell.attr('align', 'center');
       $cell.attr('bgcolor', '#ffffff');
       ensureStyle($cell, 'text-align:center;background-color:#ffffff;padding:12px 24px 16px 24px');
-      const $text = $cell.find('[data-editorblocktype="Text"]').first();
-      if ($text.length && !$text.closest('.view-in-browser-center-table').length) {
-        $text.wrap(
-          '<table align="center" cellpadding="0" cellspacing="0" border="0" width="100%" class="view-in-browser-center-table" role="presentation" style="margin:0 auto;width:100%;border-collapse:collapse;"><tbody><tr><td align="center" style="text-align:center;padding:0;width:100%;"></td></tr></tbody></table>',
+      const $link = $cell.find('.view-in-browser-link').first();
+      if (!$link.length) return;
+
+      // Legacy exports wrapped the link in data-editorblocktype/data-container.
+      // Unwrap so Dynamics paste cannot inject a fixed-width flex container.
+      $link.parents('[data-container="true"], [data-editorblocktype="Text"]').each((___, wrapper) => {
+        const $wrapper = $(wrapper);
+        if ($wrapper.find('.view-in-browser-link').length === 1) {
+          $wrapper.replaceWith($link);
+        }
+      });
+
+      if (!$link.closest('.view-in-browser-center-table').length) {
+        $link.wrap(
+          '<table align="center" cellpadding="0" cellspacing="0" border="0" width="100%" class="view-in-browser-center-table" role="presentation" style="margin:0 auto;width:100%;border-collapse:collapse;"><tbody><tr><td align="center" class="view-in-browser-text-cell" style="text-align:center;padding:0;width:100%;"></td></tr></tbody></table>',
         );
       }
+
+      const $centerCell = $link.closest('.view-in-browser-text-cell');
+      if ($centerCell.length) {
+        $centerCell.attr('align', 'center');
+        ensureStyle($centerCell, 'text-align:center;padding:0;width:100%');
+      }
+
+      if (!$link.closest('center').length) {
+        $link.closest('.view-in-browser-center-table').wrap('<center style="width:100%;text-align:center"></center>');
+      }
     });
-    $section.find('.view-in-browser-center-table, .view-in-browser-center-table td').each((__, el) => {
+    $section.find('.view-in-browser-center-table, .view-in-browser-center-table td, .view-in-browser-text-cell').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'center');
       ensureStyle($el, 'text-align:center;width:100%;margin:0 auto');
     });
     $section.find('center').each((__, el) => {
       ensureStyle($(el), 'width:100%;text-align:center');
-    });
-    $section.find('[data-editorblocktype="Text"]').each((__, block) => {
-      const $block = $(block);
-      $block.attr('align', 'center');
-      ensureStyle($block, 'text-align:center;width:100%');
-    });
-    $section.find('[data-container]').each((__, el) => {
-      const $el = $(el);
-      $el.attr('align', 'center');
-      ensureStyle($el, 'display:inline-block;width:auto;max-width:100%;min-width:0;flex:none;text-align:center;margin-left:auto;margin-right:auto;vertical-align:top');
-    });
-    $section.find('.view-in-browser-text').each((__, text) => {
-      const $text = $(text);
-      $text.attr('align', 'center');
-      ensureStyle($text, 'text-align:center;width:100%');
-      removeStyleProp($text, 'color');
     });
     $section.find('.view-in-browser-link').each((__, link) => {
       const $link = $(link);
@@ -1140,7 +1154,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v26';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v27';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
