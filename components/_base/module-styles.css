@@ -122,11 +122,12 @@ h2.subhead-orange {
   margin-right: auto !important;
 }
 
-.headline-block-center,
-.headline-block-center h2,
-.headline-block-center h3,
-.headline-block-center h4,
-.headline-block-center .headline-lead {
+.headline-block-center-section,
+.headline-block-center-section .headline-block-center-cell,
+.headline-block-center-section .headline-block-center-inner td,
+.headline-block-center-section h2,
+.headline-block-center-section h3,
+.headline-block-center-section .headline-lead {
   text-align: center !important;
 }
 

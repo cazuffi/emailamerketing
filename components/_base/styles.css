@@ -185,12 +185,14 @@ a.button-outline-link,
 }
 
 .view-in-browser-section,
-.mod-intro-centered {
+.mod-intro-centered,
+.headline-block-center-section {
   text-align: center !important;
 }
 
 .view-in-browser-section .view-in-browser-cell,
-.mod-intro-centered .intro-centered-cell {
+.mod-intro-centered .intro-centered-cell,
+.headline-block-center-section .headline-block-center-cell {
   text-align: center !important;
 }
 

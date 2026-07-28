@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v27';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v28';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -607,6 +607,57 @@ assert.match(
   /\.headline-block-section h2[\s\S]*text-align:\s*left !important/i,
   'Headline H2 block must ship left-aligned for Outlook',
 );
+
+const headlineH2CenterExport = buildEmailHtml({
+  title: 'headline h2 center audit',
+  modules: ['headline-h2-center'],
+  annotate: false,
+});
+const $headlineH2Center = cheerio.load(headlineH2CenterExport, { xml: false }, false);
+assert.strictEqual($headlineH2Center('.headline-block-center-section').length, 1);
+assert.strictEqual($headlineH2Center('.headline-block-center-section center').length, 1);
+assert.strictEqual($headlineH2Center('.headline-block-center-inner tr').length, 2);
+assert.strictEqual($headlineH2Center('.headline-block-center-cell').attr('align'), 'center');
+assert.strictEqual($headlineH2Center('h2').first().attr('align'), 'center');
+assert.match($headlineH2Center('h2').first().attr('style') || '', /text-align:center/i);
+assert.match(
+  headlineH2CenterExport,
+  /\.headline-block-center-section \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
+  'Centered headline block data-container must stretch full width and center',
+);
+assert.match(
+  headlineH2CenterExport,
+  /u \+ \.body \.headline-block-center-section \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
+  'Gmail must keep centered headline block data-container full width',
+);
+assert.doesNotMatch(
+  headlineH2CenterExport,
+  /\.headline-block-center-section h2\{[^}]*text-align:\s*left !important/i,
+  'Centered headline H2 must not ship a left-align override',
+);
+const headlineH2CenterPasted = simulateDynamicsPaste(headlineH2CenterExport);
+const $headlineH2CenterPasted = cheerio.load(headlineH2CenterPasted, { xml: false }, false);
+assert.strictEqual($headlineH2CenterPasted('.headline-block-center-section [data-container="true"]').length, 2);
+assert.strictEqual($headlineH2CenterPasted('.headline-block-center-inner td[align="center"]').length, 2);
+
+const headlineH3CenterExport = buildEmailHtml({
+  title: 'headline h3 center audit',
+  modules: ['headline-h3-center'],
+  annotate: false,
+});
+const $headlineH3Center = cheerio.load(headlineH3CenterExport, { xml: false }, false);
+assert.strictEqual($headlineH3Center('.headline-block-center-section').length, 1);
+assert.strictEqual($headlineH3Center('h3').first().attr('align'), 'center');
+
+const headlineH2CenterPreview = buildEmailHtml({
+  title: 'headline h2 center preview',
+  modules: ['headline-h2-center'],
+  annotate: true,
+});
+const $headlineH2CenterPreview = cheerio.load(headlineH2CenterPreview, { xml: false }, false);
+assert.strictEqual($headlineH2CenterPreview('.headline-block-center-cell').attr('align'), 'center');
+assert.strictEqual($headlineH2CenterPreview('h2').first().attr('align'), 'center');
+
 assert.match(
   exported,
   /\.feature-stack-text p[\s\S]*text-align:\s*left !important/i,

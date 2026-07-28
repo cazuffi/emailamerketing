@@ -810,6 +810,30 @@ function hardenSectionHeadings($) {
   });
 }
 
+function hardenHeadlineBlockCenter($) {
+  $('.headline-block-center-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.headline-block-center-cell, center, .headline-block-center-inner, .headline-block-center-inner td').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2, [data-editorblocktype="Text"] h3, [data-editorblocktype="Text"] p, h2, h3, p, .headline-lead').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
 function hardenFooterAlignment($) {
   $('.three-up-benefits-section [data-editorblocktype="Text"]').each((_, el) => {
     const $block = $(el);
@@ -917,6 +941,7 @@ function hardenEmailHtml(html) {
   hardenHeaderAlignment($);
   hardenLeftAlignedTextSections($);
   hardenSectionHeadings($);
+  hardenHeadlineBlockCenter($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenArticleStackDividers($);
@@ -1154,7 +1179,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v27';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v28';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1173,6 +1198,7 @@ function sanitizeExportHtml(html) {
   hardenCtaBandGrey($);
   hardenFullBleedBands($);
   hardenSectionHeadings($);
+  hardenHeadlineBlockCenter($);
   hardenIntroCentered($);
   hardenImageSplitColumns($);
   hardenTwoUpTextColumns($);

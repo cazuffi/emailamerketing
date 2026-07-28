@@ -108,7 +108,7 @@ table.outer,
 }
 
 /* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
-[data-section="true"]:not(.view-in-browser-section):not(.mod-intro-centered):not(.section-heading-section):not(.orange-footer):not(.footer-legal):not(.urgency-band) [data-container="true"] {
+[data-section="true"]:not(.view-in-browser-section):not(.mod-intro-centered):not(.section-heading-section):not(.headline-block-center-section):not(.orange-footer):not(.footer-legal):not(.urgency-band) [data-container="true"] {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -213,7 +213,8 @@ table.outer,
 }
 
 .mod-intro-centered [data-container="true"],
-.section-heading-section [data-container="true"] {
+.section-heading-section [data-container="true"],
+.headline-block-center-section [data-container="true"] {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -351,15 +352,6 @@ table.outer,
   margin: 0 auto 12px auto !important;
 }
 
-.section-heading-section [data-container="true"] {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
 /* ---- dual CTA: table markup preferred; legacy div fallback stacks ---- */
 .cta-dual-section .cta-dual-table {
   width: 100% !important;
@@ -451,7 +443,8 @@ table.outer,
 
 /* ---- view in browser: white bar, centered orange link ---- */
 .view-in-browser-section[data-section="true"],
-.mod-intro-centered[data-section="true"] {
+.mod-intro-centered[data-section="true"],
+.headline-block-center-section[data-section="true"] {
   text-align: center !important;
 }
 
@@ -988,11 +981,13 @@ u + .body .mod-intro-centered p {
   margin-right: auto !important;
 }
 
-u + .body .mod-intro-centered [data-container="true"] {
+u + .body .mod-intro-centered [data-container="true"],
+u + .body .headline-block-center-section [data-container="true"] {
   width: 100% !important;
   min-width: 0 !important;
   display: block !important;
   flex: none !important;
+  text-align: center !important;
 }
 
 u + .body .image-split-text-section .stack-column,
