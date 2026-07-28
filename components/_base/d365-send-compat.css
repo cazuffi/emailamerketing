@@ -1,9 +1,4 @@
-/* Dynamics 365 editor/send transform overrides.
-   After paste, Dynamics adds columns-equal-class, fixed-width flex
-   data-container wrappers, and display:block on section tables.
-   These rules target the HTML as it exists AFTER that transform. */
-
-/* ---- canvas centering (Gmail ignores margin:auto on block divs) ---- */
+/* D365 send-transform overrides (post-paste HTML) */
 body {
   width: 100% !important;
   margin: 0 !important;
@@ -35,7 +30,6 @@ table.outer,
   display: table !important;
 }
 
-/* Gmail inserts extra gaps between Dynamics display:block section tables */
 [data-section="true"] {
   margin: 0 !important;
   padding: 0 !important;
@@ -55,8 +49,6 @@ table.outer,
   margin-top: 0 !important;
 }
 
-/* Full-bleed band wrappers inherit the band color so sub-pixel gutters never
-   flash white when Dynamics shrinks table.outer below the 640px canvas. */
 .accent-band[data-section="true"],
 .wrap-section.accent-band {
   background-color: #ef7800 !important;
@@ -107,7 +99,6 @@ table.outer,
   display: block !important;
 }
 
-/* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
 [data-section="true"]:not(.view-in-browser-section):not(.mod-intro-centered):not(.section-heading-section):not(.headline-block-center-section):not(.orange-footer):not(.footer-legal):not(.urgency-band) [data-container="true"] {
   display: block !important;
   width: 100% !important;
@@ -193,7 +184,6 @@ table.outer,
   margin-right: auto !important;
 }
 
-/* ---- data-container flex wrappers (module-specific) ---- */
 .orange-footer [data-container="true"],
 .footer-legal [data-container="true"],
 .footer-band-content [data-container="true"],
@@ -278,7 +268,6 @@ table.outer,
   text-align: center !important;
 }
 
-/* Centered primary/outline CTAs — block-level button tables need margin auto */
 .cta-primary-center .section-pad-tight,
 .cta-outline-center .section-pad-tight {
   text-align: center !important;
@@ -304,7 +293,6 @@ table.outer,
   margin-right: auto !important;
 }
 
-/* ---- three benefits: one table, three columns on desktop ---- */
 .three-up-benefits-section .section-pad,
 .three-up-benefits-section .mobile-padding {
   text-align: center !important;
@@ -329,7 +317,6 @@ table.outer,
   text-align: center !important;
 }
 
-/* ---- section heading: rule + title must center as one unit ---- */
 .section-heading-section .section-heading-cell,
 .section-heading-section center,
 .section-heading-section .section-heading-center,
@@ -352,7 +339,6 @@ table.outer,
   margin: 0 auto 12px auto !important;
 }
 
-/* ---- dual CTA: table markup preferred; legacy div fallback stacks ---- */
 .cta-dual-section .cta-dual-table {
   width: 100% !important;
   border-collapse: collapse !important;
@@ -378,7 +364,6 @@ table.outer,
   padding-bottom: 0 !important;
 }
 
-/* ---- video play badge ---- */
 .play-badge-table,
 [data-container="true"] .play-badge-table {
   margin-left: auto !important;
@@ -392,7 +377,6 @@ table.outer,
   width: 100% !important;
 }
 
-/* ---- footer centering ---- */
 .orange-footer .footer-band-content,
 .orange-footer .footer-band-content center,
 .orange-footer .footer-band-title,
@@ -409,7 +393,6 @@ table.outer,
   width: 100% !important;
 }
 
-/* ---- header white fill (dark mode) ---- */
 .header-standard-section,
 .header-standard-section .outer,
 .header-standard-section .section-pad-tight,
@@ -441,7 +424,6 @@ table.outer,
   text-decoration: none !important;
 }
 
-/* ---- view in browser: white bar, centered orange link ---- */
 .view-in-browser-section[data-section="true"],
 .mod-intro-centered[data-section="true"],
 .headline-block-center-section[data-section="true"] {
@@ -473,7 +455,6 @@ table.outer,
   padding-top: 24px !important;
 }
 
-/* ---- intro centered ---- */
 .mod-intro-centered .intro-centered-cell,
 .mod-intro-centered center,
 .mod-intro-centered .intro-centered-inner,
@@ -493,7 +474,6 @@ table.outer,
   text-align: center !important;
 }
 
-/* ---- image split 50/50 columns ---- */
 @media only screen and (min-width: 641px) {
   .two-up-text-section .tbContainer.multi > tbody > tr > td.stack-column,
   .two-up-text-section .tbContainer.multi > tr > td.stack-column,
@@ -503,29 +483,37 @@ table.outer,
     box-sizing: border-box !important;
   }
 
-  .image-split-text-section .tbContainer.multi > tbody > tr > td.stack-column,
-  .image-split-text-section .tbContainer.multi > tr > td.stack-column,
-  .image-split-text-section .image-split-copy,
-  .image-split-text-section .image-split-media {
+  .image-split-text-section .image-split-stack.image-split-copy,
+  .image-split-text-section .image-split-stack.image-split-media {
+    display: inline-block !important;
     width: 50% !important;
     max-width: 50% !important;
     box-sizing: border-box !important;
+    vertical-align: middle !important;
   }
 
-  .accent-band .accent-band-copy {
+  .image-split-text-section .image-split-stack.image-split-media {
+    vertical-align: top !important;
+  }
+
+  .accent-band .accent-band-stack.accent-band-copy {
+    display: inline-block !important;
     width: 65% !important;
     max-width: 65% !important;
     padding-right: 16px !important;
+    text-align: left !important;
   }
 
-  .accent-band .accent-band-cta {
+  .accent-band .accent-band-stack.accent-band-cta {
+    display: inline-block !important;
     width: 35% !important;
     max-width: 35% !important;
+    padding-top: 0 !important;
+    text-align: right !important;
   }
 }
 
-.image-split-text-section .image-split-copy [data-container="true"],
-.image-split-text-section .image-split-media [data-container="true"] {
+.image-split-text-section [data-container="true"] {
   width: 100% !important;
   max-width: 100% !important;
   display: block !important;
@@ -544,7 +532,6 @@ table.outer,
   padding-right: 0 !important;
 }
 
-/* ---- left-aligned intro / headline / feature copy ---- */
 .intro-headline [data-container="true"],
 .eyebrow-headline [data-container="true"],
 .headline-block-section [data-container="true"],
@@ -607,15 +594,12 @@ table.outer,
   text-align: left !important;
 }
 
-/* ---- orange subheadline h2 ---- */
 h2.subhead-orange,
 .eyebrow-headline h2,
 .intro-headline h2 {
   color: #ef7800 !important;
 }
 
-/* Eyebrow + headline stacks: Dynamics used to split each line into its own
-   data-container, doubling margins in Gmail. Keep spacing on the elements only. */
 .eyebrow-headline [data-container="true"],
 .intro-headline [data-container="true"] {
   margin-top: 0 !important;
@@ -803,17 +787,14 @@ h2.subhead-orange,
     margin-right: auto !important;
   }
 
-  .image-split-text-section .tbContainer.multi > tbody > tr > td.stack-column,
-  .image-split-text-section .tbContainer.multi > tr > td.stack-column,
-  .image-split-text-section .image-split-copy,
-  .image-split-text-section .image-split-media {
+  .image-split-text-section .image-split-stack {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     min-width: 100% !important;
   }
 
-  .image-split-text-section .image-split-copy {
+  .image-split-text-section .image-split-stack.image-split-copy {
     padding: 20px !important;
   }
 
@@ -837,15 +818,17 @@ h2.subhead-orange,
     padding-top: 16px !important;
   }
 
-  .accent-band .stack-column {
+  .accent-band .accent-band-stack {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     padding-right: 0 !important;
-    text-align: center !important;
   }
 
-  .accent-band .accent-band-cta { padding-top: 16px !important; }
+  .accent-band .accent-band-stack.accent-band-cta {
+    padding-top: 16px !important;
+    text-align: center !important;
+  }
 
   .accent-band .compact-button-column .buttonWrapper,
   .accent-band .compact-button-column .button-outline-table {
@@ -856,12 +839,12 @@ h2.subhead-orange,
   }
 
   .accent-band .compact-button-column a.button-outline-link {
-    width: 100% !important;
+    width: auto !important;
+    max-width: none !important;
     padding: 14px 20px !important;
   }
 }
 
-/* Gmail app (web + mobile) — override fixed-width Dynamics data-container inline styles */
 u + .body .orange-footer [data-container="true"],
 u + .body .footer-legal [data-container="true"] {
   width: auto !important;
@@ -1024,14 +1007,11 @@ u + .body .headline-block-center-section [data-container="true"] {
   text-align: center !important;
 }
 
-u + .body .image-split-text-section .stack-column,
-u + .body .image-split-text-section .image-split-copy,
-u + .body .image-split-text-section .image-split-media {
+u + .body .image-split-text-section .image-split-stack {
   box-sizing: border-box !important;
 }
 
-u + .body .image-split-text-section .image-split-copy [data-container="true"],
-u + .body .image-split-text-section .image-split-media [data-container="true"] {
+u + .body .image-split-text-section [data-container="true"] {
   width: 100% !important;
   max-width: 100% !important;
   display: block !important;

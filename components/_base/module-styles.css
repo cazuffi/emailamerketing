@@ -728,7 +728,7 @@ h2.subhead-orange {
   .download-resource-cta { text-align: center !important; }
 
   .cta-band-grey .stack-column,
-  .accent-band .stack-column { text-align: center !important; }
+  .accent-band .accent-band-stack { text-align: center !important; }
   .cta-band-grey .cta-band-grey-shell {
     padding: 16px 20px !important;
     border-left: 0 !important;

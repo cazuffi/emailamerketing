@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v29';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v30';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -213,17 +213,20 @@ const imageSplitExport = buildEmailHtml({
 });
 const $imageSplit = cheerio.load(imageSplitExport, { xml: false }, false);
 assert.strictEqual($imageSplit('.image-split-copy').length, 1);
-assert.doesNotMatch($imageSplit('.image-split-copy').attr('style') || '', /width:50%/i, 'Image split copy column must not ship inline 50% width');
+assert.match($imageSplit('.image-split-copy').attr('style') || '', /display:block/i, 'Image split copy must stack by default in source HTML');
+assert.match($imageSplit('.image-split-copy').attr('style') || '', /width:100%/i, 'Image split copy must ship full-width inline for no-media clients');
+assert.doesNotMatch($imageSplit('.image-split-copy').attr('width') || '', /50%/i, 'Image split copy must not ship width="50%"');
 assert.match(
   imageSplitExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-split-text-section \.image-split-copy[\s\S]*?width:\s*50% !important;/i,
-  'Exported CSS must preserve 50% width on image split copy column for desktop',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-split-text-section \.image-split-stack[\s\S]*?width:\s*50% !important;/i,
+  'Exported CSS must preserve 50% width on image split stacks for desktop',
 );
 assert.match(
   imageSplitExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.image-split-text-section \.image-split-copy[\s\S]*?width:\s*100% !important;/i,
-  'Mobile image split copy column must expand to full width',
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.image-split-text-section \.image-split-stack[\s\S]*?width:\s*100% !important;/i,
+  'Mobile image split stacks must expand to full width',
 );
+assert.match(imageSplitExport, /<!--\[if mso\][\s\S]*?image-split-stack/i, 'Image split must ship MSO desktop column wrapper');
 
 const heroFullInsetFields = extractFields('hero-full');
 assert(
@@ -849,6 +852,7 @@ const centerWrap = $centerCta('.cta-primary-center .buttonWrapper');
 assert.strictEqual(centerWrap.attr('align'), 'center');
 assert.match(centerWrap.attr('style') || '', /margin-left:auto/i, 'Center CTA wrapper must auto-margin for block-level table centering');
 assert.match(centerWrap.attr('style') || '', /margin-right:auto/i);
+assert.match(centerWrap.attr('style') || '', /max-width:320px/i, 'Center CTA wrapper must cap button width on mobile');
 const centerTable = centerWrap.find('.buttonTable').first();
 assert.match(centerTable.attr('style') || '', /margin-left:auto/i, 'Center CTA button table must auto-margin');
 assert.match(centerTable.attr('style') || '', /margin-right:auto/i);
@@ -937,21 +941,24 @@ const accentBandCtaExport = buildEmailHtml({
 const $accentBandCta = cheerio.load(accentBandCtaExport, { xml: false }, false);
 assert.strictEqual($accentBandCta('.accent-band-copy').length, 1);
 assert.strictEqual($accentBandCta('.accent-band-cta').length, 1);
+assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /display:block/i, 'Accent band copy must stack by default in source HTML');
+assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /width:100%/i, 'Accent band copy must ship full-width inline for no-media clients');
 assert.doesNotMatch($accentBandCta('.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must not ship width="65%"');
 assert.doesNotMatch($accentBandCta('.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must not ship width="35%"');
 assert.match(
   accentBandCtaExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.accent-band \.accent-band-copy[\s\S]*?width:\s*65% !important;/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.accent-band \.accent-band-stack\.accent-band-copy[\s\S]*?width:\s*65% !important;/i,
   'Accent band copy must use desktop-only 65% width via CSS',
 );
 assert.match(
   accentBandCtaExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.accent-band \.stack-column[\s\S]*?display:\s*block !important;/i,
-  'Mobile accent band must stack copy and CTA columns',
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.accent-band \.accent-band-stack[\s\S]*?width:\s*100% !important;/i,
+  'Mobile accent band stacks must expand to full width',
 );
+assert.match(accentBandCtaExport, /<!--\[if mso\][\s\S]*?accent-band-copy/i, 'Accent band must ship MSO desktop column wrapper');
 const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
 const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
-assert.doesNotMatch($accentBandCtaPasted('.accent-band-copy').attr('width') || '', /65%/i);
+assert.match($accentBandCtaPasted('.accent-band-copy').attr('style') || '', /width:100%/i, 'Dynamics paste must keep accent band copy full-width inline');
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern

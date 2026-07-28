@@ -952,6 +952,7 @@ function hardenEmailHtml(html) {
   hardenImageSplitColumns($);
   hardenTwoUpTextColumns($);
   hardenAccentBandColumns($);
+  hardenCtaPrimaryCenter($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -977,6 +978,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1078,19 +1080,14 @@ function hardenTwoUpTextColumns($) {
 function hardenAccentBandColumns($) {
   $('.accent-band').each((_, section) => {
     const $section = $(section);
-    if (!$section.find('.tbContainer.multi').length) return;
-    $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
-      const $cell = $(cell);
-      $cell.removeAttr('width');
-      removeStyleProp($cell, 'width');
-      removeStyleProp($cell, 'max-width');
-      ensureStyle($cell, 'box-sizing:border-box;vertical-align:middle');
+    $section.find('.accent-band-stack').each((__, block) => {
+      ensureStyle(
+        $(block),
+        'display:block;width:100%;max-width:100%;box-sizing:border-box;vertical-align:middle;font-size:15px;line-height:1.6;mso-line-height-rule:exactly',
+      );
     });
-    $section.find('.accent-band-copy').each((__, cell) => {
-      ensureStyle($(cell), 'padding-right:16px');
-    });
-    $section.find('.accent-band-cta').each((__, cell) => {
-      ensureStyle($(cell), 'text-align:right');
+    $section.find('.accent-band-layout-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;mso-line-height-rule:exactly');
     });
     $section.find('.accent-band-copy [data-container], .accent-band-cta [data-container]').each((__, el) => {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
@@ -1101,23 +1098,23 @@ function hardenAccentBandColumns($) {
 function hardenImageSplitColumns($) {
   $('.image-split-text-section').each((_, section) => {
     const $section = $(section);
-    $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
-      const $cell = $(cell);
-      $cell.removeAttr('width');
-      removeStyleProp($cell, 'width');
-      removeStyleProp($cell, 'max-width');
-      ensureStyle($cell, 'box-sizing:border-box');
+    $section.find('.image-split-stack').each((__, block) => {
+      ensureStyle($(block), 'display:block;width:100%;max-width:100%;box-sizing:border-box');
     });
-    $section.find('.image-split-copy, .image-split-media').each((__, cell) => {
-      const $cell = $(cell);
-      $cell.removeAttr('width');
-      removeStyleProp($cell, 'width');
-      removeStyleProp($cell, 'max-width');
-      ensureStyle($cell, 'box-sizing:border-box');
+    $section.find('.image-split-layout-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;mso-line-height-rule:exactly');
     });
-    $section.find('.image-split-copy [data-container], .image-split-media [data-container]').each((__, el) => {
-      const $el = $(el);
-      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+    $section.find('.image-split-stack [data-container], .image-split-copy [data-container], .image-split-media [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+    });
+  });
+}
+
+function hardenCtaPrimaryCenter($) {
+  $('.cta-primary-center').each((_, section) => {
+    const $section = $(section);
+    $section.find('.buttonWrapper').each((__, wrap) => {
+      ensureStyle($(wrap), 'max-width:320px;margin-left:auto;margin-right:auto;text-align:center');
     });
   });
 }
@@ -1203,7 +1200,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v29';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v30';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1227,6 +1224,7 @@ function sanitizeExportHtml(html) {
   hardenImageSplitColumns($);
   hardenTwoUpTextColumns($);
   hardenAccentBandColumns($);
+  hardenCtaPrimaryCenter($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenArticleStackDividers($);
