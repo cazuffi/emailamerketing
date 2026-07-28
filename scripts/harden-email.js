@@ -367,7 +367,7 @@ function hardenSmallText($) {
     if (!cls) return;
     if (cls === 'disclaimer-text') ensureStyle($p, 'font-size:10px;line-height:1.5;color:#999999');
     if (cls === 'preheader-text') ensureStyle($p, 'font-size:11px;line-height:1.4;color:#666666');
-    if (cls === 'caption-text') ensureStyle($p, 'font-size:11px;line-height:1.5;color:#666666');
+    if (cls === 'caption-text') ensureStyle($p, 'font-size:11px;line-height:16px;mso-line-height-rule:at-least;color:#666666');
     if (cls === 'stat-label') ensureStyle($p, 'font-size:11px;line-height:1.4');
     if (cls === 'faq-answer') ensureStyle($p, 'font-size:15px;line-height:1.6;color:#333333');
   });
@@ -1111,6 +1111,15 @@ function hardenHybridStackLineHeights($) {
   $('.image-split-text-section .image-split-copy [data-editorblocktype="Text"]').each((_, el) => {
     ensureStyle($(el), 'font-size:15px;line-height:normal;mso-line-height-rule:at-least');
   });
+  $('.image-subtext-block').each((_, el) => {
+    ensureStyle($(el), 'font-size:11px;line-height:normal;mso-line-height-rule:at-least');
+  });
+  $('.image-subtext').each((_, el) => {
+    const $subtext = $(el);
+    const text = ($subtext.text() || '').replace(/\u00a0/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+    if (!text) return;
+    ensureStyle($subtext, 'font-size:11px;line-height:16px;mso-line-height-rule:at-least;padding:0 4px 4px 4px');
+  });
 }
 
 function hardenAccentBandColumns($) {
@@ -1119,13 +1128,13 @@ function hardenAccentBandColumns($) {
     $section.find('.accent-band-copy.accent-band-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:middle;width:416px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
+        'display:inline-block;vertical-align:middle;width:374px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
       );
     });
     $section.find('.accent-band-cta.accent-band-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:middle;width:224px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
+        'display:inline-block;vertical-align:middle;width:202px;max-width:100%;font-size:15px;line-height:normal;text-align:right;box-sizing:border-box',
       );
     });
     $section.find('.accent-band-layout-cell').each((__, cell) => {
@@ -1141,15 +1150,19 @@ function hardenImageSplitColumns($) {
   $('.image-split-text-section').each((_, section) => {
     const $section = $(section);
     $section.find('.image-split-media.image-split-stack').each((__, block) => {
+      const $block = $(block);
+      const $cell = $block.closest('.image-split-layout-cell');
+      const copyFirst = $cell.children('.image-split-copy').length
+        && $cell.children().first().hasClass('image-split-copy');
       ensureStyle(
-        $(block),
-        'display:inline-block;vertical-align:top;width:320px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
+        $block,
+        `display:inline-block;vertical-align:top;width:312px;max-width:100%;font-size:15px;line-height:normal;${copyFirst ? 'padding:0 0 0 12px' : 'padding:0 12px 0 0'};box-sizing:border-box`,
       );
     });
     $section.find('.image-split-copy.image-split-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:middle;width:320px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
+        'display:inline-block;vertical-align:middle;width:328px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
       );
     });
     $section.find('.image-split-layout-cell').each((__, cell) => {
@@ -1266,7 +1279,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v33';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v34';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

@@ -812,6 +812,10 @@ h2.subhead-orange,
     max-width: 100% !important;
   }
 
+  .image-split-text-section .image-split-stack.image-split-media {
+    padding: 0 !important;
+  }
+
   .image-split-text-section .image-split-stack.image-split-copy {
     padding: 20px !important;
   }
