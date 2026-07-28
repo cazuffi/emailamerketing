@@ -563,7 +563,7 @@ function hardenThreeUpBenefits($) {
       ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
     });
     $section.find('.benefit-stack [data-container]').each((__, el) => {
-      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
     });
   });
 }
@@ -987,6 +987,9 @@ function hardenEmailHtml(html) {
   hardenCtaTextLinks($);
   hardenCtaPrimaryCenter($);
   hardenStatsThreeColumns($);
+  hardenStatsFourColumns($);
+  hardenThreeUpProducts($);
+  hardenProactiveDynamicsContainers($);
   hardenHybridStackLineHeights($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
@@ -1013,7 +1016,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('three-up-benefits-layout')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1171,7 +1174,7 @@ function hardenAccentBandColumns($) {
       ensureStyle($(cell), 'padding:0;font-size:0;line-height:0');
     });
     $section.find('.accent-band-copy [data-container], .accent-band-cta [data-container]').each((__, el) => {
-      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none');
     });
   });
 }
@@ -1199,7 +1202,7 @@ function hardenImageSplitColumns($) {
       ensureStyle($(cell), 'padding:0;font-size:0;line-height:0');
     });
     $section.find('.image-split-stack [data-container], .image-split-copy [data-container], .image-split-media [data-container]').each((__, el) => {
-      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none');
     });
   });
 }
@@ -1220,6 +1223,108 @@ function hardenStatsThreeColumns($) {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
     });
   });
+}
+
+function hardenStatsFourColumns($) {
+  $('.stats-four-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.stat-stack').each((__, block) => {
+      ensureStyle(
+        $(block),
+        'font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
+      );
+    });
+    $section.find('.stats-four-layout-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
+    });
+    $section.find('.stat-stack [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenThreeUpProducts($) {
+  $('.three-up-products-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.product-stack').each((__, block) => {
+      ensureStyle(
+        $(block),
+        'font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
+      );
+    });
+    $section.find('.three-up-products-layout-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
+    });
+    $section.find('.product-stack [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('[data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+  });
+}
+
+const NEUTRAL_CONTAINER_STYLE = 'display:block;width:100%;max-width:100%;flex:none';
+const CENTERED_CONTAINER_STYLE = `${NEUTRAL_CONTAINER_STYLE};text-align:center;margin-left:auto;margin-right:auto`;
+
+function hardenProactiveDynamicsContainers($) {
+  const centeredSections = [
+    '.quote-centered-section',
+    '.social-links-section',
+    '.video-preview-section',
+  ];
+  for (const selector of centeredSections) {
+    $(selector).each((_, section) => {
+      const $section = $(section);
+      $section.find('.section-pad, .section-pad-tight').each((__, cell) => {
+        const $cell = $(cell);
+        $cell.attr('align', 'center');
+        ensureStyle($cell, 'text-align:center;width:100%');
+      });
+      $section.find('[data-container], [data-editorblocktype="Text"]').each((__, el) => {
+        const $el = $(el);
+        $el.attr('align', 'center');
+        ensureStyle($el, CENTERED_CONTAINER_STYLE);
+      });
+    });
+  }
+
+  const centeredColumnSelectors = [
+    '.icon-grid-four-section .icon-grid-cell [data-container]',
+    '.logo-strip-section .logo-strip-cell [data-container]',
+    '.pricing-two-up-section .pricing-tier [data-container]',
+    '.pricing-two-up-section .pricing-tier-featured [data-container]',
+    '.steps-horizontal-section .three-up-cell [data-container]',
+    '.two-up-cards-section .card-stack [data-container]',
+    '.download-resource-section .stack-column [data-container]',
+    '.cta-dual-section .cta-dual-column [data-container]',
+  ];
+  for (const selector of centeredColumnSelectors) {
+    $(selector).each((_, el) => {
+      ensureStyle($(el), CENTERED_CONTAINER_STYLE);
+    });
+  }
+
+  const neutralColumnSelectors = [
+    '.hero-split-section [data-container]',
+    '.team-profile-section [data-container]',
+    '.article-row-section [data-container]',
+    '.header-cta-section [data-container]',
+    '.case-study-mini-section [data-container]',
+    '.feature-left-section [data-container]',
+    '.feature-right-section [data-container]',
+    '.feature-left-text-section [data-container]',
+    '.feature-right-text-section [data-container]',
+    '.comparison-split-section [data-container]',
+    '.cta-band-grey [data-container]',
+  ];
+  for (const selector of neutralColumnSelectors) {
+    $(selector).each((_, el) => {
+      ensureStyle($(el), NEUTRAL_CONTAINER_STYLE);
+    });
+  }
 }
 
 function hardenCtaPrimaryCenter($) {
@@ -1309,7 +1414,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v37';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v38';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1336,6 +1441,9 @@ function sanitizeExportHtml(html) {
   hardenCtaTextLinks($);
   hardenCtaPrimaryCenter($);
   hardenStatsThreeColumns($);
+  hardenStatsFourColumns($);
+  hardenThreeUpProducts($);
+  hardenProactiveDynamicsContainers($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenHybridStackLineHeights($);

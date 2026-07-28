@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v37';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v38';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -1043,6 +1043,49 @@ assert.match(
   statsThreeExport,
   /u\s*\+\s*\.body \.stats-three-section \.stat-stack[\s\S]*?margin-left:\s*auto\s*!important/i,
   'Gmail mobile must center stacked stat columns',
+);
+
+const statsFourExport = buildEmailHtml({
+  title: 'Stats four audit',
+  modules: ['stats-four'],
+  annotate: false,
+});
+const $statsFour = cheerio.load(statsFourExport, { xml: false }, false);
+assert.strictEqual($statsFour('.stats-four-section').length, 1);
+assert.strictEqual($statsFour('.stat-stack').length, 4);
+assert.match($statsFour('.stat-stack').first().attr('style') || '', /text-align:center/i);
+assert.match(statsFourExport, /\.stats-four-section \.stat-stack[\s\S]*?width:148px!important/i);
+assert.match(statsFourExport, /<!--\[if mso\][\s\S]*?stat-stack/i);
+assert.match(
+  statsFourExport,
+  /u\s*\+\s*\.body \.stats-four-section \.stat-stack \[data-container="true"\][\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics flex containers inside four-up stat columns',
+);
+
+const threeUpProductsExport = buildEmailHtml({
+  title: 'Three up products audit',
+  modules: ['three-up-products'],
+  annotate: false,
+});
+const $threeUpProducts = cheerio.load(threeUpProductsExport, { xml: false }, false);
+assert.strictEqual($threeUpProducts('.three-up-products-section').length, 1);
+assert.strictEqual($threeUpProducts('.product-stack').length, 3);
+assert.match(threeUpProductsExport, /\.three-up-products-section \.product-stack[\s\S]*?width:197px!important/i);
+assert.match(
+  threeUpProductsExport,
+  /u\s*\+\s*\.body \.three-up-products-section \.product-stack \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics flex wrappers inside product columns',
+);
+
+const quoteCenteredExport = buildEmailHtml({
+  title: 'Quote centered audit',
+  modules: ['quote-centered'],
+  annotate: false,
+});
+assert.match(
+  quoteCenteredExport,
+  /u\s*\+\s*\.body \.quote-centered-section \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center quote-centered Dynamics containers',
 );
 
 const ctaTextLinkExport = buildEmailHtml({
