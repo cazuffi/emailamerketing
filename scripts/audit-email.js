@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v36';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v37';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -238,6 +238,11 @@ assert.match(
   imageSplitExport,
   /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail mobile must center stacked image split copy',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-stack \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center Dynamics containers in image split stacks',
 );
 
 const heroFullInsetFields = extractFields('hero-full');
@@ -1029,6 +1034,16 @@ assert.match(
   /u\s*\+\s*\.body[\s\S]*?\.stats-three-section[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail must center stats numbers and labels',
 );
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body \.stats-three-section \.stat-stack \[data-container="true"\][\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics flex containers inside stat columns',
+);
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body \.stats-three-section \.stat-stack[\s\S]*?margin-left:\s*auto\s*!important/i,
+  'Gmail mobile must center stacked stat columns',
+);
 
 const ctaTextLinkExport = buildEmailHtml({
   title: 'CTA text link audit',
@@ -1043,6 +1058,11 @@ assert.match(
   ctaTextLinkExport,
   /u\s*\+\s*\.body[\s\S]*?\.cta-text-link-section[\s\S]*?\.text-link-cta[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail must center text link CTAs',
+);
+assert.match(
+  ctaTextLinkExport,
+  /u\s*\+\s*\.body \.cta-text-link-section \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics flex wrapper around text link CTA',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);

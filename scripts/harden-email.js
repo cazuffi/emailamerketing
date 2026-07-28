@@ -849,6 +849,11 @@ function hardenCtaTextLinks($) {
       $el.attr('align', 'center');
       ensureStyle($el, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
     });
+    $section.find('[data-container], [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
     $section.find('.text-link-cta').each((__, link) => {
       const $link = $(link);
       $link.attr('align', 'center');
@@ -1212,7 +1217,7 @@ function hardenStatsThreeColumns($) {
       ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
     });
     $section.find('.stat-stack [data-container]').each((__, el) => {
-      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
     });
   });
 }
@@ -1304,7 +1309,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v36';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v37';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

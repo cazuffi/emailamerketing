@@ -207,7 +207,12 @@ function isStructuralSelector(selector) {
   const part = selector.trim();
   if (!part) return false;
   if (!part.includes('.') && !part.includes('#')) return true;
-  if (/\[data-(layout|container|editorblocktype|protected|ogsc|ogsb)/i.test(part)) return true;
+  if (/\[data-(layout|container|editorblocktype|protected|ogsc|ogsb)/i.test(part)) {
+    // Keep bare structural hooks, but prune module-scoped data-container rules
+    // when their section classes are not in the active export.
+    if (extractSelectorClasses(part).length > 0) return false;
+    return true;
+  }
   if (/a\[x-apple-data-detectors\]/i.test(part)) return true;
   if (/u\s*\+\s*\.body/i.test(part)) {
     const rest = part.replace(/^u\s*\+\s*\.body\s+/i, '');
