@@ -858,6 +858,9 @@ h2.subhead-orange,
     margin-right: auto !important;
   }
 
+  .cta-text-link-section .cta-text-link-cell,.cta-text-link-section center,.cta-text-link-section .cta-text-link-wrap,.cta-text-link-section [data-editorblocktype="Text"],.cta-text-link-cell > div,.headline-block-center-section .headline-block-center-cell,.headline-block-center-section center,.headline-block-center-inner td,.headline-block-center-cell > div,.headline-block-center-inner td > div,.headline-block-center-section [data-editorblocktype="Text"],.headline-block-center-section h2,.headline-block-center-section h3,.headline-block-center-section p,.headline-block-center-section .headline-lead{display:block!important;width:100%!important;max-width:100%!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
+  .cta-text-link-section .text-link-cta{display:inline-block!important}
+
   .image-split-text-section .image-split-stack {
     display: block !important;
     width: 100% !important;

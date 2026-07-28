@@ -844,10 +844,13 @@ function hardenHeadlineBlockCenter($) {
 function hardenCtaTextLinks($) {
   $('.cta-text-link-section').each((_, section) => {
     const $section = $(section);
-    $section.find('.cta-text-link-cell, .cta-text-link-wrap').each((__, el) => {
+    $section.find('.cta-text-link-cell, center, .cta-text-link-wrap').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'center');
       ensureStyle($el, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
     });
     $section.find('[data-container], [data-editorblocktype="Text"]').each((__, el) => {
       const $el = $(el);
@@ -1414,7 +1417,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v40';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v41';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

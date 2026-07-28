@@ -14,8 +14,8 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v40';
-const { GMAIL_CLIP_BYTES } = require('./prune-css');
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v41';
+const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
   title: 'Audit fixture',
@@ -499,6 +499,36 @@ assert.ok(
 assert.ok(
   exportBytes < GMAIL_CLIP_BYTES,
   `Audit fixture export must stay under Gmail clip limit (${exportBytes} >= ${GMAIL_CLIP_BYTES})`,
+);
+
+const pcbClipModules = [
+  'preheader-bar',
+  'view-in-browser-bar',
+  'header-standard',
+  'intro-centered',
+  'hero-full',
+  'body-text',
+  'headline-h2-center',
+  'stats-three',
+  'accent-band-cta',
+  'headline-h2',
+  'cta-primary-center',
+  'spacer-sm',
+  'feature-right-text',
+  'spacer-sm',
+  'headline-h2-center',
+  'cta-text-link',
+  'footer',
+];
+const pcbClipExport = buildEmailHtml({
+  title: 'PCB clip audit',
+  modules: pcbClipModules,
+  annotate: false,
+});
+const pcbClipSimulatedBytes = Buffer.byteLength(simulateDynamicsPaste(pcbClipExport), 'utf8');
+assert.ok(
+  pcbClipSimulatedBytes < GMAIL_CLIP_SAFE_BYTES,
+  `PCB campaign must stay under Gmail safe clip threshold after Dynamics paste (${pcbClipSimulatedBytes} >= ${GMAIL_CLIP_SAFE_BYTES})`,
 );
 
 const fullCssExport = buildEmailHtml({ ...options, fullCss: true });
@@ -1096,6 +1126,7 @@ const ctaTextLinkExport = buildEmailHtml({
 });
 const $ctaTextLink = cheerio.load(ctaTextLinkExport, { xml: false }, false);
 assert.strictEqual($ctaTextLink('.cta-text-link-section').length, 1);
+assert.strictEqual($ctaTextLink('.cta-text-link-section center').length, 1);
 assert.strictEqual($ctaTextLink('.text-link-cta').attr('align'), 'center');
 assert.match($ctaTextLink('.text-link-cta').attr('style') || '', /text-align:center/i);
 assert.match(
@@ -1107,6 +1138,16 @@ assert.match(
   ctaTextLinkExport,
   /u\s*\+\s*\.body \.cta-text-link-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail must center Dynamics send-time flex wrapper around text link CTA',
+);
+assert.match(
+  ctaTextLinkExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-text-link-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center text link CTA flex shells without u+.body',
+);
+assert.match(
+  headlineH2CenterExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.headline-block-center-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center headline block flex shells without u+.body',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);

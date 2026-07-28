@@ -360,11 +360,14 @@ img.header-logo-img--compact {
   .outer { width: 100% !important; max-width: 100% !important; }
   /* Dynamics wraps every block in a fixed-pixel-width flex container on send
      (e.g. width:592px; flex:0 0 592px). Force those wrappers fluid on mobile so
-     they can't overflow the viewport. */
-  [data-container="true"] {
+     they can't overflow the viewport. Also target send-time anonymous flex divs. */
+  [data-container="true"],
+  .cta-text-link-cell > div {
     width: 100% !important;
     max-width: 100% !important;
+    flex: none !important;
     flex-basis: auto !important;
+    display: block !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }

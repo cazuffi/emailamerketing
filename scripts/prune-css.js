@@ -101,9 +101,6 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'two-up-text-table',
   'view-in-browser-center-table',
   'view-in-browser-text-cell',
-  'headline-block-center-section',
-  'headline-block-center-cell',
-  'headline-block-center-inner',
   'section-pad',
   'section-pad-accent',
   'section-pad-compact',
@@ -352,4 +349,6 @@ module.exports = {
   extractClassTokens,
   minifyCss,
   GMAIL_CLIP_BYTES: 102400,
+  GMAIL_CLIP_HEADROOM: 2048,
+  GMAIL_CLIP_SAFE_BYTES: 102400 - 2048,
 };
