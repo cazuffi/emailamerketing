@@ -556,7 +556,7 @@ function hardenThreeUpBenefits($) {
     $section.find('.benefit-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
+        'font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
       );
     });
     $section.find('.three-up-benefits-layout-cell').each((__, cell) => {
@@ -1088,13 +1088,17 @@ function hardenTwoUpTextColumns($) {
 
 function hardenHybridStackLineHeights($) {
   $('.stats-three-section .stat-number').each((_, el) => {
-    ensureStyle($(el), 'line-height:34px;mso-line-height-rule:at-least');
+    ensureStyle($(el), 'line-height:34px;mso-line-height-rule:at-least;text-align:center');
+    $(el).attr('align', 'center');
   });
   $('.stats-three-section .stat-label').each((_, el) => {
-    ensureStyle($(el), 'line-height:16px;mso-line-height-rule:at-least');
+    ensureStyle($(el), 'line-height:16px;mso-line-height-rule:at-least;text-align:center');
+    $(el).attr('align', 'center');
   });
   $('.stats-three-section .stat-stack [data-editorblocktype="Text"]').each((_, el) => {
-    ensureStyle($(el), 'font-size:15px;line-height:normal;mso-line-height-rule:at-least');
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'font-size:15px;line-height:normal;mso-line-height-rule:at-least;text-align:center');
   });
   $('.accent-band .accent-band-copy h1').each((_, el) => {
     ensureStyle($(el), 'line-height:30px;mso-line-height-rule:at-least');
@@ -1180,7 +1184,7 @@ function hardenStatsThreeColumns($) {
     $section.find('.stat-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
+        'font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
       );
     });
     $section.find('.stats-three-layout-cell').each((__, cell) => {
@@ -1279,7 +1283,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v34';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v35';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

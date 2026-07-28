@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v34';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v35';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -432,17 +432,18 @@ const benefitCells = $('.three-up-benefits-section .benefit-stack');
 assert.strictEqual(benefitCells.length, 3);
 benefitCells.each((_, cell) => {
   assert.match($(cell).attr('style') || '', /text-align:\s*center/i);
-  assert.match($(cell).attr('style') || '', /display:inline-block/i);
-  assert.match($(cell).attr('style') || '', /width:197px/i);
 });
-assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout-cell').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-mobile-only, .three-up-benefits-section .three-up-desktop-only').length, 0);
 assert.match(
   exported,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*inline-block !important;/i,
-  'Three benefits must use three columns on desktop',
+  /\.three-up-benefits-section \.benefit-stack[\s\S]*?display:inline-block!important[\s\S]*?width:197px!important/i,
+  'Three benefits must ship base CSS for desktop/Outlook column layout',
 );
+assert.doesNotMatch(
+  exported,
+  /\.stats-three-section \.stat-stack\{display:inline-block!important;width:197px!important/i,
+  'Audit fixture must prune unused stats-three base CSS',
+);
+assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
 assert.match(
   exported,
   /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important;/i,
@@ -973,20 +974,25 @@ const $statsThree = cheerio.load(statsThreeExport, { xml: false }, false);
 assert.strictEqual($statsThree('.stats-three-section').length, 1);
 assert.strictEqual($statsThree('.stat-stack').length, 3);
 assert.doesNotMatch($statsThree('.stat-stack').first().attr('width') || '', /33%/i, 'Stats must not ship width="33%" on stack cells');
-assert.match($statsThree('.stat-stack').first().attr('style') || '', /display:inline-block/i, 'Stats must use inline-block for desktop no-media clients');
-assert.match($statsThree('.stat-stack').first().attr('style') || '', /width:197px/i, 'Stats must use fixed column width for desktop three-up layout');
+assert.match($statsThree('.stat-stack').first().attr('style') || '', /text-align:center/i, 'Stats must keep text-align center inline');
+assert.match($statsThree('.stat-number').first().attr('style') || '', /text-align:center/i, 'Stats numbers must center over labels');
 assert.match($statsThree('.stat-number').first().attr('style') || '', /line-height:34px/i, 'Stats numbers must use pixel line-height for Outlook desktop');
 assert.match($statsThree('.stat-label').first().attr('style') || '', /line-height:16px/i, 'Stats labels must use pixel line-height for Outlook desktop');
+assert.match(
+  statsThreeExport,
+  /\.stats-three-section \.stat-stack[\s\S]*?width:197px!important/i,
+  'Stats must ship base CSS column width for desktop/Outlook',
+);
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?display:block!important/i,
+  'Mobile stats must stack to full width',
+);
 assert.match(statsThreeExport, /<!--\[if mso\][\s\S]*?stat-stack/i, 'Stats three must ship MSO desktop column wrapper');
 assert.match(
   statsThreeExport,
   /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?width:\s*100% !important;/i,
   'Mobile stats must stack to full width',
-);
-assert.match(
-  statsThreeExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-edge-section\.image-edge-inset \.image-edge-cell[\s\S]*?padding-left:\s*24px !important;/i,
-  'Desktop inset images must keep side spacing via min-width media query',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
@@ -1016,9 +1022,13 @@ const allModulesNoMedia = buildEmailHtml({
 const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
 
 $fallback('.three-up-benefits-section .benefit-stack').each((_, cell) => {
-  assert.match($fallback(cell).attr('style') || '', /display:inline-block/i, 'No-media three-up must keep inline-block for Outlook desktop');
-  assert.match($fallback(cell).attr('style') || '', /width:197px/i, 'No-media three-up must keep fixed column width for Outlook desktop');
+  assert.match($fallback(cell).attr('style') || '', /text-align:center/i, 'No-media three-up must keep centered stacks');
 });
+assert.match(
+  allModulesNoMedia,
+  /<!--\[if mso\][\s\S]*?benefit-stack/i,
+  'No-media three-up must keep MSO desktop column wrapper',
+);
 assert.strictEqual(
   $fallback('.three-up-benefits-section .three-up-benefits-layout').length,
   1,

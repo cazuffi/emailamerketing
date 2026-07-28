@@ -319,6 +319,10 @@ table.outer,
   text-align: center !important;
 }
 
+.three-up-benefits-section .benefit-stack,.three-up-benefits-section .three-up-stack-cell{display:inline-block!important;width:197px!important;max-width:100%!important;text-align:center!important;box-sizing:border-box!important}
+.stats-three-section .stat-stack{display:inline-block!important;width:197px!important;max-width:100%!important;text-align:center!important;box-sizing:border-box!important}
+.stats-three-section .stat-number,.stats-three-section .stat-label,.stats-three-section .stat-stack [data-editorblocktype="Text"]{text-align:center!important}
+
 .section-heading-section .section-heading-cell,
 .section-heading-section center,
 .section-heading-section .section-heading-center,
@@ -514,12 +518,6 @@ table.outer,
     text-align: right !important;
   }
 
-  .stats-three-section .stat-stack {
-    display: inline-block !important;
-    width: 33.33% !important;
-    max-width: 197px !important;
-  }
-
   .image-edge-section.image-edge-inset .image-edge-cell {
     padding-left: 24px !important;
     padding-right: 24px !important;
@@ -687,22 +685,6 @@ h2.subhead-orange,
 
   .header-standard-section .header-tagline-column [data-container="true"] {
     text-align: right !important;
-  }
-
-  .three-up-benefits-section .benefit-stack,
-  .three-up-benefits-section .three-up-stack-cell {
-    display: inline-block !important;
-    width: 33.33% !important;
-    max-width: 197px !important;
-    vertical-align: top !important;
-    padding: 0 8px !important;
-  }
-
-  .stats-three-section .stat-stack {
-    display: inline-block !important;
-    width: 33.33% !important;
-    max-width: 197px !important;
-    vertical-align: top !important;
   }
 }
 
