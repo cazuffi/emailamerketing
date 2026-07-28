@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v32';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v33';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -214,7 +214,7 @@ const imageSplitExport = buildEmailHtml({
 const $imageSplit = cheerio.load(imageSplitExport, { xml: false }, false);
 assert.strictEqual($imageSplit('.image-split-copy').length, 1);
 assert.match($imageSplit('.image-split-copy').attr('style') || '', /display:inline-block/i, 'Image split copy must use inline-block for desktop no-media clients');
-assert.match($imageSplit('.image-split-copy').attr('style') || '', /max-width:320px/i, 'Image split copy must cap column width for side-by-side desktop layout');
+assert.match($imageSplit('.image-split-copy').attr('style') || '', /width:320px/i, 'Image split copy must use fixed column width for side-by-side desktop layout');
 assert.doesNotMatch($imageSplit('.image-split-copy').attr('width') || '', /50%/i, 'Image split copy must not ship width="50%"');
 assert.match(
   imageSplitExport,
@@ -942,7 +942,7 @@ const $accentBandCta = cheerio.load(accentBandCtaExport, { xml: false }, false);
 assert.strictEqual($accentBandCta('.accent-band-copy').length, 1);
 assert.strictEqual($accentBandCta('.accent-band-cta').length, 1);
 assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /display:inline-block/i, 'Accent band copy must use inline-block for desktop no-media clients');
-assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /max-width:416px/i, 'Accent band copy must cap column width for side-by-side desktop layout');
+assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /width:416px/i, 'Accent band copy must use fixed column width for side-by-side desktop layout');
 assert.doesNotMatch($accentBandCta('.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must not ship width="65%"');
 assert.doesNotMatch($accentBandCta('.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must not ship width="35%"');
 assert.match(
@@ -958,7 +958,7 @@ assert.match(
 assert.match(accentBandCtaExport, /<!--\[if mso\][\s\S]*?accent-band-copy/i, 'Accent band must ship MSO desktop column wrapper');
 const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
 const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
-assert.match($accentBandCtaPasted('.accent-band-copy').attr('style') || '', /max-width:416px/i, 'Dynamics paste must keep accent band copy desktop max-width inline');
+assert.match($accentBandCtaPasted('.accent-band-copy').attr('style') || '', /width:416px/i, 'Dynamics paste must keep accent band copy desktop width inline');
 
 const statsThreeExport = buildEmailHtml({
   title: 'Stats three audit',
@@ -971,6 +971,8 @@ assert.strictEqual($statsThree('.stat-stack').length, 3);
 assert.doesNotMatch($statsThree('.stat-stack').first().attr('width') || '', /33%/i, 'Stats must not ship width="33%" on stack cells');
 assert.match($statsThree('.stat-stack').first().attr('style') || '', /display:inline-block/i, 'Stats must use inline-block for desktop no-media clients');
 assert.match($statsThree('.stat-stack').first().attr('style') || '', /width:197px/i, 'Stats must use fixed column width for desktop three-up layout');
+assert.match($statsThree('.stat-number').first().attr('style') || '', /line-height:34px/i, 'Stats numbers must use pixel line-height for Outlook desktop');
+assert.match($statsThree('.stat-label').first().attr('style') || '', /line-height:16px/i, 'Stats labels must use pixel line-height for Outlook desktop');
 assert.match(statsThreeExport, /<!--\[if mso\][\s\S]*?stat-stack/i, 'Stats three must ship MSO desktop column wrapper');
 assert.match(
   statsThreeExport,

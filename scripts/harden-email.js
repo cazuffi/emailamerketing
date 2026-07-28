@@ -556,11 +556,11 @@ function hardenThreeUpBenefits($) {
     $section.find('.benefit-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:1.4;text-align:center;box-sizing:border-box;mso-line-height-rule:exactly',
+        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
       );
     });
     $section.find('.three-up-benefits-layout-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center;mso-line-height-rule:exactly');
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
     });
     $section.find('.benefit-stack [data-container]').each((__, el) => {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
@@ -961,6 +961,7 @@ function hardenEmailHtml(html) {
   hardenAccentBandColumns($);
   hardenCtaPrimaryCenter($);
   hardenStatsThreeColumns($);
+  hardenHybridStackLineHeights($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -1085,23 +1086,50 @@ function hardenTwoUpTextColumns($) {
   });
 }
 
+function hardenHybridStackLineHeights($) {
+  $('.stats-three-section .stat-number').each((_, el) => {
+    ensureStyle($(el), 'line-height:34px;mso-line-height-rule:at-least');
+  });
+  $('.stats-three-section .stat-label').each((_, el) => {
+    ensureStyle($(el), 'line-height:16px;mso-line-height-rule:at-least');
+  });
+  $('.stats-three-section .stat-stack [data-editorblocktype="Text"]').each((_, el) => {
+    ensureStyle($(el), 'font-size:15px;line-height:normal;mso-line-height-rule:at-least');
+  });
+  $('.accent-band .accent-band-copy h1').each((_, el) => {
+    ensureStyle($(el), 'line-height:30px;mso-line-height-rule:at-least');
+  });
+  $('.accent-band .accent-band-copy p').each((_, el) => {
+    ensureStyle($(el), 'line-height:24px;mso-line-height-rule:at-least');
+  });
+  $('.image-split-text-section .image-split-copy h2').each((_, el) => {
+    ensureStyle($(el), 'line-height:27px;mso-line-height-rule:at-least');
+  });
+  $('.image-split-text-section .image-split-copy p').each((_, el) => {
+    ensureStyle($(el), 'line-height:24px;mso-line-height-rule:at-least');
+  });
+  $('.image-split-text-section .image-split-copy [data-editorblocktype="Text"]').each((_, el) => {
+    ensureStyle($(el), 'font-size:15px;line-height:normal;mso-line-height-rule:at-least');
+  });
+}
+
 function hardenAccentBandColumns($) {
   $('.accent-band').each((_, section) => {
     const $section = $(section);
     $section.find('.accent-band-copy.accent-band-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:middle;width:100%;max-width:416px;font-size:15px;line-height:1.6;mso-line-height-rule:exactly;box-sizing:border-box',
+        'display:inline-block;vertical-align:middle;width:416px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
       );
     });
     $section.find('.accent-band-cta.accent-band-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:middle;width:100%;max-width:224px;font-size:15px;line-height:1.6;mso-line-height-rule:exactly;box-sizing:border-box',
+        'display:inline-block;vertical-align:middle;width:224px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
       );
     });
     $section.find('.accent-band-layout-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;mso-line-height-rule:exactly');
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0');
     });
     $section.find('.accent-band-copy [data-container], .accent-band-cta [data-container]').each((__, el) => {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
@@ -1115,17 +1143,17 @@ function hardenImageSplitColumns($) {
     $section.find('.image-split-media.image-split-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:top;width:100%;max-width:320px;font-size:15px;line-height:normal;box-sizing:border-box',
+        'display:inline-block;vertical-align:top;width:320px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
       );
     });
     $section.find('.image-split-copy.image-split-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:middle;width:100%;max-width:320px;font-size:15px;line-height:1.6;box-sizing:border-box',
+        'display:inline-block;vertical-align:middle;width:320px;max-width:100%;font-size:15px;line-height:normal;box-sizing:border-box',
       );
     });
     $section.find('.image-split-layout-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;mso-line-height-rule:exactly');
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0');
     });
     $section.find('.image-split-stack [data-container], .image-split-copy [data-container], .image-split-media [data-container]').each((__, el) => {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
@@ -1139,11 +1167,11 @@ function hardenStatsThreeColumns($) {
     $section.find('.stat-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:1.4;text-align:center;box-sizing:border-box;mso-line-height-rule:exactly',
+        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
       );
     });
     $section.find('.stats-three-layout-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center;mso-line-height-rule:exactly');
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
     });
     $section.find('.stat-stack [data-container]').each((__, el) => {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
@@ -1238,7 +1266,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v32';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v33';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1266,6 +1294,7 @@ function sanitizeExportHtml(html) {
   hardenStatsThreeColumns($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
+  hardenHybridStackLineHeights($);
   hardenArticleStackDividers($);
   hardenSectionGaps($);
   hardenBodyTextSections($);
