@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v35';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v36';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -229,6 +229,16 @@ assert.match(
   'Mobile image split stacks must expand to full width',
 );
 assert.match(imageSplitExport, /<!--\[if mso\][\s\S]*?image-split-stack/i, 'Image split must ship MSO desktop column wrapper');
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-stack\.image-split-media[\s\S]*?display:inline-block!important/i,
+  'Gmail desktop must keep image split side-by-side via u+.body min-width query',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center stacked image split copy',
+);
 
 const heroFullInsetFields = extractFields('hero-full');
 assert(
@@ -446,6 +456,21 @@ assert.doesNotMatch(
 assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
 assert.match(
   exported,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\+\.body \.three-up-benefits-section \.benefit-stack[\s\S]*?display:inline-block!important/i,
+  'Gmail desktop must keep three-up benefits side-by-side via u+.body min-width query',
+);
+assert.match(
+  exported,
+  /u\s*\+\s*\.body[\s\S]*?\.footer-legal[\s\S]*?width\s*:\s*100%\s*!important/i,
+  'Gmail must keep footer legal full width',
+);
+assert.match(
+  exported,
+  /u\s*\+\s*\.body[\s\S]*?\.three-up-benefits-section[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center three-up benefit copy',
+);
+assert.match(
+  exported,
   /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important;/i,
   'Three benefits must stack on mobile',
 );
@@ -604,12 +629,12 @@ assert.strictEqual(
   'Intro headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
 );
 assert.match(
-  exported,
+  buildEmailHtml({ title: 'intro headline audit', modules: ['intro-headline'], annotate: false }),
   /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
   'Intro headline must ship left-aligned for Outlook',
 );
 assert.match(
-  exported,
+  buildEmailHtml({ title: 'headline h2 audit', modules: ['headline-h2'], annotate: false }),
   /\.headline-block-section h2[\s\S]*text-align:\s*left !important/i,
   'Headline H2 block must ship left-aligned for Outlook',
 );
@@ -665,7 +690,7 @@ assert.strictEqual($headlineH2CenterPreview('.headline-block-center-cell').attr(
 assert.strictEqual($headlineH2CenterPreview('h2').first().attr('align'), 'center');
 
 assert.match(
-  exported,
+  buildEmailHtml({ title: 'feature left audit', modules: ['feature-left-text'], annotate: false }),
   /\.feature-stack-text p[\s\S]*text-align:\s*left !important/i,
   'Feature module copy must ship left-aligned for Outlook',
 );
@@ -993,6 +1018,31 @@ assert.match(
   statsThreeExport,
   /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?width:\s*100% !important;/i,
   'Mobile stats must stack to full width',
+);
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\+\.body \.stats-three-section \.stat-stack[\s\S]*?display:inline-block!important/i,
+  'Gmail desktop must keep stats side-by-side via u+.body min-width query',
+);
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body[\s\S]*?\.stats-three-section[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center stats numbers and labels',
+);
+
+const ctaTextLinkExport = buildEmailHtml({
+  title: 'CTA text link audit',
+  modules: ['cta-text-link'],
+  annotate: false,
+});
+const $ctaTextLink = cheerio.load(ctaTextLinkExport, { xml: false }, false);
+assert.strictEqual($ctaTextLink('.cta-text-link-section').length, 1);
+assert.strictEqual($ctaTextLink('.text-link-cta').attr('align'), 'center');
+assert.match($ctaTextLink('.text-link-cta').attr('style') || '', /text-align:center/i);
+assert.match(
+  ctaTextLinkExport,
+  /u\s*\+\s*\.body[\s\S]*?\.cta-text-link-section[\s\S]*?\.text-link-cta[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center text link CTAs',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);

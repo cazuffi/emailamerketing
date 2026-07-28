@@ -297,19 +297,7 @@ img.header-logo-img--compact {
   }
 }
 
-/* Three benefits: one row on desktop, stacked on mobile (no duplicate markup) */
-.three-up-benefits-section .three-up-benefits-layout {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-.three-up-benefits-section .benefit-stack,
-.three-up-benefits-section .three-up-stack-cell {
-  box-sizing: border-box !important;
-  text-align: center !important;
-  vertical-align: top !important;
-}
+/* Three benefits layout lives in d365-send-compat.css */
 
 .header-standard-section .header-logo-table,
 .header-standard-section .header-logo-safe {

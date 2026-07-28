@@ -306,20 +306,13 @@ table.outer,
   margin-right: auto !important;
 }
 
-.three-up-benefits-section .benefit-stack,
-.three-up-benefits-section .three-up-stack-cell {
-  box-sizing: border-box !important;
-  text-align: center !important;
-  vertical-align: top !important;
-}
-
+.three-up-benefits-section .benefit-stack,.three-up-benefits-section .three-up-stack-cell{display:inline-block!important;width:197px!important;max-width:100%!important;text-align:center!important;box-sizing:border-box!important}
 .three-up-benefits-section [data-editorblocktype="Text"],
 .three-up-benefits-section [data-editorblocktype="Text"] h3,
 .three-up-benefits-section [data-editorblocktype="Text"] p {
   text-align: center !important;
 }
 
-.three-up-benefits-section .benefit-stack,.three-up-benefits-section .three-up-stack-cell{display:inline-block!important;width:197px!important;max-width:100%!important;text-align:center!important;box-sizing:border-box!important}
 .stats-three-section .stat-stack{display:inline-block!important;width:197px!important;max-width:100%!important;text-align:center!important;box-sizing:border-box!important}
 .stats-three-section .stat-number,.stats-three-section .stat-label,.stats-three-section .stat-stack [data-editorblocktype="Text"]{text-align:center!important}
 
@@ -849,8 +842,7 @@ h2.subhead-orange,
   }
 }
 
-u + .body .orange-footer [data-container="true"],
-u + .body .footer-legal [data-container="true"] {
+u + .body .orange-footer [data-container="true"] {
   width: auto !important;
   max-width: 100% !important;
   min-width: 0 !important;
@@ -859,6 +851,17 @@ u + .body .footer-legal [data-container="true"] {
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+u + .body .footer-legal [data-container="true"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+u + .body .footer-legal,u + .body .footer-legal table.outer,u + .body .footer-legal .footer-legal-center,u + .body .footer-legal .footer-legal-text-table,u + .body .footer-legal td{width:100%!important;max-width:640px!important;display:block!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
 
 u + .body .footer-band-text-table,
 u + .body .footer-legal-text-table,
@@ -1013,6 +1016,18 @@ u + .body .headline-block-center-section [data-container="true"] {
 
 u + .body .image-split-text-section .image-split-stack {
   box-sizing: border-box !important;
+}
+
+u + .body .stats-three-section .stat-number,u + .body .stats-three-section .stat-label,u + .body .stats-three-section .stat-stack [data-editorblocktype="Text"],u + .body .three-up-benefits-section .benefit-stack [data-editorblocktype="Text"],u + .body .three-up-benefits-section .benefit-stack h3,u + .body .three-up-benefits-section .benefit-stack p,u + .body .cta-text-link-section .cta-text-link-cell,u + .body .cta-text-link-section .cta-text-link-wrap,u + .body .cta-text-link-section p,u + .body .cta-text-link-section .text-link-cta{text-align:center!important}
+u + .body .cta-text-link-section .text-link-cta{display:inline-block!important}
+@media only screen and (max-width:640px){u+.body .image-split-text-section .image-split-copy,u+.body .image-split-text-section .image-split-copy [data-editorblocktype="Text"],u+.body .image-split-text-section .image-split-copy h2,u+.body .image-split-text-section .image-split-copy p{text-align:center!important}}
+
+@media only screen and (min-width: 641px) {
+  u+.body .stats-three-section .stat-stack,u+.body .three-up-benefits-section .benefit-stack,u+.body .three-up-benefits-section .three-up-stack-cell{display:inline-block!important;width:197px!important;max-width:100%!important;text-align:center!important;vertical-align:top!important}
+  u+.body .image-split-text-section .image-split-stack.image-split-media{display:inline-block!important;width:312px!important;max-width:100%!important;vertical-align:top!important}
+  u+.body .image-split-text-section .image-split-stack.image-split-copy{display:inline-block!important;width:328px!important;max-width:100%!important;vertical-align:middle!important;text-align:left!important}
+  u+.body .accent-band .accent-band-stack.accent-band-copy{display:inline-block!important;width:374px!important;max-width:100%!important}
+  u+.body .accent-band .accent-band-stack.accent-band-cta{display:inline-block!important;width:202px!important;max-width:100%!important;text-align:right!important}
 }
 
 u + .body .image-split-text-section [data-container="true"] {

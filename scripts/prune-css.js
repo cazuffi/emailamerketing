@@ -209,19 +209,32 @@ function isStructuralSelector(selector) {
   if (!part.includes('.') && !part.includes('#')) return true;
   if (/\[data-(layout|container|editorblocktype|protected|ogsc|ogsb)/i.test(part)) return true;
   if (/a\[x-apple-data-detectors\]/i.test(part)) return true;
-  if (/u\s*\+\s*\.body/i.test(part)) return true;
+  if (/u\s*\+\s*\.body/i.test(part)) {
+    const rest = part.replace(/^u\s*\+\s*\.body\s+/i, '');
+    if (extractSelectorClasses(rest).length === 0) return true;
+    return false;
+  }
   if (/\[style\*=/i.test(part)) return true;
   return false;
 }
 
+function selectorPartActive(part, activeClasses) {
+  if (isStructuralSelector(part)) return true;
+  const classes = extractSelectorClasses(part);
+  if (classes.length === 0) return true;
+  return classes.some((cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls));
+}
+
+function filterSelectorHeader(header, activeClasses) {
+  return header
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => part && selectorPartActive(part, activeClasses))
+    .join(',');
+}
+
 function selectorIsActive(selector, activeClasses) {
-  const parts = selector.split(',');
-  return parts.some((part) => {
-    if (isStructuralSelector(part)) return true;
-    const classes = extractSelectorClasses(part);
-    if (classes.length === 0) return true;
-    return classes.some((cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls));
-  });
+  return Boolean(filterSelectorHeader(selector, activeClasses));
 }
 
 function skipWhitespaceAndComments(css, index) {
@@ -283,8 +296,11 @@ function pruneStylesheet(css, activeClasses) {
       } else {
         kept.push(block.raw.trim());
       }
-    } else if (selectorIsActive(header, activeClasses)) {
-      kept.push(block.raw.trim());
+    } else {
+      const filteredHeader = filterSelectorHeader(header, activeClasses);
+      if (filteredHeader) {
+        kept.push(`${filteredHeader}{${block.inner}}`.trim());
+      }
     }
 
     i = skipWhitespaceAndComments(css, block.end);
