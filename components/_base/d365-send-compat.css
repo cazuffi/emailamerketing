@@ -511,6 +511,17 @@ table.outer,
     max-width: 50% !important;
     box-sizing: border-box !important;
   }
+
+  .accent-band .accent-band-copy {
+    width: 65% !important;
+    max-width: 65% !important;
+    padding-right: 16px !important;
+  }
+
+  .accent-band .accent-band-cta {
+    width: 35% !important;
+    max-width: 35% !important;
+  }
 }
 
 .image-split-text-section .image-split-copy [data-container="true"],
@@ -824,6 +835,29 @@ h2.subhead-orange,
     border-left: 0 !important;
     border-top: 1px solid #e8e8e8 !important;
     padding-top: 16px !important;
+  }
+
+  .accent-band .stack-column {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 0 !important;
+    text-align: center !important;
+  }
+
+  .accent-band .accent-band-cta { padding-top: 16px !important; }
+
+  .accent-band .compact-button-column .buttonWrapper,
+  .accent-band .compact-button-column .button-outline-table {
+    width: 100% !important;
+    max-width: 280px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .accent-band .compact-button-column a.button-outline-link {
+    width: 100% !important;
+    padding: 14px 20px !important;
   }
 }
 

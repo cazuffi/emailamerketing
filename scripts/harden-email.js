@@ -951,6 +951,7 @@ function hardenEmailHtml(html) {
   hardenIntroCentered($);
   hardenImageSplitColumns($);
   hardenTwoUpTextColumns($);
+  hardenAccentBandColumns($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -975,7 +976,7 @@ function hardenD365Containers($) {
     if ($table.hasClass('specs-table')) return;
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
-    if ($table.closest('.two-up-text-section, .image-split-text-section').length) return;
+    if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1069,6 +1070,29 @@ function hardenTwoUpTextColumns($) {
       ensureStyle($(cell), 'padding-bottom:28px');
     });
     $section.find('.two-up-text-col [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+    });
+  });
+}
+
+function hardenAccentBandColumns($) {
+  $('.accent-band').each((_, section) => {
+    const $section = $(section);
+    if (!$section.find('.tbContainer.multi').length) return;
+    $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.removeAttr('width');
+      removeStyleProp($cell, 'width');
+      removeStyleProp($cell, 'max-width');
+      ensureStyle($cell, 'box-sizing:border-box;vertical-align:middle');
+    });
+    $section.find('.accent-band-copy').each((__, cell) => {
+      ensureStyle($(cell), 'padding-right:16px');
+    });
+    $section.find('.accent-band-cta').each((__, cell) => {
+      ensureStyle($(cell), 'text-align:right');
+    });
+    $section.find('.accent-band-copy [data-container], .accent-band-cta [data-container]').each((__, el) => {
       ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
     });
   });
@@ -1179,7 +1203,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v28';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v29';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1202,6 +1226,7 @@ function sanitizeExportHtml(html) {
   hardenIntroCentered($);
   hardenImageSplitColumns($);
   hardenTwoUpTextColumns($);
+  hardenAccentBandColumns($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
   hardenArticleStackDividers($);

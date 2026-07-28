@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v28';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v29';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -928,6 +928,30 @@ assert.match(
 const twoUpPasted = simulateDynamicsPaste(twoUpTextExport);
 const $twoUpPasted = cheerio.load(twoUpPasted, { xml: false }, false);
 assert.doesNotMatch($twoUpPasted('.two-up-text-col-left').attr('width') || '', /50%/i, 'Dynamics paste must not reintroduce width="50%" on two-up columns');
+
+const accentBandCtaExport = buildEmailHtml({
+  title: 'Accent band CTA audit',
+  modules: ['accent-band-cta'],
+  annotate: false,
+});
+const $accentBandCta = cheerio.load(accentBandCtaExport, { xml: false }, false);
+assert.strictEqual($accentBandCta('.accent-band-copy').length, 1);
+assert.strictEqual($accentBandCta('.accent-band-cta').length, 1);
+assert.doesNotMatch($accentBandCta('.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must not ship width="65%"');
+assert.doesNotMatch($accentBandCta('.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must not ship width="35%"');
+assert.match(
+  accentBandCtaExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.accent-band \.accent-band-copy[\s\S]*?width:\s*65% !important;/i,
+  'Accent band copy must use desktop-only 65% width via CSS',
+);
+assert.match(
+  accentBandCtaExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.accent-band \.stack-column[\s\S]*?display:\s*block !important;/i,
+  'Mobile accent band must stack copy and CTA columns',
+);
+const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
+const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
+assert.doesNotMatch($accentBandCtaPasted('.accent-band-copy').attr('width') || '', /65%/i);
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern
