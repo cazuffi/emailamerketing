@@ -3,8 +3,8 @@
 const cheerio = require('cheerio');
 
 /**
- * Approximate what Dynamics 365 does when HTML is pasted into the
- * marketing content editor and saved (verified from a real send).
+ * Approximate what Dynamics 365 does on SEND (verified from real Gmail source).
+ * Send transform wraps editor blocks in anonymous flex divs — NOT data-container.
  */
 function simulateDynamicsPaste(html) {
   const $ = cheerio.load(html, { xml: false }, false);
@@ -23,13 +23,10 @@ function simulateDynamicsPaste(html) {
 
   $('[data-editorblocktype]').each((_, block) => {
     const $block = $(block);
-    if ($block.parent('[data-container="true"]').length) return;
+    if ($block.parent('[data-d365-flex-wrap="true"]').length) return;
 
     const width = inferContainerWidth($, $block);
-    const $wrapper = $('<div></div>').attr({
-      'data-container': 'true',
-      id: `container${Math.random().toString(16).slice(2)}`,
-    });
+    const $wrapper = $('<div></div>').attr('data-d365-flex-wrap', 'true');
     setStyleProp($wrapper, 'width', `${width}px`);
     setStyleProp($wrapper, 'flex', `0 0 ${width}px`);
     setStyleProp($wrapper, 'display', 'flex');
@@ -59,7 +56,18 @@ function simulateDynamicsLayoutShell($) {
 }
 
 function inferContainerWidth($, $block) {
-  const $stackCell = $block.closest('.three-up-stack-cell, .three-up-cell').first();
+  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack').first();
+  if ($stackCell.length) {
+    if ($stackCell.hasClass('stat-stack') || $stackCell.hasClass('benefit-stack') || $stackCell.hasClass('product-stack')) {
+      return 181;
+    }
+    if ($stackCell.hasClass('image-split-media')) return 272;
+    if ($stackCell.hasClass('image-split-copy')) return 280;
+    if ($stackCell.hasClass('accent-band-copy')) return 358;
+    if ($stackCell.hasClass('accent-band-cta')) return 202;
+  }
+
+  const $threeUpCell = $block.closest('.three-up-stack-cell, .three-up-cell').first();
   if ($stackCell.length) {
     const cellWidthAttr = String($stackCell.attr('width') || '');
     const pctMatch = cellWidthAttr.match(/(\d+(?:\.\d+)?)\s*%/);

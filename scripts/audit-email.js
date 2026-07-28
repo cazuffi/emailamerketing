@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v38';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v39';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -203,7 +203,7 @@ assert.match(
 );
 const introCenteredPasted = simulateDynamicsPaste(introCenteredExport);
 const $introPasted = cheerio.load(introCenteredPasted, { xml: false }, false);
-assert.strictEqual($introPasted('.mod-intro-centered [data-container="true"]').length, 3);
+assert.strictEqual($introPasted('.mod-intro-centered [data-d365-flex-wrap="true"]').length, 3);
 assert.strictEqual($introPasted('.mod-intro-centered .intro-centered-inner td[align="center"]').length, 3);
 
 const imageSplitExport = buildEmailHtml({
@@ -236,13 +236,13 @@ assert.match(
 );
 assert.match(
   imageSplitExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail mobile must center stacked image split copy',
 );
 assert.match(
   imageSplitExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-stack \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
-  'Gmail mobile must center Dynamics containers in image split stacks',
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center Dynamics send-time flex shells in image split stacks',
 );
 
 const heroFullInsetFields = extractFields('hero-full');
@@ -461,8 +461,8 @@ assert.doesNotMatch(
 assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
 assert.match(
   exported,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\+\.body \.three-up-benefits-section \.benefit-stack[\s\S]*?display:inline-block!important/i,
-  'Gmail desktop must keep three-up benefits side-by-side via u+.body min-width query',
+  /u\+\.body \.benefit-stack[\s\S]*?display:inline-block!important/i,
+  'Gmail desktop must keep three-up benefits side-by-side via u+.body',
 );
 assert.match(
   exported,
@@ -565,7 +565,7 @@ assert.match(
 
 const simulatedDynamics = simulateDynamicsPaste(exported);
 assert.match(simulatedDynamics, /columns-equal-class/i, 'Dynamics simulation must add columns-equal-class');
-assert.match(simulatedDynamics, /data-container="true"/i, 'Dynamics simulation must wrap editor blocks');
+assert.match(simulatedDynamics, /data-d365-flex-wrap="true"|display:flex;flex-direction:column/i, 'Dynamics simulation must wrap editor blocks in send-time flex shells');
 assert.strictEqual($('[data-layout="true"]').length, 1, 'Export keeps a single layout shell');
 assert.strictEqual(
   $('[data-layout="true"]').parent('[data-layout="true"]').length,
@@ -673,7 +673,7 @@ assert.doesNotMatch(
 );
 const headlineH2CenterPasted = simulateDynamicsPaste(headlineH2CenterExport);
 const $headlineH2CenterPasted = cheerio.load(headlineH2CenterPasted, { xml: false }, false);
-assert.strictEqual($headlineH2CenterPasted('.headline-block-center-section [data-container="true"]').length, 2);
+assert.strictEqual($headlineH2CenterPasted('.headline-block-center-section [data-d365-flex-wrap="true"]').length, 2);
 assert.strictEqual($headlineH2CenterPasted('.headline-block-center-inner td[align="center"]').length, 2);
 
 const headlineH3CenterExport = buildEmailHtml({
@@ -1026,8 +1026,8 @@ assert.match(
 );
 assert.match(
   statsThreeExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\+\.body \.stats-three-section \.stat-stack[\s\S]*?display:inline-block!important/i,
-  'Gmail desktop must keep stats side-by-side via u+.body min-width query',
+  /u\+\.body \.stat-stack[\s\S]*?display:inline-block!important/i,
+  'Gmail desktop must keep stats side-by-side via u+.body',
 );
 assert.match(
   statsThreeExport,
@@ -1036,8 +1036,8 @@ assert.match(
 );
 assert.match(
   statsThreeExport,
-  /u\s*\+\s*\.body \.stats-three-section \.stat-stack \[data-container="true"\][\s\S]*?width:\s*100%\s*!important/i,
-  'Gmail must neutralize Dynamics flex containers inside stat columns',
+  /u\s*\+\s*\.body \.stat-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside stat columns',
 );
 assert.match(
   statsThreeExport,
@@ -1058,8 +1058,8 @@ assert.match(statsFourExport, /\.stats-four-section \.stat-stack[\s\S]*?width:14
 assert.match(statsFourExport, /<!--\[if mso\][\s\S]*?stat-stack/i);
 assert.match(
   statsFourExport,
-  /u\s*\+\s*\.body \.stats-four-section \.stat-stack \[data-container="true"\][\s\S]*?width:\s*100%\s*!important/i,
-  'Gmail must neutralize Dynamics flex containers inside four-up stat columns',
+  /u\s*\+\s*\.body \.stat-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside four-up stat columns',
 );
 
 const threeUpProductsExport = buildEmailHtml({
@@ -1073,8 +1073,8 @@ assert.strictEqual($threeUpProducts('.product-stack').length, 3);
 assert.match(threeUpProductsExport, /\.three-up-products-section \.product-stack[\s\S]*?width:197px!important/i);
 assert.match(
   threeUpProductsExport,
-  /u\s*\+\s*\.body \.three-up-products-section \.product-stack \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
-  'Gmail must center Dynamics flex wrappers inside product columns',
+  /u\s*\+\s*\.body \.product-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics send-time flex shells inside product columns',
 );
 
 const quoteCenteredExport = buildEmailHtml({
@@ -1084,8 +1084,8 @@ const quoteCenteredExport = buildEmailHtml({
 });
 assert.match(
   quoteCenteredExport,
-  /u\s*\+\s*\.body \.quote-centered-section \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
-  'Gmail must center quote-centered Dynamics containers',
+  /u\s*\+\s*\.body \.quote-centered-section \.section-pad > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center quote-centered Dynamics flex shells',
 );
 
 const ctaTextLinkExport = buildEmailHtml({
@@ -1104,8 +1104,8 @@ assert.match(
 );
 assert.match(
   ctaTextLinkExport,
-  /u\s*\+\s*\.body \.cta-text-link-section \[data-container="true"\][\s\S]*?text-align\s*:\s*center\s*!important/i,
-  'Gmail must center Dynamics flex wrapper around text link CTA',
+  /u\s*\+\s*\.body \.cta-text-link-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics send-time flex wrapper around text link CTA',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);

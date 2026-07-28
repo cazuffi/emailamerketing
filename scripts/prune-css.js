@@ -227,6 +227,12 @@ function selectorPartActive(part, activeClasses) {
   if (isStructuralSelector(part)) return true;
   const classes = extractSelectorClasses(part);
   if (classes.length === 0) return true;
+  const sectionClasses = classes.filter((cls) => cls.endsWith('-section'));
+  if (sectionClasses.length > 0) {
+    return sectionClasses.some(
+      (cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls),
+    );
+  }
   return classes.some((cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls));
 }
 
