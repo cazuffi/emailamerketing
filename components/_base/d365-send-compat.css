@@ -108,7 +108,7 @@ table.outer,
 }
 
 /* Dynamics wraps every data-editorblocktype in a fixed-width flex div */
-[data-section="true"] [data-container="true"] {
+[data-section="true"]:not(.view-in-browser-section):not(.mod-intro-centered):not(.section-heading-section):not(.orange-footer):not(.footer-legal):not(.urgency-band) [data-container="true"] {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -197,13 +197,30 @@ table.outer,
 .orange-footer [data-container="true"],
 .footer-legal [data-container="true"],
 .footer-band-content [data-container="true"],
-.video-preview-section [data-container="true"] {
+.video-preview-section [data-container="true"],
+.view-in-browser-section [data-container="true"] {
   display: inline-block !important;
   width: auto !important;
   max-width: 100% !important;
+  min-width: 0 !important;
   flex: none !important;
+  flex-basis: auto !important;
   align-self: center !important;
   align-items: center !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.mod-intro-centered [data-container="true"],
+.section-heading-section [data-container="true"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: none !important;
+  flex-basis: auto !important;
+  align-self: center !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -433,6 +450,11 @@ table.outer,
 }
 
 /* ---- view in browser: white bar, centered orange link ---- */
+.view-in-browser-section[data-section="true"],
+.mod-intro-centered[data-section="true"] {
+  text-align: center !important;
+}
+
 .view-in-browser-section,
 .view-in-browser-section .outer,
 .view-in-browser-section .view-in-browser-cell {
@@ -440,32 +462,14 @@ table.outer,
 }
 
 .view-in-browser-section .view-in-browser-cell,
+.view-in-browser-section center,
+.view-in-browser-section .view-in-browser-center-table,
+.view-in-browser-section .view-in-browser-center-table td,
 .view-in-browser-section [data-editorblocktype="Text"],
 .view-in-browser-section .view-in-browser-text,
 .view-in-browser-section .view-in-browser-link {
   text-align: center !important;
   width: 100% !important;
-}
-
-.view-in-browser-section [data-container="true"],
-.view-in-browser-section center,
-.view-in-browser-section .view-in-browser-center-table,
-.view-in-browser-section .view-in-browser-center-table td {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-.view-in-browser-section [data-container="true"] {
-  display: inline-block !important;
-  width: auto !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  flex: none !important;
-  vertical-align: top !important;
 }
 
 .view-in-browser-section .view-in-browser-cell {
@@ -491,18 +495,6 @@ table.outer,
 .mod-intro-centered p {
   text-align: center !important;
   width: 100% !important;
-}
-
-.mod-intro-centered [data-container="true"] {
-  display: inline-block !important;
-  width: auto !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  flex: none !important;
-  vertical-align: top !important;
-  text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
 }
 
 .mod-intro-centered .intro-centered-inner td {
@@ -789,44 +781,22 @@ h2.subhead-orange,
   .view-in-browser-section center,
   .view-in-browser-section .view-in-browser-center-table,
   .view-in-browser-section .view-in-browser-center-table td,
-  .view-in-browser-section [data-container="true"],
   .view-in-browser-section [data-editorblocktype="Text"],
   .view-in-browser-section .view-in-browser-text,
   .view-in-browser-section .view-in-browser-link {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
     text-align: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
 
-  .view-in-browser-section [data-container="true"] {
-    display: inline-block !important;
-    width: auto !important;
-    min-width: 0 !important;
-    flex: none !important;
-  }
-
   .mod-intro-centered .intro-centered-inner td,
-  .mod-intro-centered [data-container="true"],
   .mod-intro-centered [data-editorblocktype="Text"],
   .mod-intro-centered h1,
   .mod-intro-centered h2,
   .mod-intro-centered p {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
     text-align: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
-  }
-
-  .mod-intro-centered [data-container="true"] {
-    display: inline-block !important;
-    width: auto !important;
-    min-width: 0 !important;
-    flex: none !important;
   }
 
   .image-split-text-section .tbContainer.multi > tbody > tr > td.stack-column,
@@ -859,6 +829,7 @@ h2.subhead-orange,
   .two-up-text-section .two-up-text-col-right {
     padding-left: 0 !important;
     border-left: 0 !important;
+    border-top: 1px solid #e8e8e8 !important;
     padding-top: 16px !important;
   }
 }
@@ -973,14 +944,10 @@ u + .body .view-in-browser-section .view-in-browser-cell {
 u + .body .view-in-browser-section center,
 u + .body .view-in-browser-section .view-in-browser-center-table,
 u + .body .view-in-browser-section .view-in-browser-center-table td,
-u + .body .view-in-browser-section [data-container="true"],
 u + .body .view-in-browser-section [data-editorblocktype="Text"],
 u + .body .view-in-browser-section .view-in-browser-text,
 u + .body .view-in-browser-section .view-in-browser-link {
   text-align: center !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  display: block !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -993,23 +960,19 @@ u + .body .view-in-browser-section [data-container="true"] {
 }
 
 u + .body .mod-intro-centered .intro-centered-inner td,
-u + .body .mod-intro-centered [data-container="true"],
 u + .body .mod-intro-centered [data-editorblocktype="Text"],
 u + .body .mod-intro-centered h1,
 u + .body .mod-intro-centered h2,
 u + .body .mod-intro-centered p {
-  width: 100% !important;
-  max-width: 100% !important;
-  display: block !important;
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
 u + .body .mod-intro-centered [data-container="true"] {
-  width: auto !important;
+  width: 100% !important;
   min-width: 0 !important;
-  display: inline-block !important;
+  display: block !important;
   flex: none !important;
 }
 

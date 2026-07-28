@@ -921,6 +921,11 @@ function hardenEmailHtml(html) {
   hardenThreeUpBenefits($);
   hardenArticleStackDividers($);
   hardenBodyTextSections($);
+  hardenViewInBrowser($);
+  hardenInsetImages($);
+  hardenIntroCentered($);
+  hardenImageSplitColumns($);
+  hardenTwoUpTextColumns($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -1011,7 +1016,7 @@ function hardenIntroCentered($) {
     $section.find('[data-container]').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'center');
-      ensureStyle($el, 'display:inline-block;width:auto;max-width:100%;min-width:0;flex:none;text-align:center;margin-left:auto;margin-right:auto;vertical-align:top');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
     });
   });
 }
@@ -1135,7 +1140,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v25';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v26';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

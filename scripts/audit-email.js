@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v25';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v26';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -81,7 +81,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /\[data-section="true"\] \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
+  /\[data-section="true"\]:not\(\.view-in-browser-section\)[\s\S]*?\[data-container="true"\][\s\S]*?display:\s*block !important;/i,
   'Post-paste CSS must neutralize Dynamics flex data-container wrappers',
 );
 assert.strictEqual($('.accent-band [data-editorblocktype="Text"]').length, 1);
@@ -190,13 +190,13 @@ assert.strictEqual($introCentered('.mod-intro-centered .intro-centered-inner tr'
 assert.match($introCentered('.intro-centered-cell').attr('style') || '', /text-align:center/i);
 assert.match(
   introCenteredExport,
-  /\.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*inline-block !important;[\s\S]*?width:\s*auto !important;/i,
-  'Intro centered data-container must use inline-block auto width like the footer',
+  /\.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;/i,
+  'Intro centered data-container must stretch full width for centered headlines',
 );
 assert.match(
   introCenteredExport,
-  /u \+ \.body \.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*inline-block !important;/i,
-  'Gmail must center intro data-container blocks with inline-block',
+  /u \+ \.body \.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
+  'Gmail must keep intro centered data-container full width',
 );
 const introCenteredPasted = simulateDynamicsPaste(introCenteredExport);
 const $introPasted = cheerio.load(introCenteredPasted, { xml: false }, false);
@@ -861,8 +861,8 @@ assert.match(
 );
 assert.match(
   twoUpTextExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.two-up-text-section \.two-up-text-col-right[\s\S]*?border-left:\s*0 !important;/i,
-  'Mobile two-up text must drop the divider when stacked',
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.two-up-text-section \.two-up-text-col-right[\s\S]*?border-top:\s*1px solid #e8e8e8 !important;/i,
+  'Mobile two-up text must use a horizontal divider when stacked',
 );
 
 const allModuleIds = loadManifest().modules.map((module) => module.id);

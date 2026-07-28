@@ -184,6 +184,16 @@ a.button-outline-link,
   text-align: left;
 }
 
+.view-in-browser-section,
+.mod-intro-centered {
+  text-align: center !important;
+}
+
+.view-in-browser-section .view-in-browser-cell,
+.mod-intro-centered .intro-centered-cell {
+  text-align: center !important;
+}
+
 .outer {
   width: 100% !important;
   max-width: 640px !important;
