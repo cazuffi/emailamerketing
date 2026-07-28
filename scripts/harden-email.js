@@ -548,15 +548,22 @@ function hardenThreeUpBenefits($) {
       $cell.attr('align', 'center');
       ensureStyle($cell, 'text-align:center;width:100%');
     });
-    $section.find('.three-up-stack-table').each((__, table) => {
+    $section.find('.three-up-benefits-layout').each((__, table) => {
       const $table = $(table);
       $table.attr('align', 'center');
       ensureStyle($table, 'width:100%;margin-left:auto;margin-right:auto;border-collapse:collapse');
     });
-    $section.find('.three-up-stack-cell').each((__, cell) => {
-      const $cell = $(cell);
-      $cell.attr('align', 'center');
-      ensureStyle($cell, 'text-align:center;vertical-align:top');
+    $section.find('.benefit-stack').each((__, block) => {
+      ensureStyle(
+        $(block),
+        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:1.4;text-align:center;box-sizing:border-box;mso-line-height-rule:exactly',
+      );
+    });
+    $section.find('.three-up-benefits-layout-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center;mso-line-height-rule:exactly');
+    });
+    $section.find('.benefit-stack [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
     });
   });
 }
@@ -979,7 +986,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('three-up-benefits-layout')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1132,7 +1139,7 @@ function hardenStatsThreeColumns($) {
     $section.find('.stat-stack').each((__, block) => {
       ensureStyle(
         $(block),
-        'display:inline-block;vertical-align:top;width:100%;max-width:200px;font-size:15px;line-height:1.4;text-align:center;box-sizing:border-box;mso-line-height-rule:exactly',
+        'display:inline-block;vertical-align:top;width:197px;max-width:100%;font-size:15px;line-height:1.4;text-align:center;box-sizing:border-box;mso-line-height-rule:exactly',
       );
     });
     $section.find('.stats-three-layout-cell').each((__, cell) => {
@@ -1231,7 +1238,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v31';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v32';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

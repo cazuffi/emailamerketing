@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v31';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v32';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -426,25 +426,30 @@ assert.strictEqual(
   'Dynamics paste must not wrap article stack dividers in fixed-width containers',
 );
 
-const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
+const benefitCells = $('.three-up-benefits-section .benefit-stack');
 assert.strictEqual(benefitCells.length, 3);
 benefitCells.each((_, cell) => {
-  assert.strictEqual($(cell).attr('align'), 'center');
   assert.match($(cell).attr('style') || '', /text-align:\s*center/i);
+  assert.match($(cell).attr('style') || '', /display:inline-block/i);
+  assert.match($(cell).attr('style') || '', /width:197px/i);
 });
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').length, 3);
+assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
+assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout-cell').length, 1);
 assert.strictEqual($('.three-up-benefits-section .three-up-mobile-only, .three-up-benefits-section .three-up-desktop-only').length, 0);
 assert.match(
   exported,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*table-cell !important;/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*inline-block !important;/i,
   'Three benefits must use three columns on desktop',
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important;/i,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important;/i,
   'Three benefits must stack on mobile',
+);
+assert.match(
+  exported,
+  /<!--\[if mso\][\s\S]*?benefit-stack/i,
+  'Three benefits must ship MSO desktop column wrapper',
 );
 assert.match(
   exported,
@@ -542,7 +547,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important/i,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important/i,
   'Dynamics send CSS must stack three-up benefits on mobile',
 );
 assert.match(
@@ -965,7 +970,7 @@ assert.strictEqual($statsThree('.stats-three-section').length, 1);
 assert.strictEqual($statsThree('.stat-stack').length, 3);
 assert.doesNotMatch($statsThree('.stat-stack').first().attr('width') || '', /33%/i, 'Stats must not ship width="33%" on stack cells');
 assert.match($statsThree('.stat-stack').first().attr('style') || '', /display:inline-block/i, 'Stats must use inline-block for desktop no-media clients');
-assert.match($statsThree('.stat-stack').first().attr('style') || '', /max-width:200px/i, 'Stats must cap column width for desktop three-up layout');
+assert.match($statsThree('.stat-stack').first().attr('style') || '', /width:197px/i, 'Stats must use fixed column width for desktop three-up layout');
 assert.match(statsThreeExport, /<!--\[if mso\][\s\S]*?stat-stack/i, 'Stats three must ship MSO desktop column wrapper');
 assert.match(
   statsThreeExport,
@@ -1004,16 +1009,19 @@ const allModulesNoMedia = buildEmailHtml({
 });
 const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
 
-$fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').each(() => {});
+$fallback('.three-up-benefits-section .benefit-stack').each((_, cell) => {
+  assert.match($fallback(cell).attr('style') || '', /display:inline-block/i, 'No-media three-up must keep inline-block for Outlook desktop');
+  assert.match($fallback(cell).attr('style') || '', /width:197px/i, 'No-media three-up must keep fixed column width for Outlook desktop');
+});
 assert.strictEqual(
-  $fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr').length,
+  $fallback('.three-up-benefits-section .three-up-benefits-layout').length,
   1,
-  'No-media three-up must keep a single benefits row',
+  'No-media three-up must keep a single benefits layout table',
 );
 assert.strictEqual(
-  $fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').length,
+  $fallback('.three-up-benefits-section .benefit-stack').length,
   3,
-  'No-media three-up must keep three benefit cells',
+  'No-media three-up must keep three benefit stacks',
 );
 assert.strictEqual($fallback('.three-up-benefits-section .three-up-desktop-only, .three-up-benefits-section .three-up-mobile-only').length, 0);
 $fallback('.cta-dual-section .cta-dual-column').each((_, col) => {

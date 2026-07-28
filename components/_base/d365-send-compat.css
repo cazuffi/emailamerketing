@@ -232,7 +232,8 @@ table.outer,
 .footer-legal .footer-legal-center,
 .footer-band-text-table,
 .footer-legal-text-table,
-.three-up-benefits-section .three-up-stack-cell > table {
+.three-up-benefits-section .benefit-stack,
+.three-up-benefits-section .three-up-stack-cell {
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
@@ -298,13 +299,14 @@ table.outer,
   text-align: center !important;
 }
 
-.three-up-benefits-section .three-up-stack-table {
+.three-up-benefits-section .three-up-benefits-layout {
   width: 100% !important;
   border-collapse: collapse !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
+.three-up-benefits-section .benefit-stack,
 .three-up-benefits-section .three-up-stack-cell {
   box-sizing: border-box !important;
   text-align: center !important;
@@ -515,7 +517,7 @@ table.outer,
   .stats-three-section .stat-stack {
     display: inline-block !important;
     width: 33.33% !important;
-    max-width: 200px !important;
+    max-width: 197px !important;
   }
 
   .image-edge-section.image-edge-inset .image-edge-cell {
@@ -687,11 +689,20 @@ h2.subhead-orange,
     text-align: right !important;
   }
 
+  .three-up-benefits-section .benefit-stack,
   .three-up-benefits-section .three-up-stack-cell {
-    display: table-cell !important;
+    display: inline-block !important;
     width: 33.33% !important;
-    max-width: 33.33% !important;
+    max-width: 197px !important;
+    vertical-align: top !important;
     padding: 0 8px !important;
+  }
+
+  .stats-three-section .stat-stack {
+    display: inline-block !important;
+    width: 33.33% !important;
+    max-width: 197px !important;
+    vertical-align: top !important;
   }
 }
 
@@ -708,6 +719,7 @@ h2.subhead-orange,
     padding-bottom: 0 !important;
   }
 
+  .three-up-benefits-section .benefit-stack,
   .three-up-benefits-section .three-up-stack-cell {
     display: block !important;
     width: 100% !important;
@@ -715,6 +727,7 @@ h2.subhead-orange,
     padding: 0 0 20px 0 !important;
   }
 
+  .three-up-benefits-section .benefit-stack:last-child,
   .three-up-benefits-section .three-up-stack-cell:last-child {
     padding-bottom: 0 !important;
   }
