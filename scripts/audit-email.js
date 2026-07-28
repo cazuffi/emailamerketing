@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v39';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v40';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -450,12 +450,12 @@ benefitCells.each((_, cell) => {
 });
 assert.match(
   exported,
-  /\.three-up-benefits-section \.benefit-stack[\s\S]*?display:inline-block!important[\s\S]*?width:197px!important/i,
+  /\.three-up-benefits-section \.benefit-stack[\s\S]*?display:inline-block!important[\s\S]*?width:33\.33% !important/i,
   'Three benefits must ship base CSS for desktop/Outlook column layout',
 );
 assert.doesNotMatch(
   exported,
-  /\.stats-three-section \.stat-stack\{display:inline-block!important;width:197px!important/i,
+  /\.stats-three-section \.stat-stack\{display:inline-block!important;width:33\.33% !important/i,
   'Audit fixture must prune unused stats-three base CSS',
 );
 assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
@@ -476,7 +476,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important;/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important;/i,
   'Three benefits must stack on mobile',
 );
 assert.match(
@@ -580,7 +580,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important/i,
   'Dynamics send CSS must stack three-up benefits on mobile',
 );
 assert.match(
@@ -1003,6 +1003,7 @@ const statsThreeExport = buildEmailHtml({
 const $statsThree = cheerio.load(statsThreeExport, { xml: false }, false);
 assert.strictEqual($statsThree('.stats-three-section').length, 1);
 assert.strictEqual($statsThree('.stat-stack').length, 3);
+assert.strictEqual($statsThree('.stat-stack.three-up-cell').length, 0, 'Stats must not reuse three-up-cell mobile stack class');
 assert.doesNotMatch($statsThree('.stat-stack').first().attr('width') || '', /33%/i, 'Stats must not ship width="33%" on stack cells');
 assert.match($statsThree('.stat-stack').first().attr('style') || '', /text-align:center/i, 'Stats must keep text-align center inline');
 assert.match($statsThree('.stat-number').first().attr('style') || '', /text-align:center/i, 'Stats numbers must center over labels');
@@ -1010,18 +1011,18 @@ assert.match($statsThree('.stat-number').first().attr('style') || '', /line-heig
 assert.match($statsThree('.stat-label').first().attr('style') || '', /line-height:16px/i, 'Stats labels must use pixel line-height for Outlook desktop');
 assert.match(
   statsThreeExport,
-  /\.stats-three-section \.stat-stack[\s\S]*?width:197px!important/i,
+  /\.stats-three-section \.stat-stack[\s\S]*?width:33\.33% !important/i,
   'Stats must ship base CSS column width for desktop/Outlook',
 );
 assert.match(
   statsThreeExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?display:block!important/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?display:block!important/i,
   'Mobile stats must stack to full width',
 );
 assert.match(statsThreeExport, /<!--\[if mso\][\s\S]*?stat-stack/i, 'Stats three must ship MSO desktop column wrapper');
 assert.match(
   statsThreeExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?width:\s*100% !important;/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?width:\s*100% !important;/i,
   'Mobile stats must stack to full width',
 );
 assert.match(
@@ -1054,7 +1055,7 @@ const $statsFour = cheerio.load(statsFourExport, { xml: false }, false);
 assert.strictEqual($statsFour('.stats-four-section').length, 1);
 assert.strictEqual($statsFour('.stat-stack').length, 4);
 assert.match($statsFour('.stat-stack').first().attr('style') || '', /text-align:center/i);
-assert.match(statsFourExport, /\.stats-four-section \.stat-stack[\s\S]*?width:148px!important/i);
+assert.match(statsFourExport, /\.stats-four-section \.stat-stack[\s\S]*?width:25% !important/i);
 assert.match(statsFourExport, /<!--\[if mso\][\s\S]*?stat-stack/i);
 assert.match(
   statsFourExport,
@@ -1070,7 +1071,7 @@ const threeUpProductsExport = buildEmailHtml({
 const $threeUpProducts = cheerio.load(threeUpProductsExport, { xml: false }, false);
 assert.strictEqual($threeUpProducts('.three-up-products-section').length, 1);
 assert.strictEqual($threeUpProducts('.product-stack').length, 3);
-assert.match(threeUpProductsExport, /\.three-up-products-section \.product-stack[\s\S]*?width:197px!important/i);
+assert.match(threeUpProductsExport, /\.three-up-products-section \.product-stack[\s\S]*?width:33\.33% !important/i);
 assert.match(
   threeUpProductsExport,
   /u\s*\+\s*\.body \.product-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,

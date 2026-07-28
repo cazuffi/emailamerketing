@@ -559,14 +559,14 @@ h2.subhead-orange {
   .stat-number { font-size: 28px !important; }
   .stat-label { font-size: 12px !important; text-align: center !important; }
 
-  .three-up-cell {
+  .three-up-cell:not(.benefit-stack):not(.product-stack):not(.stat-stack) {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     padding: 0 0 20px 0 !important;
     text-align: center !important;
   }
-  .three-up-cell:last-child { padding-bottom: 0 !important; }
+  .three-up-cell:not(.benefit-stack):not(.product-stack):not(.stat-stack):last-child { padding-bottom: 0 !important; }
   .three-up-cell h3,
   .three-up-cell p { text-align: center !important; }
   /* Stacked on mobile: drop the desktop equal-height title rows so a title
