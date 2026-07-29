@@ -21,6 +21,7 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'article-stack-cta',
   'article-stack-cta-link',
   'article-stack-cta-wrap',
+  'article-stack-divider',
   'article-stack-headline',
   'article-stack-item',
   'article-stack-section',
@@ -52,6 +53,8 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'cta-band-grey-shell',
   'cta-band-grey-title',
   'cta-button-block',
+  'cta-outline-center',
+  'cta-primary-center',
   'disclaimer-text',
   'emptyContainer',
   'email-canvas-cell',
@@ -65,7 +68,12 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'footer-legal-text-table',
   'footer-legal',
   'footer-legal-center',
-  'imageWrapper',
+  'header-standard-section',
+  'image-edge-inset',
+  'image-edge-section',
+  'image-edge-subtext-wrap',
+  'image-subtext-block',
+  'image-subtext--left',
   'inner',
   'mobile-center',
   'mobile-center-on-stack',
@@ -75,6 +83,16 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'orange-footer',
   'outer',
   'preheader-text',
+  'view-in-browser-text',
+  'view-in-browser-link',
+  'view-in-browser-section',
+  'two-up-text-col-left',
+  'two-up-text-col-right',
+  'two-up-text-section',
+  'two-up-text-shell',
+  'two-up-text-table',
+  'view-in-browser-center-table',
+  'view-in-browser-text-cell',
   'section-pad',
   'section-pad-accent',
   'section-pad-compact',
@@ -178,21 +196,45 @@ function isStructuralSelector(selector) {
   const part = selector.trim();
   if (!part) return false;
   if (!part.includes('.') && !part.includes('#')) return true;
-  if (/\[data-(layout|container|editorblocktype|protected|ogsc|ogsb)/i.test(part)) return true;
+  if (/\[data-(layout|container|editorblocktype|protected|ogsc|ogsb)/i.test(part)) {
+    // Keep bare structural hooks, but prune module-scoped data-container rules
+    // when their section classes are not in the active export.
+    if (extractSelectorClasses(part).length > 0) return false;
+    return true;
+  }
   if (/a\[x-apple-data-detectors\]/i.test(part)) return true;
-  if (/u\s*\+\s*\.body/i.test(part)) return true;
+  if (/u\s*\+\s*\.body/i.test(part)) {
+    const rest = part.replace(/^u\s*\+\s*\.body\s+/i, '');
+    if (extractSelectorClasses(rest).length === 0) return true;
+    return false;
+  }
   if (/\[style\*=/i.test(part)) return true;
   return false;
 }
 
+function selectorPartActive(part, activeClasses) {
+  if (isStructuralSelector(part)) return true;
+  const classes = extractSelectorClasses(part);
+  if (classes.length === 0) return true;
+  const sectionClasses = classes.filter((cls) => cls.endsWith('-section'));
+  if (sectionClasses.length > 0) {
+    return sectionClasses.some(
+      (cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls),
+    );
+  }
+  return classes.some((cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls));
+}
+
+function filterSelectorHeader(header, activeClasses) {
+  return header
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => part && selectorPartActive(part, activeClasses))
+    .join(',');
+}
+
 function selectorIsActive(selector, activeClasses) {
-  const parts = selector.split(',');
-  return parts.some((part) => {
-    if (isStructuralSelector(part)) return true;
-    const classes = extractSelectorClasses(part);
-    if (classes.length === 0) return true;
-    return classes.some((cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls));
-  });
+  return Boolean(filterSelectorHeader(selector, activeClasses));
 }
 
 function skipWhitespaceAndComments(css, index) {
@@ -254,8 +296,11 @@ function pruneStylesheet(css, activeClasses) {
       } else {
         kept.push(block.raw.trim());
       }
-    } else if (selectorIsActive(header, activeClasses)) {
-      kept.push(block.raw.trim());
+    } else {
+      const filteredHeader = filterSelectorHeader(header, activeClasses);
+      if (filteredHeader) {
+        kept.push(`${filteredHeader}{${block.inner}}`.trim());
+      }
     }
 
     i = skipWhitespaceAndComments(css, block.end);
@@ -296,4 +341,6 @@ module.exports = {
   extractClassTokens,
   minifyCss,
   GMAIL_CLIP_BYTES: 102400,
+  GMAIL_CLIP_HEADROOM: 2048,
+  GMAIL_CLIP_SAFE_BYTES: 102400 - 2048,
 };

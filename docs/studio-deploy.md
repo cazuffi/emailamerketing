@@ -28,6 +28,8 @@ Coordinators can create emails, save campaigns, and copy HTML — but cannot add
 
 ## Deploy (Option C — hosted)
 
+**Step-by-step Azure (personal account → use at work):** [azure-app-service.md](./azure-app-service.md)
+
 ### Environment variables
 
 | Variable | Required | Description |

@@ -3,8 +3,8 @@
 const cheerio = require('cheerio');
 
 /**
- * Approximate what Dynamics 365 does when HTML is pasted into the
- * marketing content editor and saved (verified from a real send).
+ * Approximate what Dynamics 365 does on SEND (verified from real Gmail source).
+ * Send transform wraps editor blocks in anonymous flex divs — NOT data-container.
  */
 function simulateDynamicsPaste(html) {
   const $ = cheerio.load(html, { xml: false }, false);
@@ -23,13 +23,10 @@ function simulateDynamicsPaste(html) {
 
   $('[data-editorblocktype]').each((_, block) => {
     const $block = $(block);
-    if ($block.parent('[data-container="true"]').length) return;
+    if ($block.parent('[data-d365-flex-wrap="true"]').length) return;
 
     const width = inferContainerWidth($, $block);
-    const $wrapper = $('<div></div>').attr({
-      'data-container': 'true',
-      id: `container${Math.random().toString(16).slice(2)}`,
-    });
+    const $wrapper = $('<div></div>').attr('data-d365-flex-wrap', 'true');
     setStyleProp($wrapper, 'width', `${width}px`);
     setStyleProp($wrapper, 'flex', `0 0 ${width}px`);
     setStyleProp($wrapper, 'display', 'flex');
@@ -59,14 +56,40 @@ function simulateDynamicsLayoutShell($) {
 }
 
 function inferContainerWidth($, $block) {
-  const $stackCell = $block.closest('.three-up-stack-cell, .three-up-cell').first();
-  if ($stackCell.length) {
+  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack, .step-stack').first();
+  if ($stackCell.length && $stackCell.is('td')) {
+    const horizontalPad = sectionHorizontalPad($, $block);
+    const outerWidth = outerTableWidth($, $block);
     const cellWidthAttr = String($stackCell.attr('width') || '');
+    const pctMatch = cellWidthAttr.match(/(\d+(?:\.\d+)?)\s*%/);
+    if (pctMatch) {
+      const cellPad = cellHorizontalPad($stackCell);
+      const contentWidth = outerWidth - horizontalPad;
+      const width = Math.round((contentWidth * parseFloat(pctMatch[1])) / 100 - cellPad);
+      return Math.max(width, 178);
+    }
+    if ($stackCell.closest('.stats-four-section').length) {
+      return Math.max(Math.round((outerWidth - horizontalPad) / 4), 178);
+    }
+    if ($stackCell.closest('.steps-horizontal-section').length) {
+      return Math.max(Math.round((outerWidth - horizontalPad) * 0.3), 178);
+    }
+    return Math.max(Math.round((outerWidth - horizontalPad) / 3), 178);
+  }
+  if ($stackCell.length) {
+    if ($stackCell.hasClass('stat-stack') || $stackCell.hasClass('benefit-stack') || $stackCell.hasClass('product-stack')) {
+      return 181;
+    }
+  }
+
+  const $threeUpCell = $block.closest('.three-up-stack-cell, .three-up-cell').first();
+  if ($threeUpCell.length) {
+    const cellWidthAttr = String($threeUpCell.attr('width') || '');
     const pctMatch = cellWidthAttr.match(/(\d+(?:\.\d+)?)\s*%/);
     if (pctMatch) {
       const horizontalPad = sectionHorizontalPad($, $block);
       const outerWidth = outerTableWidth($, $block);
-      const cellPad = cellHorizontalPad($stackCell);
+      const cellPad = cellHorizontalPad($threeUpCell);
       const contentWidth = outerWidth - horizontalPad;
       const width = Math.round((contentWidth * parseFloat(pctMatch[1])) / 100 - cellPad);
       return Math.max(width, 178);

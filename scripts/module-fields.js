@@ -30,6 +30,7 @@ function loadResolvedModuleHtml(moduleId) {
 function inferTextLabel(tagName, index, $el) {
   const tag = tagName.toLowerCase();
   const text = normalizeTextValue($el.text());
+  if ($el.hasClass('image-subtext')) return index === 0 ? 'Image subtext' : `Image ${index + 1} subtext`;
   if ($el.hasClass('faq-question')) return `FAQ question ${index + 1}`;
   if ($el.hasClass('faq-answer')) return `FAQ answer ${index + 1}`;
   if ($el.hasClass('bullet-item')) return `Bullet ${index + 1}`;
@@ -51,6 +52,47 @@ function normalizeTextValue(value) {
     .replace(/\u00a0/g, ' ')
     .replace(/&nbsp;/gi, ' ')
     .trim();
+}
+
+function readTextFieldValue($el) {
+  const html = $el.html() || '';
+  if (/<br\s*\/?>/i.test(html)) {
+    return html
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>\s*<p[^>]*>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\u00a0/g, ' ')
+      .trim();
+  }
+  return normalizeTextValue($el.text());
+}
+
+function getPrecedingImageIndex($, subtextEl) {
+  const $subtext = $(subtextEl);
+  let imageCount = 0;
+  let imageIndex = -1;
+
+  $('[data-editorblocktype="Image"], .image-subtext').each((_, node) => {
+    const $node = $(node);
+    if ($node.is($subtext)) {
+      imageIndex = imageCount - 1;
+      return false;
+    }
+    if ($node.is('[data-editorblocktype="Image"]')) {
+      imageCount += 1;
+    }
+  });
+
+  return imageIndex;
+}
+
+function imageCaptionKey(imageIndex) {
+  return `image_${Math.max(imageIndex, 0)}_caption`;
+}
+
+function imageCaptionLabel(imageIndex) {
+  return imageIndex <= 0 ? 'Image subtext' : `Image ${imageIndex + 1} subtext`;
 }
 
 function isEmptyOverride(value) {
@@ -106,6 +148,7 @@ function eachTextField($, $block, startCount, fn) {
   $block.find('h1, h2, h3, p, li').each((idx, el) => {
     const $el = $(el);
     if ($el.attr('data-studio-field')) return;
+    if ($el.hasClass('image-subtext')) return;
     if (isInsideStudioRepeat($el)) return;
     if (isInsideArticleStack($el)) return;
     if (shouldSkipEmptyNonParagraph($el)) return;
@@ -218,6 +261,16 @@ function applyTextOverride($el, value, emptyMode = 'hide') {
   }
   showForEmail($el);
   $el.removeAttr('data-studio-spacer');
+  const normalized = normalizeTextValue(value);
+  if (/\n/.test(normalized)) {
+    $el.html(
+      normalized
+        .split(/\n/)
+        .map((line) => formatInlineText(line))
+        .join('<br>'),
+    );
+    return;
+  }
   const formatted = formatInlineText(value);
   if (formatted.includes('<strong')) {
     $el.html(formatted);
@@ -303,6 +356,47 @@ function readShowButtonFromSection($section) {
   return isElementHidden($btn) ? 'no' : 'yes';
 }
 
+function readInsetImageFromSection($section) {
+  return $section.hasClass('image-edge-inset') ? 'yes' : 'no';
+}
+
+const IMAGE_EDGE_INSET_PADDING = '24px';
+const IMAGE_EDGE_INSET_PADDING_MOBILE = '20px';
+
+function applyInsetImageSetting($section, insetImage) {
+  const value = parseToggleValue(insetImage, 'no');
+  const $cells = $section.find('.image-edge-cell');
+
+  if (value === 'yes') {
+    $section.addClass('image-edge-inset');
+    $cells.each((index) => {
+      const $cell = $cells.eq(index);
+      let style = $cell.attr('style') || '';
+      style = mergeInlineStyle(style, 'padding-left', IMAGE_EDGE_INSET_PADDING);
+      style = mergeInlineStyle(style, 'padding-right', IMAGE_EDGE_INSET_PADDING);
+      style = mergeInlineStyle(style, 'box-sizing', 'border-box');
+      style = mergeInlineStyle(style, 'padding-top', '0');
+      style = mergeInlineStyle(style, 'padding-bottom', '0');
+      $cell.attr('style', style);
+    });
+    $section.find('.image-edge-subtext-wrap').each((index) => {
+      const $wrap = $section.find('.image-edge-subtext-wrap').eq(index);
+      $wrap.attr('style', mergeInlineStyle($wrap.attr('style') || '', 'padding', '8px 0 0 0'));
+    });
+    return;
+  }
+
+  $section.removeClass('image-edge-inset');
+  $cells.each((index) => {
+    const $cell = $cells.eq(index);
+    $cell.attr('style', mergeInlineStyle($cell.attr('style') || '', 'padding', '0'));
+  });
+  $section.find('.image-edge-subtext-wrap').each((index) => {
+    const $wrap = $section.find('.image-edge-subtext-wrap').eq(index);
+    $wrap.attr('style', mergeInlineStyle($wrap.attr('style') || '', 'padding', '8px 24px 0 24px'));
+  });
+}
+
 function extractModuleSettings($, fields) {
   $('[data-studio-setting]').each((_, el) => {
     const $el = $(el);
@@ -323,6 +417,16 @@ function extractModuleSettings($, fields) {
         type: 'toggle',
         label: $el.attr('data-studio-setting-label') || 'Show button',
         value: readShowButtonFromSection($el),
+        options: TOGGLE_OPTIONS,
+      });
+      return;
+    }
+    if (key === 'insetImage') {
+      fields.unshift({
+        key: 'insetImage',
+        type: 'toggle',
+        label: $el.attr('data-studio-setting-label') || 'Inset image (side spacing)',
+        value: readInsetImageFromSection($el),
         options: TOGGLE_OPTIONS,
       });
     }
@@ -374,6 +478,11 @@ function applyModuleSettings($, normalized) {
   if (Object.prototype.hasOwnProperty.call(normalized, 'showButton')) {
     $('[data-studio-setting="showButton"]').each((_, el) => {
       applyShowButtonSetting($(el), normalized.showButton);
+    });
+  }
+  if (Object.prototype.hasOwnProperty.call(normalized, 'insetImage')) {
+    $('[data-studio-setting="insetImage"]').each((_, el) => {
+      applyInsetImageSetting($(el), normalized.insetImage);
     });
   }
 }
@@ -491,7 +600,7 @@ function loadArticleStackDividerHtml() {
 
 function buildArticleStackDividerHtml() {
   const divider = loadArticleStackDividerHtml().trim();
-  return `<div data-editorblocktype="Divider" class="article-stack-divider" style="margin:16px 0;">${divider}</div>`;
+  return `<div class="article-stack-divider" style="margin:16px 0;display:block;width:100%;">${divider}</div>`;
 }
 
 function extractArticleStackRows($, fields) {
@@ -574,6 +683,45 @@ function applyArticleStackRows($, normalized) {
         $stack.append(buildArticleStackDividerHtml());
       }
     });
+  });
+}
+
+function extractImageSubtextFields($, fields) {
+  $('.image-subtext').each((_, el) => {
+    const $el = $(el);
+    if ($el.attr('data-studio-field')) return;
+
+    const imageIndex = getPrecedingImageIndex($, el);
+    if (imageIndex < 0) return;
+
+    const key = imageCaptionKey(imageIndex);
+    if (fields.some((field) => field.key === key)) return;
+
+    fields.push({
+      key,
+      type: 'text',
+      label: imageCaptionLabel(imageIndex),
+      value: readTextFieldValue($el),
+      multiline: true,
+      hideWhenEmpty: true,
+    });
+  });
+}
+
+function applyImageSubtextOverrides($, normalized) {
+  $('.image-subtext').each((_, el) => {
+    const $el = $(el);
+    const explicitKey = $el.attr('data-studio-field');
+    const key = explicitKey || imageCaptionKey(getPrecedingImageIndex($, el));
+    if (!key || !Object.prototype.hasOwnProperty.call(normalized, key)) return;
+    applyTextOverride($el, normalized[key], getEmptyMode(normalized, key));
+
+    const $block = $el.closest('.image-subtext-block');
+    if ($block.length && isElementHidden($el)) {
+      hideForEmail($block);
+    } else if ($block.length) {
+      showForEmail($block);
+    }
   });
 }
 
@@ -690,7 +838,7 @@ function extractFields(moduleId) {
           key: `text_${index}`,
           type: 'text',
           label: inferTextLabel(tag, visibleTextIndex, $el),
-          value: normalizeTextValue($el.text()),
+          value: readTextFieldValue($el),
           multiline: tag === 'p' || tag === 'li',
           hideWhenEmpty: tag === 'p' || tag === 'li',
         });
@@ -756,6 +904,7 @@ function extractFields(moduleId) {
 
   extractSpecsRows($, fields);
   extractArticleStackRows($, fields);
+  extractImageSubtextFields($, fields);
   extractModuleSettings($, fields);
 
   return fields;
@@ -823,6 +972,14 @@ function tagPreviewFields($) {
     if (isElementHidden($el)) return;
     $el.attr('data-studio-edit', `link_${linkCount}_label`);
     linkCount += 1;
+  });
+
+  $('.image-subtext').each((_, el) => {
+    const $el = $(el);
+    if (isElementHidden($el)) return;
+    const explicitKey = $el.attr('data-studio-field');
+    const key = explicitKey || imageCaptionKey(getPrecedingImageIndex($, el));
+    if (key) $el.attr('data-studio-edit', key);
   });
 
   $('[data-studio-specs-rows]').each((_, tbody) => {
@@ -973,6 +1130,7 @@ function applyOverrides(moduleId, overrides = {}, options = {}) {
   applyModuleSettings($, normalized);
   applySpecsRows($, normalized);
   applyArticleStackRows($, normalized);
+  applyImageSubtextOverrides($, normalized);
 
   collapseOrphanSpacers($);
   collapseEmptyFaqPairs($);

@@ -147,6 +147,32 @@ a.button-outline-link,
 
 .buttonWrapper { margin: 4px 0 0 0; }
 .buttonTable { border-collapse: separate; }
+
+/* Centered CTAs — text-align on the wrapper does not center block-level button tables */
+.cta-primary-center .buttonWrapper[align="center"],
+.cta-primary-center .buttonWrapper.cta-button-block {
+  text-align: center !important;
+  max-width: 320px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.cta-outline-center .buttonWrapper[align="center"],
+.buttonWrapper[align="center"]:not(.cta-dual-section .buttonWrapper):not(.cta-band-grey .buttonWrapper) {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.cta-primary-center .buttonTable,
+.cta-primary-center .button-outline-table,
+.cta-outline-center .buttonTable,
+.cta-outline-center .button-outline-table,
+.buttonWrapper[align="center"] > .buttonTable,
+.buttonWrapper[align="center"] > .button-outline-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 .buttonCell {
   background-color: #ef7800;
   border-radius: 0;
@@ -162,6 +188,18 @@ a.button-outline-link,
   max-width: 640px;
   width: 100%;
   text-align: left;
+}
+
+.view-in-browser-section,
+.mod-intro-centered,
+.headline-block-center-section {
+  text-align: center !important;
+}
+
+.view-in-browser-section .view-in-browser-cell,
+.mod-intro-centered .intro-centered-cell,
+.headline-block-center-section .headline-block-center-cell {
+  text-align: center !important;
 }
 
 .outer {
@@ -231,7 +269,9 @@ img.header-logo-img--compact {
 
   .header-standard-section .header-logo-column,
   .header-standard-section .header-logo-column [data-editorblocktype="Image"],
-  .header-standard-section .header-logo-column .imageWrapper {
+  .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-table,
+  .header-standard-section .header-logo-safe {
     text-align: center !important;
   }
 
@@ -257,33 +297,23 @@ img.header-logo-img--compact {
   }
 }
 
-/* Three benefits: one row on desktop, stacked on mobile (no duplicate markup) */
-.three-up-benefits-section .three-up-stack-table {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-.three-up-benefits-section .three-up-stack-cell {
-  box-sizing: border-box !important;
-  text-align: center !important;
-  vertical-align: top !important;
-}
+/* Three benefits layout lives in d365-send-compat.css */
 
-@media only screen and (min-width: 641px) {
-  .three-up-benefits-section .three-up-stack-cell {
-    display: table-cell !important;
-    width: 33.33% !important;
-    max-width: 33.33% !important;
-    padding: 0 8px !important;
-  }
+.header-standard-section .header-logo-table,
+.header-standard-section .header-logo-safe {
+  display: block;
+  width: 100%;
+  text-align: left;
+  line-height: normal;
+  mso-line-height-rule: exactly;
 }
 
 .header-standard-section .header-logo-wrap {
   display: block;
   width: 100%;
   text-align: center;
-  line-height: 0;
+  line-height: normal;
+  mso-line-height-rule: exactly;
 }
 
 .orange-footer .footer-band-content,
@@ -330,26 +360,14 @@ img.header-logo-img--compact {
   .outer { width: 100% !important; max-width: 100% !important; }
   /* Dynamics wraps every block in a fixed-pixel-width flex container on send
      (e.g. width:592px; flex:0 0 592px). Force those wrappers fluid on mobile so
-     they can't overflow the viewport. */
-  [data-container="true"] {
+     they can't overflow the viewport. Also target send-time anonymous flex divs. */
+  [data-container="true"],
+  .cta-text-link-cell > div {
     width: 100% !important;
     max-width: 100% !important;
+    flex: none !important;
     flex-basis: auto !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  .three-up-benefits-section .three-up-stack-cell {
     display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 0 20px 0 !important;
-  }
-  .three-up-benefits-section .three-up-stack-cell:last-child {
-    padding-bottom: 0 !important;
-  }
-  .three-up-benefits-section [data-container="true"],
-  .three-up-benefits-section [data-editorblocktype="Text"] {
-    text-align: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
@@ -394,6 +412,8 @@ img.header-logo-img--compact {
   .header-standard-section .header-logo-column,
   .header-standard-section .header-logo-column [data-editorblocktype="Image"],
   .header-standard-section .header-logo-column .imageWrapper,
+  .header-standard-section .header-logo-table,
+  .header-standard-section .header-logo-safe,
   .header-standard-section .header-logo-wrap {
     text-align: center !important;
     width: 100% !important;
@@ -535,6 +555,8 @@ img.header-logo-img--compact {
     background-color: #ffffff !important;
   }
   .buttonWrapper { text-align: center !important; width: 100% !important; }
+  .cta-primary-center .buttonWrapper,.cta-primary-center .buttonTable{max-width:320px!important;margin-left:auto!important;margin-right:auto!important}
+  .cta-primary-center a.buttonClass.button-primary,.cta-primary-center .button-primary.buttonClass{width:auto!important;padding:14px 24px!important}
   .imageWrapper img:not(.header-logo-img) { width: 100% !important; max-width: 100% !important; height: auto !important; }
   .orange-footer .outer, .orange-footer [data-layout="true"] { background-color: #ef7800 !important; }
   .orange-footer .footer-band-content,

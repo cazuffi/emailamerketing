@@ -14,8 +14,8 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
-const { GMAIL_CLIP_BYTES } = require('./prune-css');
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v44';
+const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
   title: 'Audit fixture',
@@ -81,7 +81,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /\[data-section="true"\] \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
+  /\[data-section="true"\]:not\(\.view-in-browser-section\)[\s\S]*?\[data-container="true"\][\s\S]*?display:\s*block !important;/i,
   'Post-paste CSS must neutralize Dynamics flex data-container wrappers',
 );
 assert.strictEqual($('.accent-band [data-editorblocktype="Text"]').length, 1);
@@ -104,6 +104,16 @@ assert.match(
   /background-color:\s*#ef7800/i,
   'Accent band table must carry the orange fill',
 );
+assert.match(
+  exported,
+  /\.accent-band\[data-section="true"\][\s\S]*background-color:\s*#ef7800 !important/i,
+  'Accent band section wrapper must inherit orange so canvas gutters never flash white',
+);
+assert.match(
+  exported,
+  /\.urgency-band table\.outer[\s\S]*min-width:\s*100% !important/i,
+  'Urgency band must harden full-bleed outer tables',
+);
 assert.strictEqual(
   $('.header-standard-section table.outer').first().attr('bgcolor'),
   '#ffffff',
@@ -117,9 +127,149 @@ assert.strictEqual($('.header-standard-section .tbContainer, .header-standard-se
 assert.strictEqual($('.header-standard-section .header-layout-table').length, 1);
 const taglineCell = $('.header-standard-section .header-tagline-cell');
 const logoCell = $('.header-standard-section .header-logo-cell');
-assert.strictEqual(logoCell.attr('align'), 'center');
+assert.strictEqual(logoCell.attr('align'), 'left');
+assert.strictEqual(logoCell.attr('valign'), 'top');
+assert.match(logoCell.attr('style') || '', /vertical-align:top/i);
 assert.strictEqual(taglineCell.attr('valign'), 'middle');
 assert.match(taglineCell.attr('style') || '', /vertical-align:middle/i);
+
+const viewBrowserExport = buildEmailHtml({
+  title: 'view in browser audit',
+  modules: ['view-in-browser-bar'],
+  annotate: false,
+});
+const $viewBrowser = cheerio.load(viewBrowserExport, { xml: false }, false);
+assert.strictEqual($viewBrowser('.view-in-browser-section [data-editorblocktype="Text"]').length, 0, 'View in browser must not use data-editorblocktype so Dynamics cannot inject a flex wrapper');
+assert.strictEqual($viewBrowser('.view-in-browser-link').length, 1);
+assert.match($viewBrowser('.view-in-browser-link').attr('style') || '', /color:#ef7800/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /text-align:center/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /background-color:#ffffff/i);
+assert.match($viewBrowser('.view-in-browser-cell').attr('style') || '', /padding:12px 24px 16px 24px/i);
+assert.strictEqual($viewBrowser('.view-in-browser-section center').length, 1, 'View in browser must wrap link in a center block for Gmail');
+assert.strictEqual($viewBrowser('.view-in-browser-center-table').length, 1, 'View in browser must use a centering table for Gmail');
+assert.strictEqual($viewBrowser('.view-in-browser-text-cell').length, 1, 'View in browser link must sit in a dedicated center cell');
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \.view-in-browser-text-cell[\s\S]*?text-align:\s*center !important;/i,
+  'View in browser center cell must stay center-aligned after export',
+);
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \.view-in-browser-cell[\s\S]*?background-color:\s*#ffffff !important;/i,
+  'View in browser bar must use a white background after export',
+);
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \.view-in-browser-link[\s\S]*?text-align:\s*center !important;/i,
+  'View in browser link must stay center-aligned after export',
+);
+assert.match(
+  viewBrowserExport,
+  /\.view-in-browser-section \+ \.header-standard-section \.section-pad-tight[\s\S]*?padding-top:\s*24px !important;/i,
+  'Header must gain extra top padding when it follows the view-in-browser bar',
+);
+assert.match(
+  viewBrowserExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.view-in-browser-section center[\s\S]*?text-align:\s*center !important;/i,
+  'Mobile view-in-browser center wrapper must stay centered after export',
+);
+const viewBrowserPasted = simulateDynamicsPaste(viewBrowserExport);
+const $viewBrowserPasted = cheerio.load(viewBrowserPasted, { xml: false }, false);
+assert.strictEqual(
+  $viewBrowserPasted('.view-in-browser-section [data-container="true"]').length,
+  0,
+  'Dynamics paste must not wrap the view-in-browser link in a fixed-width data-container',
+);
+
+const introCenteredExport = buildEmailHtml({
+  title: 'intro centered audit',
+  modules: ['intro-centered'],
+  annotate: false,
+});
+const $introCentered = cheerio.load(introCenteredExport, { xml: false }, false);
+assert.strictEqual($introCentered('.mod-intro-centered center').length, 1, 'Intro centered must wrap copy in a center block for Gmail');
+assert.strictEqual($introCentered('.mod-intro-centered .intro-centered-inner').length, 1);
+assert.strictEqual($introCentered('.mod-intro-centered .intro-centered-inner tr').length, 3, 'Intro centered must use one table row per text block for Dynamics paste');
+assert.match($introCentered('.intro-centered-cell').attr('style') || '', /text-align:center/i);
+assert.match(
+  introCenteredExport,
+  /\.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;/i,
+  'Intro centered data-container must stretch full width for centered headlines',
+);
+assert.match(
+  introCenteredExport,
+  /u \+ \.body \.mod-intro-centered \[data-container="true"\][\s\S]*?display:\s*block !important;/i,
+  'Gmail must keep intro centered data-container full width',
+);
+const introCenteredPasted = simulateDynamicsPaste(introCenteredExport);
+const $introPasted = cheerio.load(introCenteredPasted, { xml: false }, false);
+assert.strictEqual($introPasted('.mod-intro-centered [data-d365-flex-wrap="true"]').length, 3);
+assert.strictEqual($introPasted('.mod-intro-centered .intro-centered-inner td[align="center"]').length, 3);
+
+const imageSplitExport = buildEmailHtml({
+  title: 'image split audit',
+  modules: ['image-split-text-right'],
+  annotate: false,
+});
+const $imageSplit = cheerio.load(imageSplitExport, { xml: false }, false);
+assert.strictEqual($imageSplit('td.image-split-copy').length, 1);
+assert.strictEqual($imageSplit('td.image-split-media').length, 1);
+assert.match($imageSplit('td.image-split-copy').attr('width') || '', /51%/i, 'Image split copy must use percentage table column width');
+assert.match($imageSplit('td.image-split-media').attr('width') || '', /49%/i, 'Image split media must use percentage table column width');
+assert.match($imageSplit('td.image-split-media').attr('style') || '', /padding:0 12px 0 0/i, 'Image-left split must keep gutter padding between columns');
+assert.strictEqual($imageSplit('td.image-split-copy [data-editorblocktype="Text"]').length, 1, 'Image split must use one text block per copy column');
+assert.match(
+  imageSplitExport,
+  /\.image-split-layout td\.image-split-copy[\s\S]*?width:51% !important/i,
+  'Image split must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.image-split-layout td\.image-split-copy[\s\S]*?display:table-cell!important/i,
+  'Image split must keep columns side-by-side above mobile breakpoint',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.image-split-layout td\.image-split-copy[\s\S]*?display:block!important/i,
+  'Mobile image split columns must stack to full width',
+);
+assert.doesNotMatch($imageSplit('.image-split-text-section').html() || '', /<!--\[if mso\]/i, 'Image split must not rely on MSO-only desktop columns');
+assert.match(
+  imageSplitExport,
+  /u\s*\+\s*\.body \.image-split-layout td\.image-split-copy[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep image split side-by-side via table cells',
+);
+assert.match(
+  imageSplitExport,
+  /u\s*\+\s*\.body \.image-split-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside image split columns',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?u\+\.body \.image-split-layout td\.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center stacked image split copy',
+);
+
+const heroFullInsetFields = extractFields('hero-full');
+assert(
+  heroFullInsetFields.some((field) => field.key === 'insetImage' && field.type === 'toggle'),
+  'Edge-touching image modules must expose insetImage toggle',
+);
+
+const insetHeroExport = buildEmailHtml({
+  title: 'Inset hero audit',
+  modules: ['hero-full'],
+  overrides: { 0: { insetImage: 'yes' } },
+  annotate: false,
+});
+const $insetHero = cheerio.load(insetHeroExport, { xml: false }, false);
+assert.strictEqual($insetHero('.image-edge-inset').length, 1, 'Inset toggle must add image-edge-inset class');
+assert.match(
+  insetHeroExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-edge-section\.image-edge-inset \.image-edge-cell[\s\S]*?padding-left:\s*24px !important;/i,
+  'Exported CSS must apply inset image side spacing on desktop only',
+);
+
 assert.match(
   exported,
   /\.header-standard-section \.header-tagline-cell \[data-editorblocktype="Text"\]\s*\{\s*text-align:\s*center !important;/i,
@@ -127,7 +277,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  /\.header-standard-section \.header-logo-column[\s\S]*?\.header-standard-section \.header-logo-safe\s*\{[\s\S]*?text-align:\s*center !important;/i,
   'Mobile header logo wrappers must center across the email',
 );
 assert.match(
@@ -137,7 +287,7 @@ assert.match(
 );
 assert.match(
   noMediaPreview,
-  /\.header-standard-section \.header-logo-column \.imageWrapper\s*\{\s*text-align:\s*center !important;/i,
+  /\.header-standard-section \.header-logo-safe\s*\{[\s\S]*?text-align:\s*center !important;/i,
   'No-media fallback must center the logo across the email',
 );
 assert.match(
@@ -193,15 +343,22 @@ assert.match(
   /<img[^>]*class="divider-line-img"[^>]*src="data:image\/gif;base64,R0lGODdhAQAC|<img[^>]*src="data:image\/gif;base64,R0lGODdhAQAC[^"]*"[^>]*class="divider-line-img"/i,
   'Divider must ship an orange spacer image for Gmail iOS',
 );
-assert.strictEqual($('.accent-band > table.section-gap-shim').length, 0, 'Full-bleed accent band must not use gap shims');
-assert.strictEqual($('.cta-band-grey > table.section-gap-shim').length, 0, 'Grey CTA band must not use gap shims');
-assert.strictEqual($('.urgency-band > table.section-gap-shim').length, 0, 'Urgency band must not use gap shims');
+assert.strictEqual($('table.section-gap-shim').length, 0, 'Export must not inject section gap shims');
+assert.match(
+  exported,
+  /\[data-section="true"\][\s\S]*margin:\s*0 !important/i,
+  'Export must zero section wrapper margins for Gmail',
+);
+assert.match(
+  exported,
+  /\[data-section="true"\] > table\.outer[\s\S]*display:\s*table !important/i,
+  'Export must force display:table on section outer tables for Gmail',
+);
 assert.match(
   buildEmailHtml({ title: 'urgency audit', modules: ['urgency-band'], annotate: false }),
   /urgency-band[\s\S]*text-align:center/i,
   'Urgency band must ship centered text styles',
 );
-assert.strictEqual($('.divider-line-section > table.section-gap-shim').length, 0, 'Divider must not use gap shims');
 assert.strictEqual(
   cheerio.load(
     buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
@@ -219,6 +376,24 @@ assert.strictEqual(
   )('.section-heading-section .section-heading-center').length,
   1,
   'Section heading must use an inner centering table',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-table').length,
+  1,
+  'Section heading must use a full-width divider rule',
+);
+assert.strictEqual(
+  cheerio.load(
+    buildEmailHtml({ title: 'section heading audit', modules: ['section-heading'], annotate: false }),
+    { xml: false },
+    false,
+  )('.section-heading-section .divider-line-img').length,
+  1,
+  'Section heading divider must ship the Gmail-safe spacer image',
 );
 assert.match(
   exported,
@@ -250,32 +425,74 @@ assert.strictEqual(
   1,
   'Article stack must export one CTA when only one story has showCta enabled',
 );
+assert.strictEqual(
+  cheerio.load(articleStackExport, { xml: false }, false)('.article-stack-divider').length,
+  1,
+  'Article stack must export a divider between stories',
+);
+assert.doesNotMatch(
+  articleStackExport,
+  /class="article-stack-divider"[^>]*data-editorblocktype="Divider"/i,
+  'Article stack dividers must not use Dynamics Divider blocks',
+);
 assert.match(
-  exported,
-  /\[data-section="true"\][\s\S]*line-height:\s*0 !important/i,
-  'Export must collapse Gmail gaps between section tables',
+  articleStackExport,
+  /\.article-stack-section \.article-stack-divider[\s\S]*width:\s*100% !important/i,
+  'Article stack dividers must span the full content column',
+);
+assert.strictEqual(
+  cheerio.load(simulateDynamicsPaste(articleStackExport), { xml: false }, false)(
+    '.article-stack-divider',
+  ).parent('[data-container="true"]').length,
+  0,
+  'Dynamics paste must not wrap article stack dividers in fixed-width containers',
 );
 
-const benefitCells = $('.three-up-benefits-section .three-up-stack-cell');
+const benefitCells = $('.three-up-benefits-section td.benefit-stack');
 assert.strictEqual(benefitCells.length, 3);
+assert.strictEqual($('.three-up-benefits-section .benefit-stack.three-up-cell').length, 0, 'Benefits must not use three-up-cell class');
 benefitCells.each((_, cell) => {
-  assert.strictEqual($(cell).attr('align'), 'center');
   assert.match($(cell).attr('style') || '', /text-align:\s*center/i);
+  assert.match($(cell).attr('width') || '', /33\.33%/i);
 });
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr').length, 1);
-assert.strictEqual($('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').length, 3);
-assert.strictEqual($('.three-up-benefits-section .three-up-mobile-only, .three-up-benefits-section .three-up-desktop-only').length, 0);
 assert.match(
   exported,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*table-cell !important;/i,
-  'Three benefits must use three columns on desktop',
+  /\.three-up-benefits-section td\.benefit-stack[\s\S]*?width:33\.33% !important/i,
+  'Three benefits must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.doesNotMatch(
+  exported,
+  /\.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Audit fixture must prune unused stats-three base CSS',
+);
+assert.doesNotMatch(
+  exported,
+  /\.stats-four-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Audit fixture must prune unused stats-four base CSS',
+);
+assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
+assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout tr').length, 1);
+assert.match(
+  exported,
+  /u\s*\+\s*\.body \.three-up-benefits-section td\.benefit-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep three-up benefits side-by-side via table cells',
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important;/i,
+  /u\s*\+\s*\.body[\s\S]*?\.footer-legal[\s\S]*?width\s*:\s*100%\s*!important/i,
+  'Gmail must keep footer legal full width',
+);
+assert.match(
+  exported,
+  /u\s*\+\s*\.body[\s\S]*?\.three-up-benefits-section[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center three-up benefit copy',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.three-up-benefits-section td\.benefit-stack[\s\S]*?display:\s*block !important;/i,
   'Three benefits must stack on mobile',
 );
+assert.doesNotMatch($('.three-up-benefits-section').html() || '', /<!--\[if mso\]/i, 'Three benefits must not rely on MSO-only desktop columns');
 assert.match(
   exported,
   /\.orange-footer \[data-container="true"\][\s\S]*?display:\s*inline-block !important;/i,
@@ -291,6 +508,36 @@ assert.ok(
 assert.ok(
   exportBytes < GMAIL_CLIP_BYTES,
   `Audit fixture export must stay under Gmail clip limit (${exportBytes} >= ${GMAIL_CLIP_BYTES})`,
+);
+
+const pcbClipModules = [
+  'preheader-bar',
+  'view-in-browser-bar',
+  'header-standard',
+  'intro-centered',
+  'hero-full',
+  'body-text',
+  'headline-h2-center',
+  'stats-three',
+  'accent-band-cta',
+  'headline-h2',
+  'cta-primary-center',
+  'spacer-sm',
+  'feature-right-text',
+  'spacer-sm',
+  'headline-h2-center',
+  'cta-text-link',
+  'footer',
+];
+const pcbClipExport = buildEmailHtml({
+  title: 'PCB clip audit',
+  modules: pcbClipModules,
+  annotate: false,
+});
+const pcbClipSimulatedBytes = Buffer.byteLength(simulateDynamicsPaste(pcbClipExport), 'utf8');
+assert.ok(
+  pcbClipSimulatedBytes < GMAIL_CLIP_SAFE_BYTES,
+  `PCB campaign must stay under Gmail safe clip threshold after Dynamics paste (${pcbClipSimulatedBytes} >= ${GMAIL_CLIP_SAFE_BYTES})`,
 );
 
 const fullCssExport = buildEmailHtml({ ...options, fullCss: true });
@@ -357,7 +604,7 @@ assert.match(
 
 const simulatedDynamics = simulateDynamicsPaste(exported);
 assert.match(simulatedDynamics, /columns-equal-class/i, 'Dynamics simulation must add columns-equal-class');
-assert.match(simulatedDynamics, /data-container="true"/i, 'Dynamics simulation must wrap editor blocks');
+assert.match(simulatedDynamics, /data-d365-flex-wrap="true"|display:flex;flex-direction:column/i, 'Dynamics simulation must wrap editor blocks in send-time flex shells');
 assert.strictEqual($('[data-layout="true"]').length, 1, 'Export keeps a single layout shell');
 assert.strictEqual(
   $('[data-layout="true"]').parent('[data-layout="true"]').length,
@@ -372,7 +619,7 @@ assert.match(
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.three-up-benefits-section \.three-up-stack-cell[\s\S]*?display:\s*block !important/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important/i,
   'Dynamics send CSS must stack three-up benefits on mobile',
 );
 assert.match(
@@ -393,8 +640,8 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.header-logo-wrap[\s\S]*width:100%/i,
-  'Header logo wrapper must span the full header width',
+  /\.header-logo-safe[\s\S]*line-height:\s*normal/i,
+  'Header logo shell must use natural line-height so Outlook does not clip the image',
 );
 assert.match(
   exported,
@@ -424,6 +671,92 @@ assert.strictEqual(
   )('.intro-headline [data-editorblocktype="Text"]').length,
   1,
   'Intro headline module must use one Text block to avoid Gmail spacing between Dynamics containers',
+);
+assert.match(
+  buildEmailHtml({ title: 'intro headline audit', modules: ['intro-headline'], annotate: false }),
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Intro headline must ship left-aligned for Outlook',
+);
+assert.match(
+  buildEmailHtml({ title: 'headline h2 audit', modules: ['headline-h2'], annotate: false }),
+  /\.headline-block-section h2[\s\S]*text-align:\s*left !important/i,
+  'Headline H2 block must ship left-aligned for Outlook',
+);
+
+const headlineH2CenterExport = buildEmailHtml({
+  title: 'headline h2 center audit',
+  modules: ['headline-h2-center'],
+  annotate: false,
+});
+const $headlineH2Center = cheerio.load(headlineH2CenterExport, { xml: false }, false);
+assert.strictEqual($headlineH2Center('.headline-block-center-section').length, 1);
+assert.strictEqual($headlineH2Center('.headline-block-center-section center').length, 1);
+assert.strictEqual($headlineH2Center('.headline-block-center-inner tr').length, 2);
+assert.strictEqual($headlineH2Center('.headline-block-center-cell').attr('align'), 'center');
+assert.strictEqual($headlineH2Center('h2').first().attr('align'), 'center');
+assert.match($headlineH2Center('h2').first().attr('style') || '', /text-align:center/i);
+assert.match(
+  headlineH2CenterExport,
+  /\.headline-block-center-section \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
+  'Centered headline block data-container must stretch full width and center',
+);
+assert.match(
+  headlineH2CenterExport,
+  /u \+ \.body \.headline-block-center-section \[data-container="true"\][\s\S]*?text-align:\s*center !important/i,
+  'Gmail must keep centered headline block data-container full width',
+);
+assert.doesNotMatch(
+  headlineH2CenterExport,
+  /\.headline-block-center-section h2\{[^}]*text-align:\s*left !important/i,
+  'Centered headline H2 must not ship a left-align override',
+);
+const headlineH2CenterPasted = simulateDynamicsPaste(headlineH2CenterExport);
+const $headlineH2CenterPasted = cheerio.load(headlineH2CenterPasted, { xml: false }, false);
+assert.strictEqual($headlineH2CenterPasted('.headline-block-center-section [data-d365-flex-wrap="true"]').length, 2);
+assert.strictEqual($headlineH2CenterPasted('.headline-block-center-inner td[align="center"]').length, 2);
+
+const headlineH3CenterExport = buildEmailHtml({
+  title: 'headline h3 center audit',
+  modules: ['headline-h3-center'],
+  annotate: false,
+});
+const $headlineH3Center = cheerio.load(headlineH3CenterExport, { xml: false }, false);
+assert.strictEqual($headlineH3Center('.headline-block-center-section').length, 1);
+assert.strictEqual($headlineH3Center('h3').first().attr('align'), 'center');
+
+const headlineH2CenterPreview = buildEmailHtml({
+  title: 'headline h2 center preview',
+  modules: ['headline-h2-center'],
+  annotate: true,
+});
+const $headlineH2CenterPreview = cheerio.load(headlineH2CenterPreview, { xml: false }, false);
+assert.strictEqual($headlineH2CenterPreview('.headline-block-center-cell').attr('align'), 'center');
+assert.strictEqual($headlineH2CenterPreview('h2').first().attr('align'), 'center');
+
+assert.match(
+  buildEmailHtml({ title: 'feature left audit', modules: ['feature-left-text'], annotate: false }),
+  /\.feature-stack-text p[\s\S]*text-align:\s*left !important/i,
+  'Feature module copy must ship left-aligned for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section \.header-logo-safe[\s\S]*line-height:\s*normal !important/i,
+  'Header logo shell must use natural line-height for Outlook',
+);
+assert.match(
+  exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*auto !important/i,
+  'Header logo must scale naturally in Outlook without fixed-height clipping',
+);
+assert.doesNotMatch(
+  exported,
+  /\.header-standard-section img\.header-logo-img[\s\S]*height:\s*23px !important/i,
+  'Header logo must not force a fixed 23px height that clips taller assets',
+);
+assert.match(
+  getOutlookFallbackCss(),
+  /\.intro-headline h1[\s\S]*text-align:\s*left !important/i,
+  'Outlook desktop fallback must keep intro headlines left-aligned',
 );
 assert.strictEqual(
   cheerio.load(
@@ -508,7 +841,12 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
+  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*4px solid #ef7800 !important;[\s\S]*?border-right:\s*4px solid #ffffff !important;/i,
+  'Post-paste CSS must keep grey CTA desktop edge rails',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
   'Mobile grey CTA must remove both desktop edge rails',
 );
 
@@ -574,6 +912,328 @@ const overriddenAnchor = $overriddenButton('.buttonCell a.button-primary');
 assert.strictEqual(overriddenAnchor.attr('href'), 'https://example.com/outlook-cta');
 assert.strictEqual(overriddenAnchor.text(), 'Custom Outlook CTA');
 
+const centerCtaExport = buildEmailHtml({
+  title: 'Center CTA audit',
+  modules: ['cta-primary-center'],
+  overrides: {},
+  annotate: false,
+});
+const $centerCta = cheerio.load(centerCtaExport, { xml: false }, false);
+assert.strictEqual($centerCta('.cta-primary-center').length, 1, 'Center CTA section must carry cta-primary-center class');
+const centerWrap = $centerCta('.cta-primary-center .buttonWrapper');
+assert.strictEqual(centerWrap.attr('align'), 'center');
+assert.match(centerWrap.attr('style') || '', /margin-left:auto/i, 'Center CTA wrapper must auto-margin for block-level table centering');
+assert.match(centerWrap.attr('style') || '', /margin-right:auto/i);
+assert.match(centerWrap.attr('style') || '', /max-width:320px/i, 'Center CTA wrapper must cap button width on mobile');
+const centerTable = centerWrap.find('.buttonTable').first();
+assert.match(centerTable.attr('style') || '', /margin-left:auto/i, 'Center CTA button table must auto-margin');
+assert.match(centerTable.attr('style') || '', /margin-right:auto/i);
+assert.match(
+  centerCtaExport,
+  /\.cta-primary-center \.buttonTable[\s\S]*?margin-left:\s*auto !important;/i,
+  'Exported CSS must center block-level button tables in cta-primary-center',
+);
+
+const heroFullFields = extractFields('hero-full');
+assert(
+  heroFullFields.some((field) => field.key === 'image_0_caption' && field.hideWhenEmpty),
+  'Image modules must expose optional image subtext field',
+);
+const twoUpFields = extractFields('two-up-cards');
+assert(twoUpFields.some((field) => field.key === 'image_0_caption'), 'Two-up cards must expose subtext for first image');
+assert(twoUpFields.some((field) => field.key === 'image_1_caption'), 'Two-up cards must expose subtext for second image');
+
+const subtextExport = buildEmailHtml({
+  title: 'Image subtext audit',
+  modules: ['team-profile'],
+  overrides: {
+    0: {
+      image_0_caption: 'Alex Müller\nProduct Manager, Connectivity',
+    },
+  },
+  annotate: false,
+});
+const $subtext = cheerio.load(subtextExport, { xml: false }, false);
+assert.match(
+  $subtext('.image-subtext').html() || '',
+  /Alex Müller<br>Product Manager, Connectivity/i,
+  'Multiline image subtext must render line breaks',
+);
+
+const emptySubtextExport = buildEmailHtml({
+  title: 'Empty image subtext audit',
+  modules: ['hero-full'],
+  overrides: {},
+  annotate: false,
+});
+assert.doesNotMatch(
+  emptySubtextExport,
+  /class="caption-text image-subtext"/,
+  'Empty image subtext must be omitted on export',
+);
+
+const twoUpTextExport = buildEmailHtml({
+  title: 'Two-up text audit',
+  modules: ['two-up-text'],
+  overrides: {},
+  annotate: false,
+});
+const $twoUpText = cheerio.load(twoUpTextExport, { xml: false }, false);
+assert.strictEqual($twoUpText('.two-up-text-section .two-up-text-col').length, 2, 'Two-up text must render two 50/50 columns');
+assert.strictEqual($twoUpText('.two-up-text-col-right').length, 1);
+assert.match($twoUpText('.two-up-text-col-left').attr('style') || '', /padding-right:12px/i);
+assert.match($twoUpText('.two-up-text-col-right').attr('style') || '', /border-left:1px solid #e8e8e8/i);
+assert.match($twoUpText('.two-up-text-shell').attr('style') || '', /padding-bottom:28px/i);
+assert.doesNotMatch($twoUpText('.two-up-text-col-left').attr('width') || '', /50%/i, 'Two-up columns must not ship width="50%" attributes');
+assert.doesNotMatch($twoUpText('.two-up-text-col-left').attr('style') || '', /width:50%/i, 'Two-up columns must not ship inline 50% width');
+assert.match(
+  twoUpTextExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.two-up-text-section \.two-up-text-col[\s\S]*?width:\s*50% !important;/i,
+  'Two-up text columns must ship at 50% width on desktop via CSS only',
+);
+assert.match(
+  twoUpTextExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.two-up-text-section \.two-up-text-col-right[\s\S]*?border-top:\s*1px solid #e8e8e8 !important;/i,
+  'Mobile two-up text must use a horizontal divider when stacked',
+);
+assert.match(
+  twoUpTextExport,
+  /u \+ \.body \.two-up-text-section \.two-up-text-col[\s\S]*?display:\s*block !important;/i,
+  'Gmail must force two-up columns to stack on mobile',
+);
+const twoUpPasted = simulateDynamicsPaste(twoUpTextExport);
+const $twoUpPasted = cheerio.load(twoUpPasted, { xml: false }, false);
+assert.doesNotMatch($twoUpPasted('.two-up-text-col-left').attr('width') || '', /50%/i, 'Dynamics paste must not reintroduce width="50%" on two-up columns');
+
+const accentBandCtaExport = buildEmailHtml({
+  title: 'Accent band CTA audit',
+  modules: ['accent-band-cta'],
+  annotate: false,
+});
+const $accentBandCta = cheerio.load(accentBandCtaExport, { xml: false }, false);
+assert.strictEqual($accentBandCta('td.accent-band-copy').length, 1);
+assert.strictEqual($accentBandCta('td.accent-band-cta').length, 1);
+assert.match($accentBandCta('td.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must use percentage table column width');
+assert.match($accentBandCta('td.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must use percentage table column width');
+assert.match($accentBandCta('td.accent-band-cta').attr('style') || '', /text-align:right/i, 'Accent band CTA must align right on desktop');
+assert.match(
+  accentBandCtaExport,
+  /\.accent-band-layout td\.accent-band-copy[\s\S]*?width:65% !important/i,
+  'Accent band must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.match(
+  accentBandCtaExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.accent-band-layout td\.accent-band-copy[\s\S]*?display:table-cell!important/i,
+  'Accent band must keep columns side-by-side above mobile breakpoint',
+);
+assert.match(
+  accentBandCtaExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.accent-band-layout td\.accent-band-copy[\s\S]*?display:block!important/i,
+  'Mobile accent band columns must stack to full width',
+);
+assert.doesNotMatch($accentBandCta('.accent-band').html() || '', /<!--\[if mso\]/i, 'Accent band must not rely on MSO-only desktop columns');
+assert.match(
+  accentBandCtaExport,
+  /u\s*\+\s*\.body \.accent-band-layout td\.accent-band-copy[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep accent band side-by-side via table cells',
+);
+assert.match(
+  accentBandCtaExport,
+  /u\s*\+\s*\.body \.accent-band-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside accent band columns',
+);
+const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
+const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
+assert.match($accentBandCtaPasted('td.accent-band-copy').attr('width') || '', /65%/i, 'Dynamics paste must keep accent band copy percentage width');
+
+const stepsHorizontalExport = buildEmailHtml({
+  title: 'Steps horizontal audit',
+  modules: ['steps-horizontal'],
+  annotate: false,
+});
+const $stepsHorizontal = cheerio.load(stepsHorizontalExport, { xml: false }, false);
+assert.strictEqual($stepsHorizontal('.steps-horizontal-section').length, 1);
+assert.strictEqual($stepsHorizontal('td.step-stack').length, 3);
+assert.strictEqual($stepsHorizontal('td.step-arrow-cell').length, 2);
+assert.strictEqual($stepsHorizontal('.step-stack.three-up-cell').length, 0, 'Steps must not use three-up-cell class');
+assert.strictEqual($stepsHorizontal('td.step-stack [data-editorblocktype="Text"]').length, 3, 'Steps must use one text block per column');
+assert.match($stepsHorizontal('td.step-stack').first().attr('width') || '', /30%/i);
+assert.match(
+  stepsHorizontalExport,
+  /\.steps-horizontal-layout td\.step-stack[\s\S]*?width:30% !important/i,
+  'Steps must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.match(
+  stepsHorizontalExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.steps-horizontal-layout td\.step-stack[\s\S]*?display:table-cell!important/i,
+  'Steps must keep columns side-by-side above mobile breakpoint',
+);
+assert.match(
+  stepsHorizontalExport,
+  /u\s*\+\s*\.body \.steps-horizontal-layout td\.step-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep steps side-by-side via table cells',
+);
+assert.match(
+  stepsHorizontalExport,
+  /u\s*\+\s*\.body \.step-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics send-time flex shells inside step columns',
+);
+assert.doesNotMatch($stepsHorizontal('.steps-horizontal-section').html() || '', /tbContainer multi/i, 'Steps must not use Dynamics editable-column table');
+
+const statsThreeExport = buildEmailHtml({
+  title: 'Stats three audit',
+  modules: ['stats-three'],
+  annotate: false,
+});
+const $statsThree = cheerio.load(statsThreeExport, { xml: false }, false);
+assert.strictEqual($statsThree('.stats-three-section').length, 1);
+assert.strictEqual($statsThree('.stat-stack').length, 3);
+assert.strictEqual($statsThree('td.stat-stack').length, 3, 'Stats must use table cells for three-column desktop layout');
+assert.strictEqual($statsThree('.stats-three-layout tr').length, 1);
+assert.strictEqual($statsThree('.stat-stack.three-up-cell').length, 0, 'Stats must not reuse three-up-cell mobile stack class');
+assert.match($statsThree('.stat-stack').first().attr('width') || '', /33\.33%/i, 'Stats table cells must ship width="33.33%"');
+assert.match($statsThree('.stat-stack').first().attr('style') || '', /text-align:center/i, 'Stats must keep text-align center inline');
+assert.match($statsThree('.stat-number').first().attr('style') || '', /text-align:center/i, 'Stats numbers must center over labels');
+assert.match($statsThree('.stat-number').first().attr('style') || '', /line-height:34px/i, 'Stats numbers must use pixel line-height for Outlook desktop');
+assert.match($statsThree('.stat-label').first().attr('style') || '', /line-height:16px/i, 'Stats labels must use pixel line-height for Outlook desktop');
+assert.strictEqual($statsThree('.stat-stack [data-editorblocktype="Text"]').length, 3, 'Stats must use one editor block per column');
+assert.match(
+  statsThreeExport,
+  /\.stats-three-section td\.stat-stack[\s\S]*?width:33\.33% !important/i,
+  'Stats must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Stats must keep three columns side-by-side above mobile breakpoint',
+);
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?display:block!important/i,
+  'Mobile stats must stack to full width',
+);
+const statsThreeSectionHtml = $statsThree('.stats-three-section').html() || '';
+assert.doesNotMatch(statsThreeSectionHtml, /<!--\[if mso\]/i, 'Stats three must not rely on MSO-only desktop columns');
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?width:\s*100% !important;/i,
+  'Mobile stats must stack to full width',
+);
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body \.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep stats side-by-side via table cells',
+);
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body[\s\S]*?\.stats-three-section[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center stats numbers and labels',
+);
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body \.stat-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside stat columns',
+);
+assert.match(
+  statsThreeExport,
+  /u\s*\+\s*\.body \.stats-three-section td\.stat-stack[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center stat table cells',
+);
+
+const statsFourExport = buildEmailHtml({
+  title: 'Stats four audit',
+  modules: ['stats-four'],
+  annotate: false,
+});
+const $statsFour = cheerio.load(statsFourExport, { xml: false }, false);
+assert.strictEqual($statsFour('.stats-four-section').length, 1);
+assert.strictEqual($statsFour('td.stat-stack').length, 4);
+assert.strictEqual($statsFour('.stat-stack [data-editorblocktype="Text"]').length, 4);
+assert.match($statsFour('.stat-stack').first().attr('width') || '', /25%/i);
+assert.match($statsFour('.stat-stack').first().attr('style') || '', /text-align:center/i);
+assert.match(statsFourExport, /\.stats-four-section td\.stat-stack[\s\S]*?width:25% !important/i);
+assert.match(
+  statsFourExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.stats-four-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Stats four must keep four columns side-by-side above mobile breakpoint',
+);
+assert.doesNotMatch($statsFour('.stats-four-section').html() || '', /<!--\[if mso\]/i, 'Stats four must not rely on MSO-only desktop columns');
+assert.match(
+  statsFourExport,
+  /u\s*\+\s*\.body \.stats-four-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep stats four side-by-side via table cells',
+);
+assert.match(
+  statsFourExport,
+  /u\s*\+\s*\.body \.stat-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside four-up stat columns',
+);
+
+const threeUpProductsExport = buildEmailHtml({
+  title: 'Three up products audit',
+  modules: ['three-up-products'],
+  annotate: false,
+});
+const $threeUpProducts = cheerio.load(threeUpProductsExport, { xml: false }, false);
+assert.strictEqual($threeUpProducts('.three-up-products-section').length, 1);
+assert.strictEqual($threeUpProducts('td.product-stack').length, 3);
+assert.strictEqual($threeUpProducts('.product-stack.three-up-cell').length, 0, 'Products must not use three-up-cell class');
+assert.strictEqual($threeUpProducts('.product-stack [data-editorblocktype="Text"]').length, 3, 'Products must use one text block per column');
+assert.match(threeUpProductsExport, /\.three-up-products-section td\.product-stack[\s\S]*?width:33\.33% !important/i);
+assert.match(
+  threeUpProductsExport,
+  /u\s*\+\s*\.body \.three-up-products-section td\.product-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep three-up products side-by-side via table cells',
+);
+assert.match(
+  threeUpProductsExport,
+  /u\s*\+\s*\.body \.product-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics send-time flex shells inside product columns',
+);
+assert.doesNotMatch($threeUpProducts('.three-up-products-section').html() || '', /<!--\[if mso\]/i, 'Three products must not rely on MSO-only desktop columns');
+
+const quoteCenteredExport = buildEmailHtml({
+  title: 'Quote centered audit',
+  modules: ['quote-centered'],
+  annotate: false,
+});
+assert.match(
+  quoteCenteredExport,
+  /u\s*\+\s*\.body \.quote-centered-section \.section-pad > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center quote-centered Dynamics flex shells',
+);
+
+const ctaTextLinkExport = buildEmailHtml({
+  title: 'CTA text link audit',
+  modules: ['cta-text-link'],
+  annotate: false,
+});
+const $ctaTextLink = cheerio.load(ctaTextLinkExport, { xml: false }, false);
+assert.strictEqual($ctaTextLink('.cta-text-link-section').length, 1);
+assert.strictEqual($ctaTextLink('.cta-text-link-section center').length, 1);
+assert.strictEqual($ctaTextLink('.text-link-cta').attr('align'), 'center');
+assert.match($ctaTextLink('.text-link-cta').attr('style') || '', /text-align:center/i);
+assert.match(
+  ctaTextLinkExport,
+  /u\s*\+\s*\.body[\s\S]*?\.cta-text-link-section[\s\S]*?\.text-link-cta[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center text link CTAs',
+);
+assert.match(
+  ctaTextLinkExport,
+  /u\s*\+\s*\.body \.cta-text-link-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics send-time flex wrapper around text link CTA',
+);
+assert.match(
+  ctaTextLinkExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-text-link-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center text link CTA flex shells without u+.body',
+);
+assert.match(
+  headlineH2CenterExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.headline-block-center-cell > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail mobile must center headline block flex shells without u+.body',
+);
+
 const allModuleIds = loadManifest().modules.map((module) => module.id);
 // These modules intentionally keep the Dynamics editable-column pattern
 // (columns-equal-class + data-container). Dynamics needs that metadata to render
@@ -600,16 +1260,23 @@ const allModulesNoMedia = buildEmailHtml({
 });
 const $fallback = cheerio.load(allModulesNoMedia, { xml: false }, false);
 
-$fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').each(() => {});
-assert.strictEqual(
-  $fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr').length,
-  1,
-  'No-media three-up must keep a single benefits row',
+$fallback('.three-up-benefits-section .benefit-stack').each((_, cell) => {
+  assert.match($fallback(cell).attr('style') || '', /text-align:center/i, 'No-media three-up must keep centered stacks');
+});
+assert.match(
+  allModulesNoMedia,
+  /<!--\[if mso\][\s\S]*?benefit-stack/i,
+  'No-media three-up must keep MSO desktop column wrapper',
 );
 assert.strictEqual(
-  $fallback('.three-up-benefits-section .three-up-stack-table > tbody > tr > td').length,
+  $fallback('.three-up-benefits-section .three-up-benefits-layout').length,
+  1,
+  'No-media three-up must keep a single benefits layout table',
+);
+assert.strictEqual(
+  $fallback('.three-up-benefits-section .benefit-stack').length,
   3,
-  'No-media three-up must keep three benefit cells',
+  'No-media three-up must keep three benefit stacks',
 );
 assert.strictEqual($fallback('.three-up-benefits-section .three-up-desktop-only, .three-up-benefits-section .three-up-mobile-only').length, 0);
 $fallback('.cta-dual-section .cta-dual-column').each((_, col) => {
@@ -690,8 +1357,9 @@ for (const moduleId of allModuleIds) {
 }
 
 const headerLogoStyle = $all('.header-standard-section img.header-logo-img').first().attr('style') || '';
-assert.match(headerLogoStyle, /width:100%/i, 'Header logo must shrink inside its source column');
-assert.match(headerLogoStyle, /max-width:200px/i, 'Header logo must retain its desktop cap');
+assert.match(headerLogoStyle, /width:200px/i, 'Header logo must use a fixed desktop width for Outlook');
+assert.match(headerLogoStyle, /height:auto/i, 'Header logo must preserve natural height for Outlook');
+assert.doesNotMatch(headerLogoStyle, /height:23px/i, 'Header logo must not force a fixed 23px height inline');
 
 for (const selector of ['.article-thumb img', '.team-photo img']) {
   const style = $all(selector).first().attr('style') || '';
@@ -754,6 +1422,7 @@ assert.strictEqual(
 
 $all('[data-layout="true"] > [data-section="true"]').each((_, section) => {
   const $section = $all(section);
+  if ($section.hasClass('accent-band') || $section.hasClass('orange-footer')) return;
   assert.match(
     $section.attr('style') || '',
     /background(?:-color)?\s*:/i,

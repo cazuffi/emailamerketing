@@ -127,6 +127,17 @@ function hardenButtons($) {
     });
   });
 
+  $('.buttonWrapper[align="center"], .cta-primary-center .buttonWrapper, .cta-outline-center .buttonWrapper').each((_, el) => {
+    const $wrap = $(el);
+    if ($wrap.closest('.cta-dual-section, .cta-band-grey, .compact-button-column').length) return;
+    $wrap.attr('align', 'center');
+    ensureStyle($wrap, 'text-align:center;display:block;margin-left:auto;margin-right:auto');
+    $wrap.find('.buttonTable, .button-outline-table').first().each((__, table) => {
+      const $table = $(table);
+      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+    });
+  });
+
   $('.cta-band-grey .cta-band-grey-button .buttonWrapper').each((_, el) => {
     const $wrap = $(el);
     setStyleProp($wrap, 'width', '100%');
@@ -221,12 +232,10 @@ function hardenImages($) {
   $('img.header-logo-img, .header-logo-cell img').each((_, el) => {
     const $img = $(el);
     const w = Number($img.attr('width')) || 200;
-    ensureStyle($img, `width:${w}px;max-width:${w}px;height:auto`);
-    if (!$img.attr('height')) {
-      const srcW = 400;
-      const srcH = 45;
-      $img.attr('height', String(Math.round((srcH / srcW) * w)));
-    }
+    $img.attr('width', String(w));
+    $img.removeAttr('height');
+    removeStyleProp($img, 'height');
+    ensureStyle($img, `display:block;width:${w}px;max-width:${w}px;height:auto;mso-line-height-rule:exactly`);
   });
 }
 
@@ -247,7 +256,7 @@ function hasBackgroundStyle($el) {
 function hardenOrangeFooterSections($) {
   $('.orange-footer[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    setStyleProp($section, 'background-color', '#ffffff');
+    removeStyleProp($section, 'background-color');
     $section.find('table.outer').first().each((__, table) => {
       const $table = $(table);
       $table.attr('bgcolor', '#ef7800');
@@ -285,7 +294,7 @@ function hardenOuterTableCentering($) {
 function hardenAccentSections($) {
   $('.accent-band[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    setStyleProp($section, 'background-color', '#ffffff');
+    removeStyleProp($section, 'background-color');
     $section.find('table.outer').first().each((__, table) => {
       const $table = $(table);
       $table.attr('bgcolor', '#ef7800');
@@ -305,6 +314,14 @@ function hardenSectionBackgrounds($) {
     setStyleProp($layout, 'background-color', '#ffffff');
     $layout.children('[data-section="true"]').each((__, section) => {
       const $section = $(section);
+      if (
+        $section.hasClass('accent-band') ||
+        $section.hasClass('urgency-band') ||
+        $section.hasClass('orange-footer') ||
+        $section.hasClass('cta-band-grey')
+      ) {
+        return;
+      }
       if (hasBackgroundStyle($section)) return;
       setStyleProp($section, 'background-color', '#ffffff');
       $section.children('table.outer').first().each((___, table) => {
@@ -350,9 +367,22 @@ function hardenSmallText($) {
     if (!cls) return;
     if (cls === 'disclaimer-text') ensureStyle($p, 'font-size:10px;line-height:1.5;color:#999999');
     if (cls === 'preheader-text') ensureStyle($p, 'font-size:11px;line-height:1.4;color:#666666');
-    if (cls === 'caption-text') ensureStyle($p, 'font-size:11px;line-height:1.5;color:#666666');
+    if (cls === 'caption-text') ensureStyle($p, 'font-size:11px;line-height:16px;mso-line-height-rule:at-least;color:#666666');
     if (cls === 'stat-label') ensureStyle($p, 'font-size:11px;line-height:1.4');
     if (cls === 'faq-answer') ensureStyle($p, 'font-size:15px;line-height:1.6;color:#333333');
+  });
+}
+
+function hardenEmptyImageSubtext($) {
+  $('.image-subtext').each((_, el) => {
+    const $subtext = $(el);
+    const text = ($subtext.text() || '').replace(/\u00a0/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+    if (text) return;
+    ensureStyle($subtext, 'display:none;mso-hide:all;font-size:0;line-height:0;max-height:0;margin:0;padding:0;overflow:hidden;height:0');
+    const $block = $subtext.closest('.image-subtext-block');
+    if ($block.length) {
+      ensureStyle($block, 'display:none;mso-hide:all;font-size:0;line-height:0;max-height:0;margin:0;padding:0;overflow:hidden;height:0');
+    }
   });
 }
 
@@ -402,17 +432,43 @@ function unwrapPassengerDivs($) {
   });
 }
 
-function shouldUseSectionGapShim($section) {
-  if (
-    $section.hasClass('accent-band') ||
-    $section.hasClass('orange-footer') ||
-    $section.hasClass('urgency-band') ||
-    $section.hasClass('cta-band-grey')
-  ) {
-    return false;
-  }
-  if ($section.hasClass('divider-line-section') || $section.find('.divider-line-cell').length) return false;
-  return true;
+function hardenFullBleedBands($) {
+  const bands = [
+    { selector: '.accent-band', color: '#ef7800' },
+    { selector: '.urgency-band', color: '#333333' },
+    { selector: '.orange-footer', color: '#ef7800' },
+  ];
+
+  bands.forEach(({ selector, color }) => {
+    $(`${selector}[data-section="true"]`).each((_, section) => {
+      const $section = $(section);
+      if (selector === '.urgency-band') {
+        setStyleProp($section, 'background-color', color);
+      } else {
+        removeStyleProp($section, 'background-color');
+      }
+      $section.find('table.outer').each((__, table) => {
+        const $table = $(table);
+        $table.attr('align', 'center');
+        $table.attr('bgcolor', color);
+        ensureStyle(
+          $table,
+          `width:100%;min-width:100%;max-width:640px;margin-left:auto;margin-right:auto;background-color:${color}`,
+        );
+      });
+    });
+  });
+}
+
+function hardenArticleStackDividers($) {
+  $('.article-stack-section .article-stack-divider').each((_, el) => {
+    const $divider = $(el);
+    $divider.removeAttr('data-editorblocktype');
+    ensureStyle($divider, 'display:block;width:100%;max-width:100%;margin-left:0;margin-right:0');
+    $divider.find('.divider-line-table, .divider-line-cell, .divider-line-img').each((__, node) => {
+      ensureStyle($(node), 'width:100%;max-width:100%');
+    });
+  });
 }
 
 function hardenUrgencyBand($) {
@@ -457,7 +513,7 @@ function hardenCtaBandGrey($) {
     $section.find('.cta-band-grey-shell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f4f4f4');
-      ensureStyle($cell, 'background-color:#f4f4f4;width:100%');
+      ensureStyle($cell, 'background-color:#f4f4f4;width:100%;border-left:4px solid #ef7800;border-right:4px solid #ffffff');
     });
   });
 }
@@ -492,15 +548,28 @@ function hardenThreeUpBenefits($) {
       $cell.attr('align', 'center');
       ensureStyle($cell, 'text-align:center;width:100%');
     });
-    $section.find('.three-up-stack-table').each((__, table) => {
+    $section.find('.three-up-benefits-layout').each((__, table) => {
       const $table = $(table);
       $table.attr('align', 'center');
       ensureStyle($table, 'width:100%;margin-left:auto;margin-right:auto;border-collapse:collapse');
     });
-    $section.find('.three-up-stack-cell').each((__, cell) => {
+    $section.find('td.benefit-stack, .benefit-stack-cell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('align', 'center');
-      ensureStyle($cell, 'text-align:center;vertical-align:top');
+      $cell.attr('valign', 'top');
+      $cell.attr('width', '33.33%');
+      ensureStyle($cell, 'width:33.33%;text-align:center;vertical-align:top;box-sizing:border-box');
+    });
+    $section.find('td.benefit-stack:not(:last-child), .benefit-stack-cell:not(:last-child)').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 20px');
+    });
+    $section.find('td.benefit-stack:last-child, .benefit-stack-cell:last-child').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 0');
+    });
+    $section.find('td.benefit-stack [data-editorblocktype="Text"], .benefit-stack-cell [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
     });
   });
 }
@@ -508,37 +577,10 @@ function hardenThreeUpBenefits($) {
 function hardenSectionGaps($) {
   $('[data-section="true"]').each((_, section) => {
     const $section = $(section);
-    if ($section.hasClass('divider-line-section')) {
-      ensureStyle($section, 'margin:0;padding:0;display:block');
-      return;
-    }
-    ensureStyle($section, 'margin:0;padding:0;line-height:0;font-size:0;display:block');
-    $section.children('table.section-gap-shim').each((__, shim) => {
-      const $shim = $(shim);
-      ensureStyle($shim, 'margin:0;padding:0;border-collapse:collapse;width:100%');
-      $shim.find('> tbody > tr > td, > tr > td').first().each((___, cell) => {
-        ensureStyle($(cell), 'padding:0;margin:0;line-height:normal;font-size:15px;mso-line-height-rule:exactly');
-      });
-    });
+    ensureStyle($section, 'margin:0;padding:0;display:block');
     $section.children('table.outer').each((__, table) => {
       ensureStyle($(table), 'margin-top:0;margin-bottom:0;line-height:normal;font-size:15px');
     });
-  });
-}
-
-function wrapSectionGapShims($) {
-  $('[data-section="true"]').each((_, section) => {
-    const $section = $(section);
-    if (!shouldUseSectionGapShim($section)) return;
-    if ($section.children('table.section-gap-shim').length) return;
-    const $outer = $section.children('table.outer').first();
-    if (!$outer.length) return;
-
-    const $shim = $(
-      '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="section-gap-shim" role="presentation" style="margin:0;padding:0;border-collapse:collapse;width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt"><tbody><tr><td align="left" width="100%" style="padding:0;margin:0;line-height:normal;font-size:15px;mso-line-height-rule:exactly;text-align:left;width:100%;"></td></tr></tbody></table>',
-    );
-    $shim.find('td').first().append($outer);
-    $section.append($shim);
   });
 }
 
@@ -648,6 +690,46 @@ function normalizeText(value) {
     .trim();
 }
 
+function hardenLeftAlignedTextSections($) {
+  const sectionSelectors = [
+    '.intro-headline',
+    '.eyebrow-headline',
+    '.headline-block-section',
+    '.eyebrow-h2-section',
+    '.headline-h3-section',
+    '.headline-h4-section',
+    '.body-text-section',
+    '.comparison-heading-section',
+  ];
+
+  sectionSelectors.forEach((selector) => {
+    $(`${selector}[data-section="true"]`).each((_, section) => {
+      const $section = $(section);
+      $section.find('.section-pad, .section-pad-compact, .section-pad-compact-bottom, .section-heading-cell').each((__, cell) => {
+        const $cell = $(cell);
+        $cell.attr('align', 'left');
+        ensureStyle($cell, 'text-align:left');
+      });
+      $section.find('[data-container], [data-editorblocktype="Text"], [data-editorblocktype="Text"] h1, [data-editorblocktype="Text"] h2, [data-editorblocktype="Text"] h3, [data-editorblocktype="Text"] p, h1, h2, h3, p, .eyebrow-label, .headline-lead').each((__, el) => {
+        const $el = $(el);
+        $el.attr('align', 'left');
+        ensureStyle($el, 'text-align:left;width:100%;margin-left:0;margin-right:0');
+      });
+    });
+  });
+
+  $('.feature-stack-text').each((_, cell) => {
+    const $cell = $(cell);
+    $cell.attr('align', 'left');
+    ensureStyle($cell, 'text-align:left');
+    $cell.find('[data-container], [data-editorblocktype="Text"], [data-editorblocktype="Text"] h3, [data-editorblocktype="Text"] p, h3, p').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'left');
+      ensureStyle($el, 'text-align:left;width:100%;margin-left:0;margin-right:0');
+    });
+  });
+}
+
 function hardenHeaderAlignment($) {
   $('.header-standard-section').each((_, section) => {
     const $section = $(section);
@@ -657,19 +739,32 @@ function hardenHeaderAlignment($) {
       $(table).attr('bgcolor', '#ffffff');
       ensureStyle($(table), 'background-color:#ffffff');
     });
-    $section.find('.section-pad-tight, .header-logo-column, .header-logo-cell').each((__, cell) => {
+    $section.find('.section-pad-tight').each((__, cell) => {
       const $cell = $(cell);
-      if ($cell.hasClass('header-logo-column') || $cell.hasClass('header-logo-cell')) {
-        ensureStyle($cell, 'background-color:#ffffff');
-      } else {
-        $cell.attr('bgcolor', '#ffffff');
-        ensureStyle($cell, 'background-color:#ffffff');
-      }
+      $cell.attr('bgcolor', '#ffffff');
+      ensureStyle($cell, 'background-color:#ffffff');
     });
-    $section.find('.header-logo-wrap').each((__, wrap) => {
+    $section.find('.header-logo-column, .header-logo-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'left');
+      $cell.attr('valign', 'top');
+      ensureStyle($cell, 'background-color:#ffffff;vertical-align:top;text-align:left;line-height:normal;mso-line-height-rule:exactly');
+    });
+    $section.find('.header-logo-table, .header-logo-safe, .header-logo-wrap, .header-logo-column .imageWrapper, .header-logo-column [data-editorblocktype="Image"]').each((__, wrap) => {
       const $wrap = $(wrap);
-      $wrap.attr('align', 'center');
-      ensureStyle($wrap, 'display:block;width:100%;text-align:center;line-height:0;background-color:transparent');
+      $wrap.attr('align', 'left');
+      removeStyleProp($wrap, 'line-height');
+      removeStyleProp($wrap, 'font-size');
+      ensureStyle(
+        $wrap,
+        'display:block;width:100%;text-align:left;line-height:normal;mso-line-height-rule:exactly;font-size:15px;background-color:#ffffff',
+      );
+    });
+    $section.find('.header-logo-safe td, .header-logo-table td').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'left');
+      $cell.attr('valign', 'top');
+      ensureStyle($cell, 'padding:0;margin:0;line-height:normal;mso-line-height-rule:exactly;font-size:15px;background-color:#ffffff');
     });
   });
 
@@ -711,10 +806,9 @@ function hardenSectionHeadings($) {
     $section.find('center').each((__, el) => {
       ensureStyle($(el), 'width:100%;text-align:center');
     });
-    $section.find('.section-rule-table').each((__, table) => {
+    $section.find('.divider-line-table').each((__, table) => {
       const $table = $(table);
-      $table.attr('align', 'center');
-      ensureStyle($table, 'margin-left:auto;margin-right:auto');
+      ensureStyle($table, 'margin:0 auto 12px auto;width:100%');
     });
     $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2').each((__, el) => {
       const $el = $(el);
@@ -725,6 +819,54 @@ function hardenSectionHeadings($) {
       const $el = $(el);
       $el.attr('align', 'center');
       ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenHeadlineBlockCenter($) {
+  $('.headline-block-center-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.headline-block-center-cell, center, .headline-block-center-inner, .headline-block-center-inner td').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h2, [data-editorblocktype="Text"] h3, [data-editorblocktype="Text"] p, h2, h3, p, .headline-lead').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenCtaTextLinks($) {
+  $('.cta-text-link-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.cta-text-link-cell, center, .cta-text-link-wrap').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('[data-container], [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('.text-link-cta').each((__, link) => {
+      const $link = $(link);
+      $link.attr('align', 'center');
+      ensureStyle($link, 'display:inline-block;text-align:center;color:#ef7800;text-decoration:underline');
     });
   });
 }
@@ -788,6 +930,10 @@ function hardenFooterAlignment($) {
   $('.orange-footer [data-container], .footer-legal [data-container]').each((_, el) => {
     const $el = $(el);
     $el.attr('align', 'center');
+    if ($el.closest('.footer-legal').length) {
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:center;margin-left:auto;margin-right:auto');
+      return;
+    }
     ensureStyle($el, 'display:inline-block;width:auto;max-width:100%;text-align:center;margin-left:auto;margin-right:auto;vertical-align:top');
   });
 
@@ -824,6 +970,7 @@ function hardenEmailHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenFullBleedBands($);
   hardenOrangeFooterSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
@@ -833,11 +980,27 @@ function hardenEmailHtml(html) {
   hardenDividers($);
   hardenD365Containers($);
   hardenHeaderAlignment($);
+  hardenLeftAlignedTextSections($);
   hardenSectionHeadings($);
+  hardenHeadlineBlockCenter($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
+  hardenArticleStackDividers($);
   hardenBodyTextSections($);
-  wrapSectionGapShims($);
+  hardenViewInBrowser($);
+  hardenInsetImages($);
+  hardenIntroCentered($);
+  hardenImageSplitColumns($);
+  hardenTwoUpTextColumns($);
+  hardenAccentBandColumns($);
+  hardenCtaTextLinks($);
+  hardenCtaPrimaryCenter($);
+  hardenStatsThreeColumns($);
+  hardenStatsFourColumns($);
+  hardenThreeUpProducts($);
+  hardenStepsHorizontalColumns($);
+  hardenProactiveDynamicsContainers($);
+  hardenHybridStackLineHeights($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
   return $.html();
@@ -860,6 +1023,10 @@ function hardenD365Containers($) {
     // Responsive data tables use column classes for mobile stacking, but their
     // cells are not editable D365 layout containers.
     if ($table.hasClass('specs-table')) return;
+    // Responsive two-up / image-split columns stack via CSS — do not mark
+    // layout cells as Dynamics data-container or they pick up fixed widths.
+    if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -909,6 +1076,417 @@ function hardenD365Containers($) {
   });
 }
 
+function hardenIntroCentered($) {
+  $('.mod-intro-centered').each((_, section) => {
+    const $section = $(section);
+    $section.find('.intro-centered-cell, center, .intro-centered-inner, .intro-centered-inner td').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('[data-editorblocktype="Text"], [data-editorblocktype="Text"] h1, [data-editorblocktype="Text"] h2, [data-editorblocktype="Text"] p, h1, h2, p').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0');
+    });
+    $section.find('[data-container]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenTwoUpTextColumns($) {
+  $('.two-up-text-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.tbContainer.multi > tbody > tr > td.stack-column, .tbContainer.multi > tr > td.stack-column').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.removeAttr('width');
+      removeStyleProp($cell, 'width');
+      removeStyleProp($cell, 'max-width');
+      ensureStyle($cell, 'box-sizing:border-box;vertical-align:top');
+    });
+    $section.find('.two-up-text-col-left').each((__, cell) => {
+      ensureStyle($(cell), 'padding-right:12px');
+    });
+    $section.find('.two-up-text-col-right').each((__, cell) => {
+      ensureStyle($(cell), 'padding-left:12px;border-left:1px solid #e8e8e8;mso-border-left-alt:1px solid #e8e8e8');
+    });
+    $section.find('.two-up-text-shell').each((__, cell) => {
+      ensureStyle($(cell), 'padding-bottom:28px');
+    });
+    $section.find('.two-up-text-col [data-container]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;align-self:stretch');
+    });
+  });
+}
+
+function hardenHybridStackLineHeights($) {
+  $('.stats-three-section .stat-number').each((_, el) => {
+    ensureStyle($(el), 'line-height:34px;mso-line-height-rule:at-least;text-align:center');
+    $(el).attr('align', 'center');
+  });
+  $('.stats-three-section .stat-label').each((_, el) => {
+    ensureStyle($(el), 'line-height:16px;mso-line-height-rule:at-least;text-align:center');
+    $(el).attr('align', 'center');
+  });
+  $('.stats-three-section .stat-stack [data-editorblocktype="Text"]').each((_, el) => {
+    const $el = $(el);
+    $el.attr('align', 'center');
+    ensureStyle($el, 'font-size:15px;line-height:normal;mso-line-height-rule:at-least;text-align:center');
+  });
+  $('.accent-band .accent-band-copy h1').each((_, el) => {
+    ensureStyle($(el), 'line-height:30px;mso-line-height-rule:at-least');
+  });
+  $('.accent-band .accent-band-copy p').each((_, el) => {
+    ensureStyle($(el), 'line-height:24px;mso-line-height-rule:at-least');
+  });
+  $('.image-split-text-section .image-split-copy h2').each((_, el) => {
+    ensureStyle($(el), 'line-height:27px;mso-line-height-rule:at-least');
+  });
+  $('.image-split-text-section .image-split-copy p').each((_, el) => {
+    ensureStyle($(el), 'line-height:24px;mso-line-height-rule:at-least');
+  });
+  $('.image-split-text-section .image-split-copy [data-editorblocktype="Text"]').each((_, el) => {
+    ensureStyle($(el), 'font-size:15px;line-height:normal;mso-line-height-rule:at-least');
+  });
+  $('.image-subtext-block').each((_, el) => {
+    ensureStyle($(el), 'font-size:11px;line-height:normal;mso-line-height-rule:at-least');
+  });
+  $('.image-subtext').each((_, el) => {
+    const $subtext = $(el);
+    const text = ($subtext.text() || '').replace(/\u00a0/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+    if (!text) return;
+    ensureStyle($subtext, 'font-size:11px;line-height:16px;mso-line-height-rule:at-least;padding:0 4px 4px 4px');
+  });
+}
+
+function hardenAccentBandColumns($) {
+  $('.accent-band').each((_, section) => {
+    const $section = $(section);
+    $section.find('.accent-band-layout').each((__, table) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
+    });
+    $section.find('td.accent-band-copy, .accent-band-stack-cell.accent-band-copy').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('width', '65%');
+      $cell.attr('valign', 'middle');
+      $cell.attr('align', 'left');
+      ensureStyle($cell, 'width:65%;padding:0 16px 0 0;vertical-align:middle;text-align:left;box-sizing:border-box');
+    });
+    $section.find('td.accent-band-cta, .accent-band-stack-cell.accent-band-cta').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('width', '35%');
+      $cell.attr('valign', 'middle');
+      $cell.attr('align', 'right');
+      ensureStyle($cell, 'width:35%;vertical-align:middle;text-align:right;box-sizing:border-box');
+    });
+    $section.find('td.accent-band-copy [data-editorblocktype="Text"], td.accent-band-cta [data-container], td.accent-band-cta .buttonWrapper').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none');
+    });
+  });
+}
+
+function hardenImageSplitColumns($) {
+  $('.image-split-text-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.image-split-layout').each((__, table) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
+    });
+    $section.find('td.image-split-copy, .image-split-stack-cell.image-split-copy').each((__, cell) => {
+      const $cell = $(cell);
+      const $row = $cell.closest('tr');
+      const copyFirst = $row.children().first().is($cell);
+      $cell.attr('width', '51%');
+      $cell.attr('valign', 'middle');
+      $cell.attr('align', 'left');
+      ensureStyle(
+        $cell,
+        copyFirst
+          ? 'width:51%;padding:24px 16px 24px 24px;background-color:#ffffff;vertical-align:middle;text-align:left;box-sizing:border-box'
+          : 'width:51%;padding:24px 24px 24px 16px;background-color:#ffffff;vertical-align:middle;text-align:left;box-sizing:border-box',
+      );
+    });
+    $section.find('td.image-split-media, .image-split-stack-cell.image-split-media').each((__, cell) => {
+      const $cell = $(cell);
+      const $row = $cell.closest('tr');
+      const copyFirst = $row.children('td.image-split-copy, .image-split-copy').first().length
+        && $row.children().first().hasClass('image-split-copy');
+      $cell.attr('width', '49%');
+      $cell.attr('valign', 'top');
+      $cell.attr('align', 'center');
+      ensureStyle(
+        $cell,
+        copyFirst
+          ? 'width:49%;padding:0 0 0 12px;vertical-align:top;text-align:center;box-sizing:border-box'
+          : 'width:49%;padding:0 12px 0 0;vertical-align:top;text-align:center;box-sizing:border-box',
+      );
+    });
+    $section.find('td.image-split-copy [data-editorblocktype="Text"], td.image-split-media [data-editorblocktype="Image"]').each((__, el) => {
+      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none');
+    });
+  });
+}
+
+function hardenStepsHorizontalColumns($) {
+  $('.steps-horizontal-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.steps-horizontal-layout').each((__, table) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
+    });
+    $section.find('td.step-stack, .step-stack-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('width', '30%');
+      $cell.attr('valign', 'top');
+      $cell.attr('align', 'center');
+      ensureStyle($cell, 'width:30%;text-align:center;vertical-align:top;box-sizing:border-box;padding:0 4px');
+    });
+    $section.find('td.step-arrow-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('width', '5%');
+      $cell.attr('valign', 'middle');
+      $cell.attr('align', 'center');
+      ensureStyle($cell, 'width:5%;text-align:center;vertical-align:middle');
+    });
+    $section.find('td.step-stack [data-editorblocktype="Text"], .step-stack-cell [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenStatsThreeColumns($) {
+  $('.stats-three-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('td.stat-stack, .stat-stack-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('valign', 'top');
+      $cell.attr('width', '33.33%');
+      ensureStyle($cell, 'width:33.33%;text-align:center;vertical-align:top;box-sizing:border-box');
+    });
+    $section.find('td.stat-stack:not(:last-child), .stat-stack-cell:not(:last-child)').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 20px');
+    });
+    $section.find('td.stat-stack:last-child, .stat-stack-cell:last-child').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 0');
+    });
+    $section.find('td.stat-stack [data-editorblocktype="Text"], .stat-stack-cell [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('.stat-number, .stat-label').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenStatsFourColumns($) {
+  $('.stats-four-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('td.stat-stack, .stat-stack-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('valign', 'top');
+      $cell.attr('width', '25%');
+      ensureStyle($cell, 'width:25%;text-align:center;vertical-align:top;box-sizing:border-box');
+    });
+    $section.find('td.stat-stack:not(:last-child), .stat-stack-cell:not(:last-child)').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 4px 16px');
+    });
+    $section.find('td.stat-stack:last-child, .stat-stack-cell:last-child').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 4px 0');
+    });
+    $section.find('td.stat-stack [data-editorblocktype="Text"], .stat-stack-cell [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('.stat-number, .stat-label').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
+    });
+  });
+}
+
+function hardenThreeUpProducts($) {
+  $('.three-up-products-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('td.product-stack, .product-stack-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('valign', 'top');
+      $cell.attr('width', '33.33%');
+      ensureStyle($cell, 'width:33.33%;text-align:center;vertical-align:top;box-sizing:border-box');
+    });
+    $section.find('td.product-stack:not(:last-child), .product-stack-cell:not(:last-child)').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 20px');
+    });
+    $section.find('td.product-stack:last-child, .product-stack-cell:last-child').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 0');
+    });
+    $section.find('td.product-stack > div, .product-stack-cell > div, td.product-stack [data-editorblocktype="Text"], .product-stack-cell [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('[data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%');
+    });
+  });
+}
+
+const NEUTRAL_CONTAINER_STYLE = 'display:block;width:100%;max-width:100%;flex:none';
+const CENTERED_CONTAINER_STYLE = `${NEUTRAL_CONTAINER_STYLE};text-align:center;margin-left:auto;margin-right:auto`;
+
+function hardenProactiveDynamicsContainers($) {
+  const centeredSections = [
+    '.quote-centered-section',
+    '.social-links-section',
+    '.video-preview-section',
+  ];
+  for (const selector of centeredSections) {
+    $(selector).each((_, section) => {
+      const $section = $(section);
+      $section.find('.section-pad, .section-pad-tight').each((__, cell) => {
+        const $cell = $(cell);
+        $cell.attr('align', 'center');
+        ensureStyle($cell, 'text-align:center;width:100%');
+      });
+      $section.find('[data-container], [data-editorblocktype="Text"]').each((__, el) => {
+        const $el = $(el);
+        $el.attr('align', 'center');
+        ensureStyle($el, CENTERED_CONTAINER_STYLE);
+      });
+    });
+  }
+
+  const centeredColumnSelectors = [
+    '.icon-grid-four-section .icon-grid-cell [data-container]',
+    '.logo-strip-section .logo-strip-cell [data-container]',
+    '.pricing-two-up-section .pricing-tier [data-container]',
+    '.pricing-two-up-section .pricing-tier-featured [data-container]',
+    '.steps-horizontal-section .step-stack [data-container]',
+    '.two-up-cards-section .card-stack [data-container]',
+    '.download-resource-section .stack-column [data-container]',
+    '.cta-dual-section .cta-dual-column [data-container]',
+  ];
+  for (const selector of centeredColumnSelectors) {
+    $(selector).each((_, el) => {
+      ensureStyle($(el), CENTERED_CONTAINER_STYLE);
+    });
+  }
+
+  const neutralColumnSelectors = [
+    '.hero-split-section [data-container]',
+    '.team-profile-section [data-container]',
+    '.article-row-section [data-container]',
+    '.header-cta-section [data-container]',
+    '.case-study-mini-section [data-container]',
+    '.feature-left-section [data-container]',
+    '.feature-right-section [data-container]',
+    '.feature-left-text-section [data-container]',
+    '.feature-right-text-section [data-container]',
+    '.comparison-split-section [data-container]',
+    '.cta-band-grey [data-container]',
+  ];
+  for (const selector of neutralColumnSelectors) {
+    $(selector).each((_, el) => {
+      ensureStyle($(el), NEUTRAL_CONTAINER_STYLE);
+    });
+  }
+}
+
+function hardenCtaPrimaryCenter($) {
+  $('.cta-primary-center').each((_, section) => {
+    const $section = $(section);
+    $section.find('.buttonWrapper').each((__, wrap) => {
+      ensureStyle($(wrap), 'max-width:320px;margin-left:auto;margin-right:auto;text-align:center');
+    });
+  });
+}
+
+function hardenInsetImages($) {
+  $('.image-edge-section.image-edge-inset').each((_, section) => {
+    const $section = $(section);
+    $section.find('.image-edge-cell').each((__, cell) => {
+      ensureStyle($(cell), 'box-sizing:border-box');
+    });
+    $section.find('.image-edge-subtext-wrap').each((__, wrap) => {
+      setStyleProp($(wrap), 'padding', '8px 0 0 0');
+    });
+  });
+}
+
+function hardenViewInBrowser($) {
+  $('.view-in-browser-section').each((_, section) => {
+    const $section = $(section);
+    $section.attr('style', mergeStyle($section.attr('style') || '', 'background-color:#ffffff'));
+    $section.find('table.outer').each((__, table) => {
+      const $table = $(table);
+      $table.attr('bgcolor', '#ffffff');
+      ensureStyle($table, 'background-color:#ffffff');
+    });
+    $section.find('.view-in-browser-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('bgcolor', '#ffffff');
+      ensureStyle($cell, 'text-align:center;background-color:#ffffff;padding:12px 24px 16px 24px');
+      const $link = $cell.find('.view-in-browser-link').first();
+      if (!$link.length) return;
+
+      // Legacy exports wrapped the link in data-editorblocktype/data-container.
+      // Unwrap so Dynamics paste cannot inject a fixed-width flex container.
+      $link.parents('[data-container="true"], [data-editorblocktype="Text"]').each((___, wrapper) => {
+        const $wrapper = $(wrapper);
+        if ($wrapper.find('.view-in-browser-link').length === 1) {
+          $wrapper.replaceWith($link);
+        }
+      });
+
+      if (!$link.closest('.view-in-browser-center-table').length) {
+        $link.wrap(
+          '<table align="center" cellpadding="0" cellspacing="0" border="0" width="100%" class="view-in-browser-center-table" role="presentation" style="margin:0 auto;width:100%;border-collapse:collapse;"><tbody><tr><td align="center" class="view-in-browser-text-cell" style="text-align:center;padding:0;width:100%;"></td></tr></tbody></table>',
+        );
+      }
+
+      const $centerCell = $link.closest('.view-in-browser-text-cell');
+      if ($centerCell.length) {
+        $centerCell.attr('align', 'center');
+        ensureStyle($centerCell, 'text-align:center;padding:0;width:100%');
+      }
+
+      if (!$link.closest('center').length) {
+        $link.closest('.view-in-browser-center-table').wrap('<center style="width:100%;text-align:center"></center>');
+      }
+    });
+    $section.find('.view-in-browser-center-table, .view-in-browser-center-table td, .view-in-browser-text-cell').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin:0 auto');
+    });
+    $section.find('center').each((__, el) => {
+      ensureStyle($(el), 'width:100%;text-align:center');
+    });
+    $section.find('.view-in-browser-link').each((__, link) => {
+      const $link = $(link);
+      $link.attr('align', 'center');
+      ensureStyle($link, 'display:inline-block;text-align:center;color:#ef7800;text-decoration:underline');
+    });
+  });
+}
+
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
@@ -917,7 +1495,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v44';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -928,15 +1506,33 @@ function sanitizeExportHtml(html) {
   hardenD365Containers($);
   hardenButtons($);
   hardenHeaderAlignment($);
+  hardenViewInBrowser($);
+  hardenInsetImages($);
+  hardenLeftAlignedTextSections($);
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenFullBleedBands($);
   hardenSectionHeadings($);
+  hardenHeadlineBlockCenter($);
+  hardenIntroCentered($);
+  hardenImageSplitColumns($);
+  hardenTwoUpTextColumns($);
+  hardenAccentBandColumns($);
+  hardenCtaTextLinks($);
+  hardenCtaPrimaryCenter($);
+  hardenStatsThreeColumns($);
+  hardenStatsFourColumns($);
+  hardenThreeUpProducts($);
+  hardenStepsHorizontalColumns($);
+  hardenProactiveDynamicsContainers($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
-  wrapSectionGapShims($);
+  hardenHybridStackLineHeights($);
+  hardenArticleStackDividers($);
   hardenSectionGaps($);
   hardenBodyTextSections($);
+  hardenEmptyImageSubtext($);
   unwrapPassengerDivs($);
   normalizeInlineBackgrounds($);
   return `<!-- ${BUILD_MARKER} -->\n${flattenOutlookConditionals($.html())}`;
