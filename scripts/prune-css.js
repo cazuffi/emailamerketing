@@ -17,8 +17,6 @@ const PRUNABLE_CSS = new Set([
 /** Classes required in every export (footer, buttons, layout shell). */
 const GLOBAL_SCOPE_CLASSES = new Set([
   'accent-band',
-  'accent-band-copy',
-  'accent-band-cta',
   'article-stack-cell',
   'article-stack-cta',
   'article-stack-cta-link',
@@ -71,12 +69,6 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'footer-legal',
   'footer-legal-center',
   'header-standard-section',
-  'image-split-copy',
-  'image-split-media',
-  'image-split-text-section',
-  'intro-centered-cell',
-  'intro-centered-inner',
-  'mod-intro-centered',
   'image-edge-inset',
   'image-edge-section',
   'image-edge-subtext-wrap',

@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v43';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v44';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -212,37 +212,42 @@ const imageSplitExport = buildEmailHtml({
   annotate: false,
 });
 const $imageSplit = cheerio.load(imageSplitExport, { xml: false }, false);
-assert.strictEqual($imageSplit('.image-split-copy').length, 1);
-assert.match($imageSplit('.image-split-copy').attr('style') || '', /display:inline-block/i, 'Image split copy must use inline-block for desktop no-media clients');
-assert.match($imageSplit('.image-split-copy').attr('style') || '', /width:328px/i, 'Image split copy must use fixed column width for side-by-side desktop layout');
-assert.match($imageSplit('.image-split-media').attr('style') || '', /width:312px/i, 'Image split media must use fixed column width for side-by-side desktop layout');
-assert.match($imageSplit('.image-split-media').attr('style') || '', /padding:0 12px 0 0/i, 'Image-left split must keep gutter padding between columns');
-assert.doesNotMatch($imageSplit('.image-split-copy').attr('width') || '', /50%/i, 'Image split copy must not ship width="50%"');
+assert.strictEqual($imageSplit('td.image-split-copy').length, 1);
+assert.strictEqual($imageSplit('td.image-split-media').length, 1);
+assert.match($imageSplit('td.image-split-copy').attr('width') || '', /51%/i, 'Image split copy must use percentage table column width');
+assert.match($imageSplit('td.image-split-media').attr('width') || '', /49%/i, 'Image split media must use percentage table column width');
+assert.match($imageSplit('td.image-split-media').attr('style') || '', /padding:0 12px 0 0/i, 'Image-left split must keep gutter padding between columns');
+assert.strictEqual($imageSplit('td.image-split-copy [data-editorblocktype="Text"]').length, 1, 'Image split must use one text block per copy column');
 assert.match(
   imageSplitExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.image-split-text-section \.image-split-stack[\s\S]*?width:\s*50% !important;/i,
-  'Exported CSS must preserve 50% width on image split stacks for desktop',
+  /\.image-split-layout td\.image-split-copy[\s\S]*?width:51% !important/i,
+  'Image split must ship base CSS table-cell column width for desktop/Outlook',
 );
 assert.match(
   imageSplitExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.image-split-text-section \.image-split-stack[\s\S]*?width:\s*100% !important;/i,
-  'Mobile image split stacks must expand to full width',
-);
-assert.match(imageSplitExport, /<!--\[if mso\][\s\S]*?image-split-stack/i, 'Image split must ship MSO desktop column wrapper');
-assert.match(
-  imageSplitExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\+\.body \.image-split-text-section \.image-split-stack\.image-split-media[\s\S]*?display:inline-block!important/i,
-  'Gmail desktop must keep image split side-by-side via u+.body min-width query',
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.image-split-layout td\.image-split-copy[\s\S]*?display:table-cell!important/i,
+  'Image split must keep columns side-by-side above mobile breakpoint',
 );
 assert.match(
   imageSplitExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.image-split-layout td\.image-split-copy[\s\S]*?display:block!important/i,
+  'Mobile image split columns must stack to full width',
+);
+assert.doesNotMatch($imageSplit('.image-split-text-section').html() || '', /<!--\[if mso\]/i, 'Image split must not rely on MSO-only desktop columns');
+assert.match(
+  imageSplitExport,
+  /u\s*\+\s*\.body \.image-split-layout td\.image-split-copy[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep image split side-by-side via table cells',
+);
+assert.match(
+  imageSplitExport,
+  /u\s*\+\s*\.body \.image-split-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside image split columns',
+);
+assert.match(
+  imageSplitExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?u\+\.body \.image-split-layout td\.image-split-copy[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail mobile must center stacked image split copy',
-);
-assert.match(
-  imageSplitExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?u\+\.body \.image-split-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
-  'Gmail mobile must center Dynamics send-time flex shells in image split stacks',
 );
 
 const heroFullInsetFields = extractFields('hero-full');
@@ -1006,28 +1011,74 @@ const accentBandCtaExport = buildEmailHtml({
   annotate: false,
 });
 const $accentBandCta = cheerio.load(accentBandCtaExport, { xml: false }, false);
-assert.strictEqual($accentBandCta('.accent-band-copy').length, 1);
-assert.strictEqual($accentBandCta('.accent-band-cta').length, 1);
-assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /display:inline-block/i, 'Accent band copy must use inline-block for desktop no-media clients');
-assert.match($accentBandCta('.accent-band-copy').attr('style') || '', /width:374px/i, 'Accent band copy must use fixed column width for side-by-side desktop layout');
-assert.match($accentBandCta('.accent-band-cta').attr('style') || '', /width:202px/i, 'Accent band CTA must use fixed column width for side-by-side desktop layout');
-assert.match($accentBandCta('.accent-band-cta').attr('style') || '', /text-align:right/i, 'Accent band CTA must align right on desktop');
-assert.doesNotMatch($accentBandCta('.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must not ship width="65%"');
-assert.doesNotMatch($accentBandCta('.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must not ship width="35%"');
+assert.strictEqual($accentBandCta('td.accent-band-copy').length, 1);
+assert.strictEqual($accentBandCta('td.accent-band-cta').length, 1);
+assert.match($accentBandCta('td.accent-band-copy').attr('width') || '', /65%/i, 'Accent band copy must use percentage table column width');
+assert.match($accentBandCta('td.accent-band-cta').attr('width') || '', /35%/i, 'Accent band CTA must use percentage table column width');
+assert.match($accentBandCta('td.accent-band-cta').attr('style') || '', /text-align:right/i, 'Accent band CTA must align right on desktop');
 assert.match(
   accentBandCtaExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.accent-band \.accent-band-stack\.accent-band-copy[\s\S]*?width:\s*65% !important;/i,
-  'Accent band copy must use desktop-only 65% width via CSS',
+  /\.accent-band-layout td\.accent-band-copy[\s\S]*?width:65% !important/i,
+  'Accent band must ship base CSS table-cell column width for desktop/Outlook',
 );
 assert.match(
   accentBandCtaExport,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.accent-band \.accent-band-stack[\s\S]*?width:\s*100% !important;/i,
-  'Mobile accent band stacks must expand to full width',
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.accent-band-layout td\.accent-band-copy[\s\S]*?display:table-cell!important/i,
+  'Accent band must keep columns side-by-side above mobile breakpoint',
 );
-assert.match(accentBandCtaExport, /<!--\[if mso\][\s\S]*?accent-band-copy/i, 'Accent band must ship MSO desktop column wrapper');
+assert.match(
+  accentBandCtaExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.accent-band-layout td\.accent-band-copy[\s\S]*?display:block!important/i,
+  'Mobile accent band columns must stack to full width',
+);
+assert.doesNotMatch($accentBandCta('.accent-band').html() || '', /<!--\[if mso\]/i, 'Accent band must not rely on MSO-only desktop columns');
+assert.match(
+  accentBandCtaExport,
+  /u\s*\+\s*\.body \.accent-band-layout td\.accent-band-copy[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep accent band side-by-side via table cells',
+);
+assert.match(
+  accentBandCtaExport,
+  /u\s*\+\s*\.body \.accent-band-stack > div[\s\S]*?width:\s*100%\s*!important/i,
+  'Gmail must neutralize Dynamics send-time flex shells inside accent band columns',
+);
 const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
 const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
-assert.match($accentBandCtaPasted('.accent-band-copy').attr('style') || '', /width:374px/i, 'Dynamics paste must keep accent band copy desktop width inline');
+assert.match($accentBandCtaPasted('td.accent-band-copy').attr('width') || '', /65%/i, 'Dynamics paste must keep accent band copy percentage width');
+
+const stepsHorizontalExport = buildEmailHtml({
+  title: 'Steps horizontal audit',
+  modules: ['steps-horizontal'],
+  annotate: false,
+});
+const $stepsHorizontal = cheerio.load(stepsHorizontalExport, { xml: false }, false);
+assert.strictEqual($stepsHorizontal('.steps-horizontal-section').length, 1);
+assert.strictEqual($stepsHorizontal('td.step-stack').length, 3);
+assert.strictEqual($stepsHorizontal('td.step-arrow-cell').length, 2);
+assert.strictEqual($stepsHorizontal('.step-stack.three-up-cell').length, 0, 'Steps must not use three-up-cell class');
+assert.strictEqual($stepsHorizontal('td.step-stack [data-editorblocktype="Text"]').length, 3, 'Steps must use one text block per column');
+assert.match($stepsHorizontal('td.step-stack').first().attr('width') || '', /30%/i);
+assert.match(
+  stepsHorizontalExport,
+  /\.steps-horizontal-layout td\.step-stack[\s\S]*?width:30% !important/i,
+  'Steps must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.match(
+  stepsHorizontalExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.steps-horizontal-layout td\.step-stack[\s\S]*?display:table-cell!important/i,
+  'Steps must keep columns side-by-side above mobile breakpoint',
+);
+assert.match(
+  stepsHorizontalExport,
+  /u\s*\+\s*\.body \.steps-horizontal-layout td\.step-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep steps side-by-side via table cells',
+);
+assert.match(
+  stepsHorizontalExport,
+  /u\s*\+\s*\.body \.step-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center Dynamics send-time flex shells inside step columns',
+);
+assert.doesNotMatch($stepsHorizontal('.steps-horizontal-section').html() || '', /tbContainer multi/i, 'Steps must not use Dynamics editable-column table');
 
 const statsThreeExport = buildEmailHtml({
   title: 'Stats three audit',

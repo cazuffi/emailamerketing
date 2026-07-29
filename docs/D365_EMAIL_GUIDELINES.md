@@ -156,8 +156,7 @@ inline-block divs or MSO-only ghost tables:
 Canonical table-first examples: `stats-three`, `stats-four`, `three-up-benefits`,
 `three-up-products`.
 
-Modules that still use the older hybrid inline-block pattern (Tier 2 migration):
-`image-split-text-right`, `accent-band-cta`, `steps-horizontal`, `cta-text-link`.
+Modules that still use the older hybrid inline-block pattern: `cta-text-link`.
 
 ### Modules that keep editable columns
 
@@ -198,11 +197,11 @@ Browser preview and paste view alone are not sufficient.
 ## Verify you pasted the latest export
 
 The first line of Copy HTML must include the build marker comment. The current
-marker is defined in `scripts/harden-email.js` (`BUILD_MARKER`). As of v43 it
+marker is defined in `scripts/harden-email.js` (`BUILD_MARKER`). As of v44 it
 looks like:
 
 ```html
-<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v43 -->
+<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v44 -->
 ```
 
 If that comment is missing or the version is older than your repo, you are not
@@ -329,9 +328,9 @@ source-level overflow patterns such as a padded button anchor with inline
 - Constrained CTA band: `components/modules/cta-band-grey.html`
 - Multi-column (table-first n-up): `components/modules/stats-three.html`,
   `components/modules/stats-four.html`, `components/modules/three-up-benefits.html`,
-  `components/modules/three-up-products.html`
-- Multi-column (hybrid, Tier 2): `components/modules/cta-text-link.html`,
-  `components/modules/image-split-text-right.html`
+  `components/modules/three-up-products.html`, `components/modules/image-split-text.html`,
+  `components/modules/accent-band-cta.html`, `components/modules/steps-horizontal.html`
+- Multi-column (hybrid): `components/modules/cta-text-link.html`
 - Footer: `components/blocks/footer.html`
 - Gmail send compat CSS: `components/_base/d365-send-compat.css`
 - Send simulation: `scripts/simulate-dynamics-paste.js`

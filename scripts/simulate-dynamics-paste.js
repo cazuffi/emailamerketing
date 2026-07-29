@@ -56,31 +56,40 @@ function simulateDynamicsLayoutShell($) {
 }
 
 function inferContainerWidth($, $block) {
-  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack').first();
+  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack, .step-stack').first();
+  if ($stackCell.length && $stackCell.is('td')) {
+    const horizontalPad = sectionHorizontalPad($, $block);
+    const outerWidth = outerTableWidth($, $block);
+    const cellWidthAttr = String($stackCell.attr('width') || '');
+    const pctMatch = cellWidthAttr.match(/(\d+(?:\.\d+)?)\s*%/);
+    if (pctMatch) {
+      const cellPad = cellHorizontalPad($stackCell);
+      const contentWidth = outerWidth - horizontalPad;
+      const width = Math.round((contentWidth * parseFloat(pctMatch[1])) / 100 - cellPad);
+      return Math.max(width, 178);
+    }
+    if ($stackCell.closest('.stats-four-section').length) {
+      return Math.max(Math.round((outerWidth - horizontalPad) / 4), 178);
+    }
+    if ($stackCell.closest('.steps-horizontal-section').length) {
+      return Math.max(Math.round((outerWidth - horizontalPad) * 0.3), 178);
+    }
+    return Math.max(Math.round((outerWidth - horizontalPad) / 3), 178);
+  }
   if ($stackCell.length) {
     if ($stackCell.hasClass('stat-stack') || $stackCell.hasClass('benefit-stack') || $stackCell.hasClass('product-stack')) {
-      if ($stackCell.is('td')) {
-        const horizontalPad = sectionHorizontalPad($, $block);
-        const outerWidth = outerTableWidth($, $block);
-        const cols = $stackCell.closest('.stats-four-section').length ? 4 : 3;
-        return Math.max(Math.round((outerWidth - horizontalPad) / cols), 178);
-      }
       return 181;
     }
-    if ($stackCell.hasClass('image-split-media')) return 272;
-    if ($stackCell.hasClass('image-split-copy')) return 280;
-    if ($stackCell.hasClass('accent-band-copy')) return 358;
-    if ($stackCell.hasClass('accent-band-cta')) return 202;
   }
 
   const $threeUpCell = $block.closest('.three-up-stack-cell, .three-up-cell').first();
-  if ($stackCell.length) {
-    const cellWidthAttr = String($stackCell.attr('width') || '');
+  if ($threeUpCell.length) {
+    const cellWidthAttr = String($threeUpCell.attr('width') || '');
     const pctMatch = cellWidthAttr.match(/(\d+(?:\.\d+)?)\s*%/);
     if (pctMatch) {
       const horizontalPad = sectionHorizontalPad($, $block);
       const outerWidth = outerTableWidth($, $block);
-      const cellPad = cellHorizontalPad($stackCell);
+      const cellPad = cellHorizontalPad($threeUpCell);
       const contentWidth = outerWidth - horizontalPad;
       const width = Math.round((contentWidth * parseFloat(pctMatch[1])) / 100 - cellPad);
       return Math.max(width, 178);
