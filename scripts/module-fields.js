@@ -1021,7 +1021,7 @@ function tagPreviewFields($) {
 
 const PREVIEW_INTERACTION_STYLE = `<style id="studio-preview-style">
 [data-studio-edit] { cursor: pointer; border-radius: 2px; transition: outline 0.12s ease, background 0.12s ease; }
-[data-studio-edit]:hover { outline: 2px solid rgba(239,120,0,0.5); outline-offset: 2px; }
+[data-studio-edit]:hover, [data-studio-edit].studio-edit-hover { outline: 2px solid rgba(239,120,0,0.5); outline-offset: 2px; }
 [data-studio-edit].studio-edit-active { outline: 2px solid #ef7800; outline-offset: 2px; background: rgba(239,120,0,0.1); }
 [data-studio-module] { border-radius: 4px; transition: outline 0.12s ease; }
 [data-studio-module].studio-module-active { outline: 2px dashed rgba(239,120,0,0.4); outline-offset: 6px; }
