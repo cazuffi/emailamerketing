@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v42';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v43';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -443,26 +443,34 @@ assert.strictEqual(
   'Dynamics paste must not wrap article stack dividers in fixed-width containers',
 );
 
-const benefitCells = $('.three-up-benefits-section .benefit-stack');
+const benefitCells = $('.three-up-benefits-section td.benefit-stack');
 assert.strictEqual(benefitCells.length, 3);
+assert.strictEqual($('.three-up-benefits-section .benefit-stack.three-up-cell').length, 0, 'Benefits must not use three-up-cell class');
 benefitCells.each((_, cell) => {
   assert.match($(cell).attr('style') || '', /text-align:\s*center/i);
+  assert.match($(cell).attr('width') || '', /33\.33%/i);
 });
 assert.match(
   exported,
-  /\.three-up-benefits-section \.benefit-stack[\s\S]*?display:inline-block!important[\s\S]*?width:33\.33% !important/i,
-  'Three benefits must ship base CSS for desktop/Outlook column layout',
+  /\.three-up-benefits-section td\.benefit-stack[\s\S]*?width:33\.33% !important/i,
+  'Three benefits must ship base CSS table-cell column width for desktop/Outlook',
 );
 assert.doesNotMatch(
   exported,
   /\.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
   'Audit fixture must prune unused stats-three base CSS',
 );
+assert.doesNotMatch(
+  exported,
+  /\.stats-four-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Audit fixture must prune unused stats-four base CSS',
+);
 assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
+assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout tr').length, 1);
 assert.match(
   exported,
-  /u\+\.body \.benefit-stack[\s\S]*?display:inline-block!important/i,
-  'Gmail desktop must keep three-up benefits side-by-side via u+.body',
+  /u\s*\+\s*\.body \.three-up-benefits-section td\.benefit-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep three-up benefits side-by-side via table cells',
 );
 assert.match(
   exported,
@@ -476,14 +484,10 @@ assert.match(
 );
 assert.match(
   exported,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.three-up-benefits-section \.benefit-stack[\s\S]*?display:\s*block !important;/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.three-up-benefits-section td\.benefit-stack[\s\S]*?display:\s*block !important;/i,
   'Three benefits must stack on mobile',
 );
-assert.match(
-  exported,
-  /<!--\[if mso\][\s\S]*?benefit-stack/i,
-  'Three benefits must ship MSO desktop column wrapper',
-);
+assert.doesNotMatch($('.three-up-benefits-section').html() || '', /<!--\[if mso\]/i, 'Three benefits must not rely on MSO-only desktop columns');
 assert.match(
   exported,
   /\.orange-footer \[data-container="true"\][\s\S]*?display:\s*inline-block !important;/i,
@@ -1092,10 +1096,22 @@ const statsFourExport = buildEmailHtml({
 });
 const $statsFour = cheerio.load(statsFourExport, { xml: false }, false);
 assert.strictEqual($statsFour('.stats-four-section').length, 1);
-assert.strictEqual($statsFour('.stat-stack').length, 4);
+assert.strictEqual($statsFour('td.stat-stack').length, 4);
+assert.strictEqual($statsFour('.stat-stack [data-editorblocktype="Text"]').length, 4);
+assert.match($statsFour('.stat-stack').first().attr('width') || '', /25%/i);
 assert.match($statsFour('.stat-stack').first().attr('style') || '', /text-align:center/i);
-assert.match(statsFourExport, /\.stats-four-section \.stat-stack[\s\S]*?width:25% !important/i);
-assert.match(statsFourExport, /<!--\[if mso\][\s\S]*?stat-stack/i);
+assert.match(statsFourExport, /\.stats-four-section td\.stat-stack[\s\S]*?width:25% !important/i);
+assert.match(
+  statsFourExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.stats-four-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Stats four must keep four columns side-by-side above mobile breakpoint',
+);
+assert.doesNotMatch($statsFour('.stats-four-section').html() || '', /<!--\[if mso\]/i, 'Stats four must not rely on MSO-only desktop columns');
+assert.match(
+  statsFourExport,
+  /u\s*\+\s*\.body \.stats-four-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep stats four side-by-side via table cells',
+);
 assert.match(
   statsFourExport,
   /u\s*\+\s*\.body \.stat-stack > div[\s\S]*?width:\s*100%\s*!important/i,
@@ -1109,13 +1125,21 @@ const threeUpProductsExport = buildEmailHtml({
 });
 const $threeUpProducts = cheerio.load(threeUpProductsExport, { xml: false }, false);
 assert.strictEqual($threeUpProducts('.three-up-products-section').length, 1);
-assert.strictEqual($threeUpProducts('.product-stack').length, 3);
-assert.match(threeUpProductsExport, /\.three-up-products-section \.product-stack[\s\S]*?width:33\.33% !important/i);
+assert.strictEqual($threeUpProducts('td.product-stack').length, 3);
+assert.strictEqual($threeUpProducts('.product-stack.three-up-cell').length, 0, 'Products must not use three-up-cell class');
+assert.strictEqual($threeUpProducts('.product-stack [data-editorblocktype="Text"]').length, 3, 'Products must use one text block per column');
+assert.match(threeUpProductsExport, /\.three-up-products-section td\.product-stack[\s\S]*?width:33\.33% !important/i);
+assert.match(
+  threeUpProductsExport,
+  /u\s*\+\s*\.body \.three-up-products-section td\.product-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep three-up products side-by-side via table cells',
+);
 assert.match(
   threeUpProductsExport,
   /u\s*\+\s*\.body \.product-stack > div[\s\S]*?text-align\s*:\s*center\s*!important/i,
   'Gmail must center Dynamics send-time flex shells inside product columns',
 );
+assert.doesNotMatch($threeUpProducts('.three-up-products-section').html() || '', /<!--\[if mso\]/i, 'Three products must not rely on MSO-only desktop columns');
 
 const quoteCenteredExport = buildEmailHtml({
   title: 'Quote centered audit',

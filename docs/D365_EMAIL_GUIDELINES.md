@@ -40,15 +40,17 @@ The orange footer is also a plain single-column presentation table.
 
 ## Responsive behavior
 
-- **Mobile-first in source HTML.** Critical multi-column modules (`three-up-benefits`,
-  `cta-dual`) must stack with `display:block;width:100%;max-width:100%` inline.
-  Gmail mobile often ignores `@media` queries, so never rely on
+- **Mobile-first in source HTML.** Critical multi-column modules (`stats-three`,
+  `stats-four`, `three-up-benefits`, `three-up-products`, `cta-dual`) use real
+  `<table>` columns that stack with `display:block;width:100%;max-width:100%` at
+  ≤480px. Gmail mobile often ignores `@media` queries, so never rely on
   `display:inline-block` in source for stacking.
-- **`three-up-benefits` ships one stacked table only.** Do not duplicate a second
-  desktop table in the HTML — Gmail renders both copies when `display:none` or MSO
-  conditionals fail.
-- Use `@media (min-width: 481px)` as a desktop enhancement to restore
-  side-by-side columns. Outlook desktop still uses MSO ghost tables.
+- **Ship one table only for n-up modules.** Do not duplicate a second desktop
+  table or MSO-only ghost columns — Gmail renders both copies when `display:none`
+  or MSO conditionals fail.
+- Use `@media (min-width: 481px) { display:table-cell }` to restore side-by-side
+  columns in the 481–640px Gmail web pane, where Dynamics injects
+  `td { display:block }`. See **Send transform / flex shells**.
 - Use a desktop layout that remains readable if mobile stacking is ignored.
 - Stack table columns with `stack-column` and `display:block !important` in CSS.
 - Set both `width:100% !important` and `max-width:100% !important` when stacking.
@@ -126,32 +128,36 @@ does not send that attribute on flex wrappers.
 
 | Layer | Purpose | Example selector |
 |-------|---------|-------------------|
-| Column stack | Side-by-side desktop layout | `.stats-three-section .stat-stack { display:inline-block; width:197px }` |
+| Column `<td>` | Side-by-side desktop layout | `.stats-three-section td.stat-stack { width:33.33% }` |
 | Flex shell child | Neutralize Dynamics send wrapper | `.stat-stack > div { display:block; width:100%; flex:none }` |
-| Gmail desktop | Override Gmail’s injected `<u>` wrapper | `u + .body .stat-stack { display:inline-block; width:197px }` |
-| Gmail mobile | Stack columns | `@media (max-width:640px) { .stat-stack { display:block; width:100% } }` |
+| Gmail web pane | Beat Dynamics `td{display:block}` at 481–640px | `@media (min-width:481px) { td.stat-stack { display:table-cell } }` |
+| Gmail mobile | Stack columns | `@media (max-width:480px) { td.stat-stack { display:block; width:100% } }` |
 
 Do **not** rely on `@media (min-width:641px)` as the only way to restore desktop
-columns. Gmail desktop often ignores min-width queries. Put side-by-side layout in
-**base CSS**; use max-width media queries mainly for stacking.
+columns. Gmail desktop often ignores min-width queries. Use real table columns in
+HTML plus `@media (min-width:481px) { display:table-cell }` for the 481–640px pane.
 
-### Standard pattern for multi-column modules
+### Standard pattern for n-up modules (stats, benefits, products)
 
-Use this hybrid layout for stats, benefits, products, icon grids, image+text splits,
-text links, and similar modules:
+As of v42/v43, canonical n-up modules use **real HTML table columns**, not
+inline-block divs or MSO-only ghost tables:
 
 1. Section root: `.{module-id}-section` (for example `.stats-three-section`)
-2. Layout cell: `.{module}-layout-cell` with `font-size:0` for inline-block columns
-3. Column stack: semantic class such as `.stat-stack`, `.benefit-stack`,
-   `.product-stack`, `.image-split-stack`
-4. MSO ghost table: `<!--[if mso]><table>…<!--[endif]-->` for Outlook desktop
-5. Base CSS: `.stack { display:inline-block; width:197px }` (not min-width-only)
+2. Layout table: `.{module}-layout` with `table-layout:fixed` and one `<tr>`
+3. Column `<td>`: semantic class such as `.stat-stack .stat-stack-cell`,
+   `.benefit-stack .benefit-stack-cell`, `.product-stack .product-stack-cell`
+4. Percent width on each `<td>` (`33.33%` for 3-up, `25%` for 4-up)
+5. **One** `data-editorblocktype="Text"` block per column (number + label, or
+   heading + body, in a single Text block — fewer flex wrappers at send time)
 6. Flex neutralizer: `.stack > div { display:block; width:100%; flex:none }`
-7. Gmail desktop: matching `u + .body .stack` and `u + .body .stack > div` rules
-8. Gmail mobile: stack `.stack` to `display:block; width:100%`
+7. Gmail desktop: matching `u + .body td.stat-stack` and `u + .body .stack > div`
+8. Mobile stack: `@media (max-width:480px) { td.stat-stack { display:block } }`
 
-Canonical examples: `stats-three`, `stats-four`, `three-up-benefits`,
-`three-up-products`, `image-split-text-right`, `cta-text-link`.
+Canonical table-first examples: `stats-three`, `stats-four`, `three-up-benefits`,
+`three-up-products`.
+
+Modules that still use the older hybrid inline-block pattern (Tier 2 migration):
+`image-split-text-right`, `accent-band-cta`, `steps-horizontal`, `cta-text-link`.
 
 ### Modules that keep editable columns
 
@@ -170,8 +176,9 @@ send layout:
   better CSS pruning per campaign.
 - Use semantic stack names (`.stat-stack`, `.benefit-stack`) — hardening and Gmail
   overrides key off these classes.
-- Do not reuse `.three-up-cell` on stat columns — mobile CSS for `.three-up-cell`
-  can fight 3-across desktop layout.
+- Do not reuse `.three-up-cell` on stat/benefit/product columns — mobile CSS for
+  `.three-up-cell` can fight n-up desktop layout. Use `.stat-stack-cell`,
+  `.benefit-stack-cell`, or `.product-stack-cell` instead.
 
 ### Testing send output locally
 
@@ -191,11 +198,11 @@ Browser preview and paste view alone are not sufficient.
 ## Verify you pasted the latest export
 
 The first line of Copy HTML must include the build marker comment. The current
-marker is defined in `scripts/harden-email.js` (`BUILD_MARKER`). As of v39 it
+marker is defined in `scripts/harden-email.js` (`BUILD_MARKER`). As of v43 it
 looks like:
 
 ```html
-<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v39 -->
+<!-- email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v43 -->
 ```
 
 If that comment is missing or the version is older than your repo, you are not
@@ -320,8 +327,11 @@ source-level overflow patterns such as a padded button anchor with inline
 - Header: `components/modules/header-standard.html`
 - Equal dual CTA: `components/modules/cta-dual.html`
 - Constrained CTA band: `components/modules/cta-band-grey.html`
-- Multi-column (hybrid layout): `components/modules/stats-three.html`,
-  `components/modules/three-up-benefits.html`, `components/modules/cta-text-link.html`
+- Multi-column (table-first n-up): `components/modules/stats-three.html`,
+  `components/modules/stats-four.html`, `components/modules/three-up-benefits.html`,
+  `components/modules/three-up-products.html`
+- Multi-column (hybrid, Tier 2): `components/modules/cta-text-link.html`,
+  `components/modules/image-split-text-right.html`
 - Footer: `components/blocks/footer.html`
 - Gmail send compat CSS: `components/_base/d365-send-compat.css`
 - Send simulation: `scripts/simulate-dynamics-paste.js`

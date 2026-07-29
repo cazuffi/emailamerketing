@@ -59,10 +59,11 @@ function inferContainerWidth($, $block) {
   const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack').first();
   if ($stackCell.length) {
     if ($stackCell.hasClass('stat-stack') || $stackCell.hasClass('benefit-stack') || $stackCell.hasClass('product-stack')) {
-      if ($stackCell.is('td') && $stackCell.hasClass('stat-stack')) {
+      if ($stackCell.is('td')) {
         const horizontalPad = sectionHorizontalPad($, $block);
         const outerWidth = outerTableWidth($, $block);
-        return Math.max(Math.round((outerWidth - horizontalPad) / 3), 178);
+        const cols = $stackCell.closest('.stats-four-section').length ? 4 : 3;
+        return Math.max(Math.round((outerWidth - horizontalPad) / cols), 178);
       }
       return 181;
     }
