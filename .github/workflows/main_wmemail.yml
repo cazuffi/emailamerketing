@@ -24,16 +24,16 @@ jobs:
       - name: Log in to container registry
         uses: docker/login-action@v2
         with:
-          registry: mcr.microsoft.com/
-          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_7A6E47C4215948E0999783F263390D92 }}
-          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_BA19568E097D48589178C00BE3056544 }}
+          registry: wmemailacr.azurecr.io/
+          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_756F0156991549479D714BA4C9EC1C11 }}
+          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_38CB59523CEC44E6ABAFCA96E5E2E3C1 }}
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: mcr.microsoft.com/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_7A6E47C4215948E0999783F263390D92 }}/appsvc/staticsite:${{ github.sha }}
+          tags: wmemailacr.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_756F0156991549479D714BA4C9EC1C11 }}/wmemail:${{ github.sha }}
           file: ./Dockerfile
 
   deploy:
@@ -49,9 +49,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7330D630BF984C45B335A2EECC82FF51 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_02E72DC2EAC2406CB5D8BB2E8EBB1ACB }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4D908BD5C8CD49DB8CAEDDB8996190AD }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_19AAE8EB54A340A5979957C868258428 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2E12C19BC73741BE98F3D19A0FC7F4FB }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A803262A705741BE895332442E77F5F4 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -59,5 +59,5 @@ jobs:
         with:
           app-name: 'wmemail'
           slot-name: 'Production'
-          images: 'mcr.microsoft.com/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_7A6E47C4215948E0999783F263390D92 }}/appsvc/staticsite:${{ github.sha }}'
+          images: 'wmemailacr.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_756F0156991549479D714BA4C9EC1C11 }}/wmemail:${{ github.sha }}'
           
