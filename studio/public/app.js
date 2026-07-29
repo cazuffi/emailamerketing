@@ -808,7 +808,6 @@ function switchPanel(name) {
   if (name === 'preview') {
     scheduleBuild();
   }
-  updatePreviewClickCapture();
 }
 
 function updatePreviewScopeUI() {
@@ -1529,7 +1528,20 @@ function updatePreviewModeUI() {
         'Send preview — same HTML as Copy HTML · 1:1 size · D365 test send is still the final check';
     }
   }
-  updatePreviewClickCapture();
+}
+
+function syncPreviewFrameHeight(frame = $('#preview-frame')) {
+  const doc = frame?.contentDocument;
+  if (!doc) return;
+  const layout = doc.querySelector('[data-layout="true"]');
+  const contentH = Math.max(
+    layout?.offsetHeight || 0,
+    doc.body?.scrollHeight || 0,
+    doc.documentElement?.scrollHeight || 0,
+    420,
+  );
+  frame.style.height = `${contentH}px`;
+  schedulePreviewScale();
 }
 
 function updatePreviewScale() {
@@ -1624,7 +1636,6 @@ async function buildPreview() {
   }
 
   loading.classList.remove('hidden');
-  updatePreviewClickCapture();
   try {
     const isSendPreview = state.previewMode === 'send';
     const annotate = !isSendPreview;
@@ -1667,10 +1678,14 @@ async function buildPreview() {
     }
     initPreviewFrameInteraction(frame);
     frame.srcdoc = html;
-    bindPreviewClickHandlers(frame);
-    requestAnimationFrame(() => bindPreviewClickHandlers(frame));
-    setTimeout(() => bindPreviewClickHandlers(frame), 50);
-    setTimeout(() => bindPreviewClickHandlers(frame), 250);
+    const syncAndBind = () => {
+      syncPreviewFrameHeight(frame);
+      bindPreviewClickHandlers(frame);
+    };
+    syncAndBind();
+    requestAnimationFrame(syncAndBind);
+    setTimeout(syncAndBind, 50);
+    setTimeout(syncAndBind, 250);
     if (state.previewActiveField) {
       highlightPreviewField(state.previewActiveField.key, state.previewActiveField.listIndex);
     }
@@ -1678,10 +1693,10 @@ async function buildPreview() {
     schedulePreviewScale();
   } catch (ex) {
     frame.srcdoc = `<p style="color:red;padding:24px;font-family:sans-serif;">${ex.message}</p>`;
+    syncPreviewFrameHeight(frame);
     bindPreviewClickHandlers(frame);
   } finally {
     loading.classList.add('hidden');
-    updatePreviewClickCapture();
   }
 }
 
@@ -1692,20 +1707,6 @@ function resolvePreviewModuleUid(modEl) {
     || (Number.isFinite(index) && index >= 0 ? state.instances[index]?.uid : null)
     || state.editUid
     || null;
-}
-
-function updatePreviewClickCapture() {
-  const capture = $('#preview-click-capture');
-  const loading = $('#preview-loading');
-  const previewTab = $('#preview-tab');
-  if (!capture) return;
-  const active = state.previewMode === 'edit'
-    && previewTab
-    && !previewTab.classList.contains('hidden')
-    && state.instances.length > 0
-    && loading?.classList.contains('hidden');
-  capture.classList.toggle('hidden', !active);
-  capture.setAttribute('aria-hidden', active ? 'false' : 'true');
 }
 
 function getPreviewFrameScale(frame) {
@@ -1762,16 +1763,9 @@ function handlePreviewTargetClick(target, preventDefault, stopPropagation) {
 }
 
 function handlePreviewFrameClick(e) {
-  handlePreviewTargetClick(e.target, () => e.preventDefault(), () => e.stopPropagation());
-}
-
-function handlePreviewCaptureClick(e) {
   const frame = $('#preview-frame');
-  const target = resolvePreviewTargetFromPoint(frame, e.clientX, e.clientY);
-  if (handlePreviewTargetClick(target, () => e.preventDefault(), () => e.stopPropagation())) {
-    return;
-  }
-  // Fallback: direct iframe listener may still catch the event when capture layer misses.
+  const target = resolvePreviewTargetFromPoint(frame, e.clientX, e.clientY) || e.target;
+  handlePreviewTargetClick(target, () => e.preventDefault(), () => e.stopPropagation());
 }
 
 function bindPreviewClickHandlers(frame) {
@@ -1782,21 +1776,16 @@ function bindPreviewClickHandlers(frame) {
     doc.body.dataset.studioClickBound = '1';
     doc.addEventListener('click', handlePreviewFrameClick, true);
   }
-  updatePreviewClickCapture();
 }
 
 function initPreviewFrameInteraction(frame) {
   if (!frame || frame.dataset.studioInteractionInit === '1') return;
   frame.dataset.studioInteractionInit = '1';
   frame.addEventListener('load', () => {
+    syncPreviewFrameHeight(frame);
     schedulePreviewScale();
     bindPreviewClickHandlers(frame);
   });
-  const capture = $('#preview-click-capture');
-  if (capture && capture.dataset.studioCaptureInit !== '1') {
-    capture.dataset.studioCaptureInit = '1';
-    capture.addEventListener('click', handlePreviewCaptureClick, true);
-  }
 }
 
 async function openEditFromPreview(uid, fieldKey, listIndex) {
