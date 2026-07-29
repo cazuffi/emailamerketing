@@ -365,6 +365,7 @@ async function initStudio() {
   showOnboardingIfNeeded();
   initLibraryCollapse();
   initComposerDropZone();
+  initPreviewFrameInteraction($('#preview-frame'));
   updatePreviewModeUI();
   schedulePreviewScale();
 }
@@ -1661,8 +1662,10 @@ async function buildPreview() {
       });
       html = fullHtml;
     }
+    initPreviewFrameInteraction(frame);
     frame.srcdoc = html;
-    setupPreviewInteraction(frame);
+    bindPreviewClickHandlers(frame);
+    requestAnimationFrame(() => bindPreviewClickHandlers(frame));
     if (state.previewActiveField) {
       highlightPreviewField(state.previewActiveField.key, state.previewActiveField.listIndex);
     }
@@ -1670,47 +1673,66 @@ async function buildPreview() {
     schedulePreviewScale();
   } catch (ex) {
     frame.srcdoc = `<p style="color:red;padding:24px;font-family:sans-serif;">${ex.message}</p>`;
+    bindPreviewClickHandlers(frame);
   } finally {
     loading.classList.add('hidden');
   }
 }
 
-function setupPreviewInteraction(frame) {
-  frame.onload = () => {
+function resolvePreviewModuleUid(modEl) {
+  if (!modEl) return state.editUid || null;
+  const index = Number(modEl.dataset.studioIndex);
+  return modEl.dataset.studioUid
+    || (Number.isFinite(index) && index >= 0 ? state.instances[index]?.uid : null)
+    || state.editUid
+    || null;
+}
+
+function handlePreviewFrameClick(e) {
+  if (state.previewMode === 'send') return;
+
+  const fieldEl = e.target.closest('[data-studio-edit]');
+  const modEl = (fieldEl || e.target).closest('[data-studio-module]');
+
+  if (!fieldEl && !modEl) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  const uid = resolvePreviewModuleUid(modEl);
+  if (!uid) return;
+
+  if (fieldEl) {
+    const fieldKey = fieldEl.dataset.studioEdit;
+    const listIndex = fieldEl.dataset.studioListIndex;
+    openEditFromPreview(uid, fieldKey, listIndex !== undefined ? Number(listIndex) : undefined);
+    return;
+  }
+
+  state.previewActiveField = null;
+  state.editUid = uid;
+  renderComposer();
+  switchPanel('edit');
+  loadEditForm(uid);
+  highlightPreviewModule(uid);
+}
+
+function bindPreviewClickHandlers(frame) {
+  if (state.previewMode === 'send') return;
+  const doc = frame?.contentDocument;
+  if (!doc?.body) return;
+  if (doc.body.dataset.studioClickBound === '1') return;
+  doc.body.dataset.studioClickBound = '1';
+  doc.addEventListener('click', handlePreviewFrameClick, true);
+}
+
+function initPreviewFrameInteraction(frame) {
+  if (!frame || frame.dataset.studioInteractionInit === '1') return;
+  frame.dataset.studioInteractionInit = '1';
+  frame.addEventListener('load', () => {
     schedulePreviewScale();
-    if (state.previewMode === 'send') return;
-    const doc = frame.contentDocument;
-    if (!doc || doc.body?.dataset.studioClickBound) return;
-    if (doc.body) doc.body.dataset.studioClickBound = '1';
-
-    doc.addEventListener('click', (e) => {
-      const fieldEl = e.target.closest('[data-studio-edit]');
-      const modEl = e.target.closest('[data-studio-module]');
-
-      if (!fieldEl && !modEl) return;
-      e.preventDefault();
-
-      const index = modEl ? Number(modEl.dataset.studioIndex) : -1;
-      const uid = modEl?.dataset.studioUid
-        || (index >= 0 ? state.instances[index]?.uid : null)
-        || state.editUid;
-
-      if (!uid) return;
-
-      if (fieldEl) {
-        const fieldKey = fieldEl.dataset.studioEdit;
-        const listIndex = fieldEl.dataset.studioListIndex;
-        openEditFromPreview(uid, fieldKey, listIndex !== undefined ? Number(listIndex) : undefined);
-      } else {
-        state.previewActiveField = null;
-        state.editUid = uid;
-        renderComposer();
-        switchPanel('edit');
-        loadEditForm(uid);
-        highlightPreviewModule(uid);
-      }
-    });
-  };
+    bindPreviewClickHandlers(frame);
+  });
 }
 
 async function openEditFromPreview(uid, fieldKey, listIndex) {
