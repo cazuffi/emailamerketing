@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v17';
 const { GMAIL_CLIP_BYTES } = require('./prune-css');
 
 const options = {
@@ -305,9 +305,14 @@ const eventRows = $('.event-details-section .event-details-row');
 assert.strictEqual(eventCard.length, 1);
 assert.strictEqual(eventRows.length, 5);
 assert.match(
+  $('.event-details-section .event-details-rail-left').attr('style') || '',
+  /background-color:#ef7800/i,
+  'Event details card must use a forward-safe orange rail column',
+);
+assert.doesNotMatch(
   $('.event-details-section .event-details-shell').attr('style') || '',
   /border-left:4px solid #ef7800/i,
-  'Event details card must use a Word-safe td accent border',
+  'Event details shell must not rely on border-left accents',
 );
 eventRows.each((_, row) => {
   assert.strictEqual($(row).find('.event-details-label').attr('width'), '28%');
@@ -490,12 +495,18 @@ const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
 const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
 const greyCtaShell = $('.cta-band-grey .cta-band-grey-shell');
 const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
+const greyCtaLeftRail = $('.cta-band-grey .cta-band-grey-rail-left');
+const greyCtaRightRail = $('.cta-band-grey .cta-band-grey-rail-right');
 // Grey CTA keeps the Dynamics editable-column layout (68/32) so it renders
 // full-width with the button correctly on the right in a Dynamics send.
 assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
 assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
-assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
-assert.match(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
+assert.strictEqual(greyCtaLeftRail.length, 1);
+assert.strictEqual(greyCtaRightRail.length, 1);
+assert.strictEqual(greyCtaLeftRail.attr('bgcolor'), '#ef7800');
+assert.strictEqual(greyCtaRightRail.attr('bgcolor'), '#ffffff');
+assert.doesNotMatch(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
+assert.doesNotMatch(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
 assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
@@ -508,9 +519,46 @@ assert.match(
 );
 assert.match(
   exported,
-  /\.cta-band-grey \.cta-band-grey-shell[\s\S]*?border-left:\s*0 !important;[\s\S]*?border-right:\s*0 !important;/i,
-  'Mobile grey CTA must remove both desktop edge rails',
+  /\.cta-band-grey \.cta-band-grey-rail-left[\s\S]*?background-color:\s*#ef7800 !important;/i,
+  'Post-paste CSS must keep grey CTA forward-safe left rail',
 );
+assert.match(
+  exported,
+  /\.cta-band-grey \.cta-band-grey-rail-right[\s\S]*?background-color:\s*#ffffff !important;/i,
+  'Post-paste CSS must keep grey CTA forward-safe right rail',
+);
+assert.match(
+  exported,
+  /\.accent-band \.section-pad-accent p[\s\S]*?color:\s*#ffffff !important;/i,
+  'Accent band copy must ship forward-safe white text',
+);
+assert.match(
+  exported,
+  /\.orange-footer \.footer-band-title[\s\S]*?color:\s*#ffffff !important;/i,
+  'Orange footer copy must ship forward-safe white text',
+);
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.cta-band-grey \.cta-band-grey-rail-left[\s\S]*?width:\s*0 !important;[\s\S]*?\.cta-band-grey \.cta-band-grey-rail-right[\s\S]*?width:\s*0 !important;/i,
+  'Mobile grey CTA must collapse forward-safe edge rails',
+);
+const accentGreyExport = buildEmailHtml({
+  title: 'accent grey adjacency',
+  modules: ['accent-band', 'cta-band-grey'],
+  annotate: false,
+});
+const $accentGrey = cheerio.load(accentGreyExport, { xml: false }, false);
+assert.strictEqual(
+  $accentGrey('.accent-band + .cta-band-grey .cta-band-grey-rail-left').attr('bgcolor'),
+  '#ffffff',
+  'Grey CTA after accent band must use a white left rail',
+);
+
+const calloutExport = buildEmailHtml({ title: 'callout rail audit', modules: ['callout-box'], annotate: false });
+const $callout = cheerio.load(calloutExport, { xml: false }, false);
+assert.strictEqual($callout('.callout-box .callout-rail-left').length, 1);
+assert.strictEqual($callout('.callout-box .callout-rail-left').attr('bgcolor'), '#ef7800');
+assert.doesNotMatch($callout('.callout-body').attr('style') || '', /border-left:4px solid #ef7800/i);
 
 assert.strictEqual(
   $('.specs-table [data-container], .specs-table [data-container-width]').length,

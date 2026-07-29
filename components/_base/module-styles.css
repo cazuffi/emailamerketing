@@ -52,7 +52,6 @@
   background-color: #f9f9f9;
 }
 .event-details-shell {
-  border-left: 4px solid #ef7800;
   padding: 4px 20px;
 }
 .event-details-label {
@@ -260,7 +259,6 @@ h2.subhead-orange {
 }
 .callout-body {
   background-color: #f9f9f9;
-  border-left: 4px solid #ef7800;
   padding: 16px 20px;
 }
 
@@ -454,8 +452,30 @@ h2.subhead-orange {
 .cta-band-grey { background-color: #f4f4f4; }
 .cta-band-grey .cta-band-grey-shell {
   padding: 26px 28px !important;
-  border-left: 4px solid #ef7800;
-  border-right: 4px solid #ffffff;
+}
+.cta-band-grey .cta-band-grey-rail-left,
+.cta-band-grey .cta-band-grey-rail-right,
+.callout-rail-left,
+.event-details-rail-left,
+.quote-rail-left {
+  width: 4px;
+  font-size: 0;
+  line-height: 0;
+  mso-line-height-rule: exactly;
+  padding: 0;
+  margin: 0;
+}
+.cta-band-grey .cta-band-grey-rail-left,
+.callout-rail-left,
+.event-details-rail-left,
+.quote-rail-left {
+  background-color: #ef7800;
+}
+.cta-band-grey .cta-band-grey-rail-right {
+  background-color: #ffffff;
+}
+.accent-band + .cta-band-grey .cta-band-grey-rail-left {
+  background-color: #ffffff;
 }
 .cta-band-grey .cta-band-grey-title {
   margin-bottom: 6px !important;
@@ -661,8 +681,15 @@ h2.subhead-orange {
   .accent-band .stack-column { text-align: center !important; }
   .cta-band-grey .cta-band-grey-shell {
     padding: 16px 20px !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
+  }
+  .cta-band-grey .cta-band-grey-rail-left,
+  .cta-band-grey .cta-band-grey-rail-right {
+    width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    overflow: hidden !important;
   }
   .cta-band-grey .cta-band-grey-copy-inner {
     padding-left: 0 !important;

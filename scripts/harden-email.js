@@ -444,6 +444,113 @@ function hardenUrgencyBand($) {
   });
 }
 
+function hardenForwardSafeBandText($) {
+  $('.accent-band .section-pad-accent').each((_, cell) => {
+    const $cell = $(cell);
+    $cell.attr('bgcolor', '#ef7800');
+    setStyleProp($cell, 'background-color', '#ef7800');
+    $cell.find('h1, h2, h3, h4, p, span, li').each((__, node) => {
+      const $node = $(node);
+      if ($node.closest('a.buttonClass, a.button-primary, a.button-outline-link, .buttonWrapper').length) return;
+      setStyleProp($node, 'color', '#ffffff');
+    });
+    $cell.find('[data-editorblocktype="Text"]').each((__, block) => {
+      const $block = $(block);
+      setStyleProp($block, 'background-color', '#ef7800');
+    });
+  });
+
+  $('.orange-footer .section-pad-accent').each((_, cell) => {
+    const $cell = $(cell);
+    $cell.attr('bgcolor', '#ef7800');
+    setStyleProp($cell, 'background-color', '#ef7800');
+  });
+  $(
+    '.orange-footer .footer-band-title, .orange-footer .footer-band-address, .orange-footer .footer-band-contact, .orange-footer .footer-band-address p, .orange-footer .footer-band-contact p, .orange-footer h2, .orange-footer p',
+  ).each((_, el) => {
+    const $el = $(el);
+    if ($el.closest('.footer-legal').length) return;
+    setStyleProp($el, 'color', '#ffffff');
+  });
+}
+
+function ensureOrangeRailColumn($, $row, $contentCell, railClass) {
+  let $rail = $row.children(`.${railClass}`).first();
+  if (!$rail.length) {
+    $rail = $('<td></td>');
+    $rail.addClass(railClass);
+    $rail.attr('width', '4');
+    $rail.html('&nbsp;');
+    $contentCell.before($rail);
+    removeStyleProp($contentCell, 'border-left');
+    removeStyleProp($contentCell, 'mso-border-left-alt');
+  }
+  $rail.attr('bgcolor', '#ef7800');
+  setStyleProp($rail, 'background-color', '#ef7800');
+  ensureStyle($rail, 'width:4px;font-size:0;line-height:0;mso-line-height-rule:exactly;padding:0;margin:0');
+  return $rail;
+}
+
+function hardenForwardSafeRails($) {
+  $('.cta-band-grey[data-section="true"]').each((_, section) => {
+    const $section = $(section);
+    const $prev = $section.prev('[data-section="true"]');
+    const leftRailColor = $prev.length && $prev.hasClass('accent-band') ? '#ffffff' : '#ef7800';
+
+    $section.find('table.outer > tbody > tr').first().each((__, row) => {
+      const $row = $(row);
+      const $shell = $row.find('.cta-band-grey-shell').first();
+      if (!$shell.length) return;
+
+      let $leftRail = $row.children('.cta-band-grey-rail-left').first();
+      let $rightRail = $row.children('.cta-band-grey-rail-right').first();
+      if (!$leftRail.length) {
+        $leftRail = $('<td class="cta-band-grey-rail-left" width="4">&nbsp;</td>');
+        $shell.before($leftRail);
+      }
+      if (!$rightRail.length) {
+        $rightRail = $('<td class="cta-band-grey-rail-right" width="4">&nbsp;</td>');
+        $shell.after($rightRail);
+      }
+
+      $leftRail.attr('bgcolor', leftRailColor);
+      setStyleProp($leftRail, 'background-color', leftRailColor);
+      ensureStyle($leftRail, 'width:4px;font-size:0;line-height:0;mso-line-height-rule:exactly;padding:0;margin:0');
+
+      $rightRail.attr('bgcolor', '#ffffff');
+      setStyleProp($rightRail, 'background-color', '#ffffff');
+      ensureStyle($rightRail, 'width:4px;font-size:0;line-height:0;mso-line-height-rule:exactly;padding:0;margin:0');
+
+      $shell.attr('bgcolor', '#f4f4f4');
+      removeStyleProp($shell, 'border-left');
+      removeStyleProp($shell, 'border-right');
+      ensureStyle($shell, 'background-color:#f4f4f4;width:100%');
+    });
+  });
+
+  $('.callout-body').each((_, cell) => {
+    const $cell = $(cell);
+    const $row = $cell.closest('tr');
+    ensureOrangeRailColumn($, $row, $cell, 'callout-rail-left');
+    $cell.attr('bgcolor', '#f9f9f9');
+    setStyleProp($cell, 'background-color', '#f9f9f9');
+  });
+
+  $('.event-details-shell').each((_, cell) => {
+    const $cell = $(cell);
+    const $row = $cell.closest('tr');
+    ensureOrangeRailColumn($, $row, $cell, 'event-details-rail-left');
+    $cell.attr('bgcolor', '#f9f9f9');
+    setStyleProp($cell, 'background-color', '#f9f9f9');
+  });
+
+  $('.quote-block').each((_, cell) => {
+    const $cell = $(cell);
+    const $row = $cell.closest('tr');
+    ensureOrangeRailColumn($, $row, $cell, 'quote-rail-left');
+  });
+}
+
 function hardenCtaBandGrey($) {
   $('.cta-band-grey[data-section="true"]').each((_, section) => {
     const $section = $(section);
@@ -457,6 +564,8 @@ function hardenCtaBandGrey($) {
     $section.find('.cta-band-grey-shell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f4f4f4');
+      removeStyleProp($cell, 'border-left');
+      removeStyleProp($cell, 'border-right');
       ensureStyle($cell, 'background-color:#f4f4f4;width:100%');
     });
   });
@@ -824,6 +933,8 @@ function hardenEmailHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenForwardSafeRails($);
+  hardenForwardSafeBandText($);
   hardenOrangeFooterSections($);
   hardenSectionBackgrounds($);
   hardenImages($);
@@ -917,7 +1028,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v9';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v17';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -931,6 +1042,10 @@ function sanitizeExportHtml(html) {
   hardenAccentBands($);
   hardenUrgencyBand($);
   hardenCtaBandGrey($);
+  hardenForwardSafeRails($);
+  hardenForwardSafeBandText($);
+  hardenOrangeFooterSections($);
+  hardenAccentSections($);
   hardenSectionHeadings($);
   hardenFooterAlignment($);
   hardenThreeUpBenefits($);
