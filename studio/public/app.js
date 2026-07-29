@@ -808,6 +808,7 @@ function switchPanel(name) {
   if (name === 'preview') {
     scheduleBuild();
   }
+  updatePreviewClickCapture();
 }
 
 function updatePreviewScopeUI() {
@@ -1528,6 +1529,7 @@ function updatePreviewModeUI() {
         'Send preview — same HTML as Copy HTML · 1:1 size · D365 test send is still the final check';
     }
   }
+  updatePreviewClickCapture();
 }
 
 function updatePreviewScale() {
@@ -1622,6 +1624,7 @@ async function buildPreview() {
   }
 
   loading.classList.remove('hidden');
+  updatePreviewClickCapture();
   try {
     const isSendPreview = state.previewMode === 'send';
     const annotate = !isSendPreview;
@@ -1666,6 +1669,8 @@ async function buildPreview() {
     frame.srcdoc = html;
     bindPreviewClickHandlers(frame);
     requestAnimationFrame(() => bindPreviewClickHandlers(frame));
+    setTimeout(() => bindPreviewClickHandlers(frame), 50);
+    setTimeout(() => bindPreviewClickHandlers(frame), 250);
     if (state.previewActiveField) {
       highlightPreviewField(state.previewActiveField.key, state.previewActiveField.listIndex);
     }
@@ -1676,6 +1681,7 @@ async function buildPreview() {
     bindPreviewClickHandlers(frame);
   } finally {
     loading.classList.add('hidden');
+    updatePreviewClickCapture();
   }
 }
 
@@ -1688,25 +1694,62 @@ function resolvePreviewModuleUid(modEl) {
     || null;
 }
 
-function handlePreviewFrameClick(e) {
-  if (state.previewMode === 'send') return;
+function updatePreviewClickCapture() {
+  const capture = $('#preview-click-capture');
+  const loading = $('#preview-loading');
+  const previewTab = $('#preview-tab');
+  if (!capture) return;
+  const active = state.previewMode === 'edit'
+    && previewTab
+    && !previewTab.classList.contains('hidden')
+    && state.instances.length > 0
+    && loading?.classList.contains('hidden');
+  capture.classList.toggle('hidden', !active);
+  capture.setAttribute('aria-hidden', active ? 'false' : 'true');
+}
 
-  const fieldEl = e.target.closest('[data-studio-edit]');
-  const modEl = (fieldEl || e.target).closest('[data-studio-module]');
+function getPreviewFrameScale(frame) {
+  const rect = frame.getBoundingClientRect();
+  const layoutW = frame.clientWidth || rect.width;
+  const layoutH = frame.clientHeight || rect.height;
+  return {
+    x: layoutW ? rect.width / layoutW : 1,
+    y: layoutH ? rect.height / layoutH : 1,
+  };
+}
 
-  if (!fieldEl && !modEl) return;
+function resolvePreviewTargetFromPoint(frame, clientX, clientY) {
+  const doc = frame?.contentDocument;
+  if (!doc) return null;
+  const rect = frame.getBoundingClientRect();
+  if (clientX < rect.left || clientY < rect.top || clientX > rect.right || clientY > rect.bottom) {
+    return null;
+  }
+  const scale = getPreviewFrameScale(frame);
+  const x = (clientX - rect.left) / scale.x;
+  const y = (clientY - rect.top) / scale.y;
+  return doc.elementFromPoint(x, y);
+}
 
-  e.preventDefault();
-  e.stopPropagation();
+function handlePreviewTargetClick(target, preventDefault, stopPropagation) {
+  if (state.previewMode === 'send' || !target) return false;
+
+  const fieldEl = target.closest?.('[data-studio-edit]');
+  const modEl = (fieldEl || target).closest?.('[data-studio-module]');
+
+  if (!fieldEl && !modEl) return false;
+
+  preventDefault?.();
+  stopPropagation?.();
 
   const uid = resolvePreviewModuleUid(modEl);
-  if (!uid) return;
+  if (!uid) return false;
 
   if (fieldEl) {
     const fieldKey = fieldEl.dataset.studioEdit;
     const listIndex = fieldEl.dataset.studioListIndex;
     openEditFromPreview(uid, fieldKey, listIndex !== undefined ? Number(listIndex) : undefined);
-    return;
+    return true;
   }
 
   state.previewActiveField = null;
@@ -1715,15 +1758,31 @@ function handlePreviewFrameClick(e) {
   switchPanel('edit');
   loadEditForm(uid);
   highlightPreviewModule(uid);
+  return true;
+}
+
+function handlePreviewFrameClick(e) {
+  handlePreviewTargetClick(e.target, () => e.preventDefault(), () => e.stopPropagation());
+}
+
+function handlePreviewCaptureClick(e) {
+  const frame = $('#preview-frame');
+  const target = resolvePreviewTargetFromPoint(frame, e.clientX, e.clientY);
+  if (handlePreviewTargetClick(target, () => e.preventDefault(), () => e.stopPropagation())) {
+    return;
+  }
+  // Fallback: direct iframe listener may still catch the event when capture layer misses.
 }
 
 function bindPreviewClickHandlers(frame) {
   if (state.previewMode === 'send') return;
   const doc = frame?.contentDocument;
   if (!doc?.body) return;
-  if (doc.body.dataset.studioClickBound === '1') return;
-  doc.body.dataset.studioClickBound = '1';
-  doc.addEventListener('click', handlePreviewFrameClick, true);
+  if (doc.body.dataset.studioClickBound !== '1') {
+    doc.body.dataset.studioClickBound = '1';
+    doc.addEventListener('click', handlePreviewFrameClick, true);
+  }
+  updatePreviewClickCapture();
 }
 
 function initPreviewFrameInteraction(frame) {
@@ -1733,6 +1792,11 @@ function initPreviewFrameInteraction(frame) {
     schedulePreviewScale();
     bindPreviewClickHandlers(frame);
   });
+  const capture = $('#preview-click-capture');
+  if (capture && capture.dataset.studioCaptureInit !== '1') {
+    capture.dataset.studioCaptureInit = '1';
+    capture.addEventListener('click', handlePreviewCaptureClick, true);
+  }
 }
 
 async function openEditFromPreview(uid, fieldKey, listIndex) {

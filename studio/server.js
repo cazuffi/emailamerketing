@@ -172,10 +172,23 @@ app.delete('/api/campaigns/:id', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+const publicDir = path.join(__dirname, 'public');
+const assetVersion = String(fs.statSync(path.join(publicDir, 'app.js')).mtimeMs);
+
+app.use(express.static(publicDir, {
+  setHeaders(res, filePath) {
+    if (/\.(js|css|html)$/.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  },
+}));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  let html = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8');
+  html = html
+    .replace('href="/styles.css"', `href="/styles.css?v=${assetVersion}"`)
+    .replace('src="/app.js"', `src="/app.js?v=${assetVersion}"`);
+  res.type('html').send(html);
 });
 
 const server = app.listen(PORT, () => {
