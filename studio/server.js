@@ -17,6 +17,9 @@ const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-in-production';
 
 const app = express();
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 app.use(express.json({ limit: '2mb' }));
 app.use(session({
   secret: SESSION_SECRET,
@@ -52,9 +55,14 @@ app.get('/api/brand', requireAuth, (req, res) => {
 });
 
 app.get('/api/modules', requireAuth, (req, res) => {
-  const { modules } = loadManifest();
-  const categories = [...new Set(modules.map((m) => m.category))];
-  res.json({ modules, categories });
+  try {
+    const { modules } = loadManifest();
+    const categories = [...new Set(modules.map((m) => m.category))];
+    res.json({ modules, categories });
+  } catch (err) {
+    console.error('Failed to load module manifest:', err);
+    res.status(500).json({ error: err.message || 'Failed to load modules' });
+  }
 });
 
 app.get('/api/modules/:id/preview', requireAuth, (req, res) => {

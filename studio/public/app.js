@@ -289,8 +289,10 @@ async function checkAuth() {
     const { user } = await api('/api/auth/me');
     state.user = user;
     show('studio');
-    initStudio();
-  } catch {
+    await initStudio();
+  } catch (err) {
+    console.error(err);
+    toast(err.message || 'Failed to load studio', 'error');
     show('login');
     await loadBrand();
   }
@@ -310,7 +312,7 @@ $('#login-form').addEventListener('submit', async (e) => {
     });
     state.user = user;
     show('studio');
-    initStudio();
+    await initStudio();
   } catch (ex) {
     err.textContent = ex.message;
     err.classList.remove('hidden');
@@ -348,6 +350,9 @@ async function initStudio() {
   }
 
   const { modules, categories } = await api('/api/modules');
+  if (!modules?.length) {
+    throw new Error('Module library is empty — check deployment repo and manifest.json');
+  }
   state.modules = modules;
   state.categories = categories;
   setupThumbnailObserver();
