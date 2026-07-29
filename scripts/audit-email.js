@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v41';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v42';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -455,7 +455,7 @@ assert.match(
 );
 assert.doesNotMatch(
   exported,
-  /\.stats-three-section \.stat-stack\{display:inline-block!important;width:33\.33% !important/i,
+  /\.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
   'Audit fixture must prune unused stats-three base CSS',
 );
 assert.strictEqual($('.three-up-benefits-section .three-up-benefits-layout').length, 1);
@@ -1033,32 +1033,41 @@ const statsThreeExport = buildEmailHtml({
 const $statsThree = cheerio.load(statsThreeExport, { xml: false }, false);
 assert.strictEqual($statsThree('.stats-three-section').length, 1);
 assert.strictEqual($statsThree('.stat-stack').length, 3);
+assert.strictEqual($statsThree('td.stat-stack').length, 3, 'Stats must use table cells for three-column desktop layout');
+assert.strictEqual($statsThree('.stats-three-layout tr').length, 1);
 assert.strictEqual($statsThree('.stat-stack.three-up-cell').length, 0, 'Stats must not reuse three-up-cell mobile stack class');
-assert.doesNotMatch($statsThree('.stat-stack').first().attr('width') || '', /33%/i, 'Stats must not ship width="33%" on stack cells');
+assert.match($statsThree('.stat-stack').first().attr('width') || '', /33\.33%/i, 'Stats table cells must ship width="33.33%"');
 assert.match($statsThree('.stat-stack').first().attr('style') || '', /text-align:center/i, 'Stats must keep text-align center inline');
 assert.match($statsThree('.stat-number').first().attr('style') || '', /text-align:center/i, 'Stats numbers must center over labels');
 assert.match($statsThree('.stat-number').first().attr('style') || '', /line-height:34px/i, 'Stats numbers must use pixel line-height for Outlook desktop');
 assert.match($statsThree('.stat-label').first().attr('style') || '', /line-height:16px/i, 'Stats labels must use pixel line-height for Outlook desktop');
+assert.strictEqual($statsThree('.stat-stack [data-editorblocktype="Text"]').length, 3, 'Stats must use one editor block per column');
 assert.match(
   statsThreeExport,
-  /\.stats-three-section \.stat-stack[\s\S]*?width:33\.33% !important/i,
-  'Stats must ship base CSS column width for desktop/Outlook',
+  /\.stats-three-section td\.stat-stack[\s\S]*?width:33\.33% !important/i,
+  'Stats must ship base CSS table-cell column width for desktop/Outlook',
 );
 assert.match(
   statsThreeExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?display:block!important/i,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Stats must keep three columns side-by-side above mobile breakpoint',
+);
+assert.match(
+  statsThreeExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?display:block!important/i,
   'Mobile stats must stack to full width',
 );
-assert.match(statsThreeExport, /<!--\[if mso\][\s\S]*?stat-stack/i, 'Stats three must ship MSO desktop column wrapper');
+const statsThreeSectionHtml = $statsThree('.stats-three-section').html() || '';
+assert.doesNotMatch(statsThreeSectionHtml, /<!--\[if mso\]/i, 'Stats three must not rely on MSO-only desktop columns');
 assert.match(
   statsThreeExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section \.stat-stack[\s\S]*?width:\s*100% !important;/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?width:\s*100% !important;/i,
   'Mobile stats must stack to full width',
 );
 assert.match(
   statsThreeExport,
-  /u\+\.body \.stat-stack[\s\S]*?display:inline-block!important/i,
-  'Gmail desktop must keep stats side-by-side via u+.body',
+  /u\s*\+\s*\.body \.stats-three-section td\.stat-stack[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep stats side-by-side via table cells',
 );
 assert.match(
   statsThreeExport,
@@ -1072,8 +1081,8 @@ assert.match(
 );
 assert.match(
   statsThreeExport,
-  /u\s*\+\s*\.body \.stats-three-section \.stat-stack[\s\S]*?margin-left:\s*auto\s*!important/i,
-  'Gmail mobile must center stacked stat columns',
+  /u\s*\+\s*\.body \.stats-three-section td\.stat-stack[\s\S]*?text-align\s*:\s*center\s*!important/i,
+  'Gmail must center stat table cells',
 );
 
 const statsFourExport = buildEmailHtml({

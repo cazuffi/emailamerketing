@@ -320,8 +320,10 @@ table.outer,
   text-align: center !important;
 }
 
-.stats-three-section .stat-stack{display:inline-block!important;width:33.33%!important;max-width:197px!important;text-align:center!important;box-sizing:border-box!important;vertical-align:top!important}
-.stats-three-section .stat-number,.stats-three-section .stat-label,.stats-three-section .stat-stack [data-editorblocktype="Text"]{text-align:center!important}
+.stats-three-section .stats-three-layout{width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}
+.stats-three-section td.stat-stack,.stats-three-section .stat-stack-cell{width:33.33%!important;text-align:center!important;vertical-align:top!important}
+.stats-three-section td.stat-stack [data-editorblocktype="Text"],.stats-three-section .stat-number,.stats-three-section .stat-label,.stats-three-section td.stat-stack p{text-align:center!important}
+.stats-three-section td.stat-stack > div{width:100%!important;max-width:100%!important;display:block!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
 
 .stat-stack > div,
 .benefit-stack > div,
@@ -1098,7 +1100,6 @@ u + .body .image-split-text-section .image-split-stack {
   box-sizing: border-box !important;
 }
 
-u + .body .stats-three-section .stats-three-layout-cell,
 u + .body .stats-four-section .stats-four-layout-cell,
 u + .body .three-up-benefits-section .three-up-benefits-layout-cell,
 u + .body .three-up-products-section .three-up-products-layout-cell {
@@ -1107,7 +1108,22 @@ u + .body .three-up-products-section .three-up-products-layout-cell {
   line-height: 0 !important;
 }
 
-u + .body .stats-three-section .stat-stack,
+u + .body .stats-three-section .stats-three-layout {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+u + .body .stats-three-section td.stat-stack,
+u + .body .stats-three-section .stat-stack-cell {
+  display: table-cell !important;
+  width: 33.33% !important;
+  text-align: center !important;
+  vertical-align: top !important;
+  font-size: 15px !important;
+  line-height: normal !important;
+}
+
 u + .body .three-up-benefits-section .benefit-stack,
 u + .body .three-up-products-section .product-stack {
   display: inline-block !important;
@@ -1182,13 +1198,20 @@ u + .body .cta-text-link-section .text-link-cta{display:inline-block!important}
 
 @media only screen and (max-width:640px){u+.body .icon-grid-cell,u+.body .icon-grid-cell > div,u+.body .logo-strip-cell,u+.body .logo-strip-cell > div,u+.body .pricing-tier,u+.body .pricing-tier-featured,u+.body .pricing-tier > div,u+.body .pricing-tier-featured > div,u+.body .three-up-cell:not(.benefit-stack):not(.product-stack),u+.body .three-up-cell:not(.benefit-stack):not(.product-stack) > div,u+.body .card-stack,u+.body .card-stack > div,u+.body .stack-column,u+.body .stack-column > div,u+.body .image-split-stack,u+.body .image-split-stack > div,u+.body .image-split-media,u+.body .image-split-copy,u+.body .image-split-copy [data-editorblocktype="Text"],u+.body .image-split-copy h2,u+.body .image-split-copy h3,u+.body .image-split-copy p,u+.body .accent-band-stack,u+.body .accent-band-stack > div,u+.body .accent-band-stack.accent-band-cta,u+.body .cta-text-link-cell,u+.body .cta-text-link-cell > div,u+.body .headline-block-center-cell > div,u+.body .headline-block-center-inner td > div,u+.body .quote-centered-section .section-pad > div,u+.body .social-links-section .section-pad-tight > div,u+.body .cta-dual-column,u+.body .cta-dual-column > div{display:block!important;width:100%!important;max-width:100%!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}}
 
+@media only screen and (min-width:481px){
+  .stats-three-section .stats-three-layout{display:table!important;width:100%!important;table-layout:fixed!important}
+  .stats-three-section .stats-three-layout tbody{display:table-row-group!important}
+  .stats-three-section .stats-three-layout tr{display:table-row!important}
+  .stats-three-section td.stat-stack,.stats-three-section .stat-stack-cell{display:table-cell!important;width:33.33%!important;text-align:center!important;vertical-align:top!important}
+}
+
 @media only screen and (max-width:480px){
-  .stats-three-section .stat-stack,.stats-four-section .stat-stack,.three-up-benefits-section .benefit-stack,.three-up-benefits-section .three-up-stack-cell,.three-up-products-section .product-stack{display:block!important;width:100%!important;max-width:100%!important;padding-bottom:20px!important}
-  .stats-three-section .stat-stack:last-child,.stats-four-section .stat-stack:last-child,.three-up-benefits-section .benefit-stack:last-child,.three-up-benefits-section .three-up-stack-cell:last-child,.three-up-products-section .product-stack:last-child{padding-bottom:0!important}
+  .stats-three-section td.stat-stack,.stats-three-section .stat-stack-cell,.stats-four-section .stat-stack,.three-up-benefits-section .benefit-stack,.three-up-benefits-section .three-up-stack-cell,.three-up-products-section .product-stack{display:block!important;width:100%!important;max-width:100%!important;padding-bottom:20px!important}
+  .stats-three-section td.stat-stack:last-child,.stats-three-section .stat-stack-cell:last-child,.stats-four-section .stat-stack:last-child,.three-up-benefits-section .benefit-stack:last-child,.three-up-benefits-section .three-up-stack-cell:last-child,.three-up-products-section .product-stack:last-child{padding-bottom:0!important}
   .stats-four-section .stat-stack{padding-bottom:16px!important}
   .stats-three-section .stat-number{font-size:32px!important}
   .stats-three-section .stat-label{font-size:13px!important}
-  u+.body .stat-stack,u+.body .stat-stack > div,u+.body .benefit-stack,u+.body .benefit-stack > div,u+.body .product-stack,u+.body .product-stack > div{display:block!important;width:100%!important;max-width:100%!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
+  u+.body .stats-three-section td.stat-stack,u+.body .stats-three-section .stat-stack-cell,u+.body .stats-four-section .stat-stack,u+.body .stat-stack > div,u+.body .benefit-stack,u+.body .benefit-stack > div,u+.body .product-stack,u+.body .product-stack > div{display:block!important;width:100%!important;max-width:100%!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
 }
 
 @media only screen and (min-width: 641px) {

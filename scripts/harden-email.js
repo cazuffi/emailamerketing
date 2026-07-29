@@ -1213,17 +1213,28 @@ function hardenImageSplitColumns($) {
 function hardenStatsThreeColumns($) {
   $('.stats-three-section').each((_, section) => {
     const $section = $(section);
-    $section.find('.stat-stack').each((__, block) => {
-      ensureStyle(
-        $(block),
-        'font-size:15px;line-height:normal;text-align:center;box-sizing:border-box',
-      );
+    $section.find('td.stat-stack, .stat-stack-cell').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'center');
+      $cell.attr('valign', 'top');
+      $cell.attr('width', '33.33%');
+      ensureStyle($cell, 'width:33.33%;text-align:center;vertical-align:top;box-sizing:border-box');
     });
-    $section.find('.stats-three-layout-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:0;line-height:0;text-align:center');
+    $section.find('td.stat-stack:not(:last-child), .stat-stack-cell:not(:last-child)').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 20px');
     });
-    $section.find('.stat-stack [data-container]').each((__, el) => {
-      ensureStyle($(el), 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    $section.find('td.stat-stack:last-child, .stat-stack-cell:last-child').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0 8px 0');
+    });
+    $section.find('td.stat-stack [data-editorblocktype="Text"], .stat-stack-cell [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:center;margin-left:auto;margin-right:auto');
+    });
+    $section.find('.stat-number, .stat-label').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'center');
+      ensureStyle($el, 'text-align:center;width:100%;margin-left:auto;margin-right:auto');
     });
   });
 }
@@ -1417,7 +1428,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v41';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v42';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

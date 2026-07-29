@@ -59,6 +59,11 @@ function inferContainerWidth($, $block) {
   const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack').first();
   if ($stackCell.length) {
     if ($stackCell.hasClass('stat-stack') || $stackCell.hasClass('benefit-stack') || $stackCell.hasClass('product-stack')) {
+      if ($stackCell.is('td') && $stackCell.hasClass('stat-stack')) {
+        const horizontalPad = sectionHorizontalPad($, $block);
+        const outerWidth = outerTableWidth($, $block);
+        return Math.max(Math.round((outerWidth - horizontalPad) / 3), 178);
+      }
       return 181;
     }
     if ($stackCell.hasClass('image-split-media')) return 272;
