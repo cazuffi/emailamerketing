@@ -925,17 +925,6 @@ body {
   position: relative;
   background: #fff;
   min-height: 420px;
-  overflow: hidden;
-}
-.preview-click-capture {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  cursor: pointer;
-  background: transparent;
-}
-.preview-click-capture.hidden {
-  display: none !important;
 }
 .device-desktop .device-screen {
   width: 641px;
@@ -977,7 +966,7 @@ body {
   background: #fff;
   width: 100%;
   min-height: 420px;
-  height: 100%;
+  height: auto;
   display: block;
 }
 .device-desktop #preview-frame {
