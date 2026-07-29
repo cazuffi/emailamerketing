@@ -808,6 +808,7 @@ function switchPanel(name) {
   if (name === 'preview') {
     scheduleBuild();
   }
+  updatePreviewClickCapture();
 }
 
 function updatePreviewScopeUI() {
@@ -1528,6 +1529,7 @@ function updatePreviewModeUI() {
         'Send preview — same HTML as Copy HTML · 1:1 size · D365 test send is still the final check';
     }
   }
+  updatePreviewClickCapture();
 }
 
 function syncPreviewFrameHeight(frame = $('#preview-frame')) {
@@ -1542,6 +1544,39 @@ function syncPreviewFrameHeight(frame = $('#preview-frame')) {
   );
   frame.style.height = `${contentH}px`;
   schedulePreviewScale();
+}
+
+function clearPreviewHoverHighlights() {
+  const doc = $('#preview-frame')?.contentDocument;
+  if (!doc) return;
+  doc.querySelectorAll('[data-studio-edit].studio-edit-hover').forEach((el) => {
+    el.classList.remove('studio-edit-hover');
+  });
+}
+
+function updatePreviewHoverFromPoint(clientX, clientY) {
+  if (state.previewMode === 'send') return;
+  const frame = $('#preview-frame');
+  const doc = frame?.contentDocument;
+  if (!doc) return;
+  clearPreviewHoverHighlights();
+  const target = resolvePreviewTargetFromPoint(frame, clientX, clientY);
+  target?.closest?.('[data-studio-edit]')?.classList.add('studio-edit-hover');
+}
+
+function updatePreviewClickCapture() {
+  const capture = $('#preview-click-capture');
+  const loading = $('#preview-loading');
+  const previewTab = $('#preview-tab');
+  if (!capture) return;
+  const active = state.previewMode === 'edit'
+    && previewTab
+    && !previewTab.classList.contains('hidden')
+    && state.instances.length > 0
+    && loading?.classList.contains('hidden');
+  capture.classList.toggle('hidden', !active);
+  capture.setAttribute('aria-hidden', active ? 'false' : 'true');
+  if (!active) clearPreviewHoverHighlights();
 }
 
 function updatePreviewScale() {
@@ -1636,6 +1671,7 @@ async function buildPreview() {
   }
 
   loading.classList.remove('hidden');
+  updatePreviewClickCapture();
   try {
     const isSendPreview = state.previewMode === 'send';
     const annotate = !isSendPreview;
@@ -1697,6 +1733,7 @@ async function buildPreview() {
     bindPreviewClickHandlers(frame);
   } finally {
     loading.classList.add('hidden');
+    updatePreviewClickCapture();
   }
 }
 
@@ -1768,6 +1805,20 @@ function handlePreviewFrameClick(e) {
   handlePreviewTargetClick(target, () => e.preventDefault(), () => e.stopPropagation());
 }
 
+function handlePreviewCaptureClick(e) {
+  const frame = $('#preview-frame');
+  const target = resolvePreviewTargetFromPoint(frame, e.clientX, e.clientY);
+  handlePreviewTargetClick(target, () => e.preventDefault(), () => e.stopPropagation());
+}
+
+function handlePreviewCaptureWheel(e) {
+  const wrap = $('#preview-frame-wrap');
+  if (!wrap) return;
+  wrap.scrollTop += e.deltaY;
+  wrap.scrollLeft += e.deltaX;
+  e.preventDefault();
+}
+
 function bindPreviewClickHandlers(frame) {
   if (state.previewMode === 'send') return;
   const doc = frame?.contentDocument;
@@ -1776,6 +1827,7 @@ function bindPreviewClickHandlers(frame) {
     doc.body.dataset.studioClickBound = '1';
     doc.addEventListener('click', handlePreviewFrameClick, true);
   }
+  updatePreviewClickCapture();
 }
 
 function initPreviewFrameInteraction(frame) {
@@ -1786,6 +1838,14 @@ function initPreviewFrameInteraction(frame) {
     schedulePreviewScale();
     bindPreviewClickHandlers(frame);
   });
+  const capture = $('#preview-click-capture');
+  if (capture && capture.dataset.studioCaptureInit !== '1') {
+    capture.dataset.studioCaptureInit = '1';
+    capture.addEventListener('click', handlePreviewCaptureClick, true);
+    capture.addEventListener('wheel', handlePreviewCaptureWheel, { passive: false });
+    capture.addEventListener('mousemove', (e) => updatePreviewHoverFromPoint(e.clientX, e.clientY));
+    capture.addEventListener('mouseleave', () => clearPreviewHoverHighlights());
+  }
 }
 
 async function openEditFromPreview(uid, fieldKey, listIndex) {

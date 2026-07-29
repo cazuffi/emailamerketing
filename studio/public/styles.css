@@ -926,6 +926,16 @@ body {
   background: #fff;
   min-height: 420px;
 }
+.preview-click-capture {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: pointer;
+  background: transparent;
+}
+.preview-click-capture.hidden {
+  display: none !important;
+}
 .device-desktop .device-screen {
   width: 641px;
   min-width: 641px;
