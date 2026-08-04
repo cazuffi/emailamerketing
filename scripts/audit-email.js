@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v44';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v45';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1047,6 +1047,21 @@ assert.match(
   /\.ExternalClass \.accent-band-layout td\.accent-band-copy[\s\S]*?display:block!important/i,
   'Outlook.com web must stack accent band columns to avoid button overlap',
 );
+assert.match(
+  accentBandCtaExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*u\s*\+\s*\.body \.ExternalClass \.accent-band-layout td\.accent-band-copy[\s\S]*?display:block!important/i,
+  'Outlook.com OWA stack rules must follow min-width:481px table-cell rules',
+);
+assert.match(
+  accentBandCtaExport,
+  /u\s*\+\s*\.body \.ExternalClass \.accent-band-layout td\.accent-band-copy[\s\S]*?display:block!important/i,
+  'Outlook.com web must beat u+.body table-cell side-by-side on accent band',
+);
+assert.match(
+  accentBandCtaExport,
+  /u\s*\+\s*\.body \.ExternalClass \.accent-band \[data-container="true"\][\s\S]*?width:100%!?important/i,
+  'Outlook.com web must neutralize Dynamics flex shells inside accent band',
+);
 const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
 const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
 assert.match($accentBandCtaPasted('td.accent-band-copy').attr('width') || '', /65%/i, 'Dynamics paste must keep accent band copy percentage width');
@@ -1121,7 +1136,7 @@ const statsThreeSectionHtml = $statsThree('.stats-three-section').html() || '';
 assert.doesNotMatch(statsThreeSectionHtml, /<!--\[if mso\]/i, 'Stats three must not rely on MSO-only desktop columns');
 assert.match(
   statsThreeExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?width:\s*100% !important;/i,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.stats-three-section td\.stat-stack[\s\S]*?width:\s*100%!?important;/i,
   'Mobile stats must stack to full width',
 );
 assert.match(
