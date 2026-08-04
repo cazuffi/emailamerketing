@@ -352,6 +352,16 @@ table.outer,
 .accent-band-layout td.accent-band-copy,.accent-band-layout .accent-band-stack-cell.accent-band-copy{width:65%!important;text-align:left!important;vertical-align:middle!important;padding-right:16px!important}
 .accent-band-layout td.accent-band-cta,.accent-band-layout .accent-band-stack-cell.accent-band-cta{width:35%!important;text-align:right!important;vertical-align:middle!important}
 .accent-band-layout td.accent-band-copy > div,.accent-band-layout td.accent-band-cta > div{width:100%!important;max-width:100%!important;display:block!important;flex:none!important}
+.accent-band-layout td.accent-band-copy [data-editorblocktype="Text"],.accent-band-layout td.accent-band-copy h1,.accent-band-layout td.accent-band-copy p{word-wrap:break-word!important;overflow-wrap:break-word!important}
+
+/* Outlook.com desktop web applies min-width media queries but miscalculates
+   nested button tables in side-by-side columns — stack copy above the CTA.
+   Outlook desktop app ignores this CSS; Gmail keeps the 65/35 table layout. */
+.ExternalClass .accent-band-layout,.ExternalClass .accent-band-layout tbody,.ExternalClass .accent-band-layout tr{display:block!important;width:100%!important;max-width:100%!important}
+.ExternalClass .accent-band-layout td.accent-band-copy,.ExternalClass .accent-band-layout td.accent-band-cta,.ExternalClass .accent-band-layout .accent-band-stack-cell{display:block!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+.ExternalClass .accent-band-layout td.accent-band-copy,.ExternalClass .accent-band-layout .accent-band-stack-cell.accent-band-copy{padding:0 0 16px 0!important;text-align:left!important}
+.ExternalClass .accent-band-layout td.accent-band-cta,.ExternalClass .accent-band-layout .accent-band-stack-cell.accent-band-cta{padding:0!important;text-align:center!important}
+.ExternalClass .accent-band .compact-button-column .buttonWrapper,.ExternalClass .accent-band .compact-button-column .button-outline-table{width:100%!important;max-width:280px!important;margin-left:auto!important;margin-right:auto!important}
 
 .steps-horizontal-layout{width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}
 .steps-horizontal-layout td.step-stack,.steps-horizontal-layout .step-stack-cell{width:30%!important;text-align:center!important;vertical-align:top!important}

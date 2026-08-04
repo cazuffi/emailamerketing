@@ -1042,6 +1042,11 @@ assert.match(
   /u\s*\+\s*\.body \.accent-band-stack > div[\s\S]*?width:\s*100%\s*!important/i,
   'Gmail must neutralize Dynamics send-time flex shells inside accent band columns',
 );
+assert.match(
+  accentBandCtaExport,
+  /\.ExternalClass \.accent-band-layout td\.accent-band-copy[\s\S]*?display:block!important/i,
+  'Outlook.com web must stack accent band columns to avoid button overlap',
+);
 const accentBandCtaPasted = simulateDynamicsPaste(accentBandCtaExport);
 const $accentBandCtaPasted = cheerio.load(accentBandCtaPasted, { xml: false }, false);
 assert.match($accentBandCtaPasted('td.accent-band-copy').attr('width') || '', /65%/i, 'Dynamics paste must keep accent band copy percentage width');
