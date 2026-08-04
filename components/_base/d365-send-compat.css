@@ -354,15 +354,6 @@ table.outer,
 .accent-band-layout td.accent-band-copy > div,.accent-band-layout td.accent-band-cta > div{width:100%!important;max-width:100%!important;display:block!important;flex:none!important}
 .accent-band-layout td.accent-band-copy [data-editorblocktype="Text"],.accent-band-layout td.accent-band-copy h1,.accent-band-layout td.accent-band-copy p{word-wrap:break-word!important;overflow-wrap:break-word!important}
 
-/* Outlook.com desktop web applies min-width media queries but miscalculates
-   nested button tables in side-by-side columns — stack copy above the CTA.
-   Outlook desktop app ignores this CSS; Gmail keeps the 65/35 table layout. */
-.ExternalClass .accent-band-layout,.ExternalClass .accent-band-layout tbody,.ExternalClass .accent-band-layout tr{display:block!important;width:100%!important;max-width:100%!important}
-.ExternalClass .accent-band-layout td.accent-band-copy,.ExternalClass .accent-band-layout td.accent-band-cta,.ExternalClass .accent-band-layout .accent-band-stack-cell{display:block!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
-.ExternalClass .accent-band-layout td.accent-band-copy,.ExternalClass .accent-band-layout .accent-band-stack-cell.accent-band-copy{padding:0 0 16px 0!important;text-align:left!important}
-.ExternalClass .accent-band-layout td.accent-band-cta,.ExternalClass .accent-band-layout .accent-band-stack-cell.accent-band-cta{padding:0!important;text-align:center!important}
-.ExternalClass .accent-band .compact-button-column .buttonWrapper,.ExternalClass .accent-band .compact-button-column .button-outline-table{width:100%!important;max-width:280px!important;margin-left:auto!important;margin-right:auto!important}
-
 .steps-horizontal-layout{width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}
 .steps-horizontal-layout td.step-stack,.steps-horizontal-layout .step-stack-cell{width:30%!important;text-align:center!important;vertical-align:top!important}
 .steps-horizontal-layout td.step-stack > div,.steps-horizontal-layout .step-stack-cell > div{width:100%!important;max-width:100%!important;display:block!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
@@ -1308,19 +1299,11 @@ u + .body .buttonWrapper[align="center"] > .button-outline-table {
   margin-right: auto !important;
 }
 
-.divider-line-cell {
-  background-color: #ef7800 !important;
-  height: 2px !important;
-  line-height: 2px !important;
-  font-size: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-}
-
-.divider-line-img {
-  display: block !important;
-  width: 100% !important;
-  max-width: 640px !important;
-  height: 2px !important;
-  min-height: 2px !important;
-}
+.divider-line-cell{background-color:#ef7800!important;height:2px!important;line-height:2px!important;font-size:0!important;padding:0!important;border:0!important}
+.divider-line-img{display:block!important;width:100%!important;max-width:640px!important;height:2px!important;min-height:2px!important}
+.ExternalClass .accent-band-layout,.ExternalClass .accent-band-layout tbody,.ExternalClass .accent-band-layout tr,[data-ogsc] .accent-band-layout,[data-ogsc] .accent-band-layout tbody,[data-ogsc] .accent-band-layout tr,u+.body .ExternalClass .accent-band-layout,u+.body .ExternalClass .accent-band-layout tbody,u+.body .ExternalClass .accent-band-layout tr,u+.body [data-ogsc] .accent-band-layout,u+.body [data-ogsc] .accent-band-layout tbody,u+.body [data-ogsc] .accent-band-layout tr{display:block!important;width:100%!important;max-width:100%!important}
+.ExternalClass .accent-band-layout td.accent-band-copy,.ExternalClass .accent-band-layout td.accent-band-cta,.ExternalClass .accent-band-layout .accent-band-stack-cell,[data-ogsc] .accent-band-layout td.accent-band-copy,[data-ogsc] .accent-band-layout td.accent-band-cta,u+.body .ExternalClass .accent-band-layout td.accent-band-copy,u+.body .ExternalClass .accent-band-layout td.accent-band-cta,u+.body .ExternalClass .accent-band-layout .accent-band-stack-cell,u+.body [data-ogsc] .accent-band-layout td.accent-band-copy,u+.body [data-ogsc] .accent-band-layout td.accent-band-cta{display:block!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+.ExternalClass .accent-band-layout td.accent-band-copy,[data-ogsc] .accent-band-layout td.accent-band-copy,u+.body .ExternalClass .accent-band-layout td.accent-band-copy,u+.body [data-ogsc] .accent-band-layout td.accent-band-copy{padding:0 0 16px 0!important;text-align:left!important}
+.ExternalClass .accent-band-layout td.accent-band-cta,[data-ogsc] .accent-band-layout td.accent-band-cta,u+.body .ExternalClass .accent-band-layout td.accent-band-cta,u+.body [data-ogsc] .accent-band-layout td.accent-band-cta{padding:0!important;text-align:center!important}
+.ExternalClass .accent-band [data-container="true"],[data-ogsc] .accent-band [data-container="true"],u+.body .ExternalClass .accent-band [data-container="true"],u+.body [data-ogsc] .accent-band [data-container="true"]{width:100%!important;max-width:100%!important;display:block!important;flex:none!important}
+.ExternalClass .accent-band .compact-button-column .buttonWrapper,.ExternalClass .accent-band .compact-button-column .button-outline-table,u+.body .ExternalClass .accent-band .compact-button-column .buttonWrapper,u+.body .ExternalClass .accent-band .compact-button-column .button-outline-table{width:100%!important;max-width:280px!important;margin-left:auto!important;margin-right:auto!important}
