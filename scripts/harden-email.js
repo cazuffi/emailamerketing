@@ -997,6 +997,7 @@ function hardenEmailHtml(html) {
   hardenCtaPrimaryCenter($);
   hardenStatsThreeColumns($);
   hardenStatsFourColumns($);
+  hardenFeatureCardsFourColumns($);
   hardenThreeUpProducts($);
   hardenStepsHorizontalColumns($);
   hardenProactiveDynamicsContainers($);
@@ -1026,7 +1027,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-four-layout')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1347,6 +1348,54 @@ function hardenThreeUpProducts($) {
   });
 }
 
+function hardenFeatureCardsFourColumns($) {
+  $('.feature-cards-four-section').each((_, section) => {
+    const $section = $(section);
+    $section.find('.feature-cards-four-layout').each((__, table) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
+    });
+    $section.find('td.feature-card-cell, .feature-card-stack').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('align', 'left');
+      $cell.attr('valign', 'top');
+      $cell.attr('width', '50%');
+      ensureStyle($cell, 'width:50%;vertical-align:top;text-align:left;box-sizing:border-box');
+    });
+    $section.find('.feature-card').each((__, table) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse;background-color:#f9f9f9');
+    });
+    $section.find('.feature-card-accent').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#ef7800');
+      $cell.attr('height', '4');
+      ensureStyle($cell, 'height:4px;line-height:4px;font-size:0;padding:0;background-color:#ef7800');
+    });
+    $section.find('.feature-card-body').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#f9f9f9');
+      $cell.attr('valign', 'top');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;min-height:168px;vertical-align:top;text-align:left');
+    });
+    $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"]').each((__, el) => {
+      const $el = $(el);
+      $el.attr('align', 'left');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:left');
+    });
+    $section.find('.feature-card-number').each((__, el) => {
+      ensureStyle($(el), 'font-family:ARIALNB,Arial,sans-serif;font-size:22px;line-height:1.1;color:#ef7800;margin:0 0 10px 0;text-align:left');
+    });
+    $section.find('.feature-card-subtitle').each((__, el) => {
+      ensureStyle($(el), 'margin:0 0 10px 0;text-align:left;font-size:15px;line-height:1.4');
+    });
+    $section.find('td.feature-card-cell h3, .feature-card-body h3').each((__, el) => {
+      ensureStyle($(el), 'margin:0 0 8px 0;text-align:left;font-size:15px;line-height:1.35');
+    });
+    $section.find('td.feature-card-cell [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle)').each((__, el) => {
+      ensureStyle($(el), 'margin:0;text-align:left;font-size:15px;line-height:1.6');
+    });
+  });
+}
+
 const NEUTRAL_CONTAINER_STYLE = 'display:block;width:100%;max-width:100%;flex:none';
 const CENTERED_CONTAINER_STYLE = `${NEUTRAL_CONTAINER_STYLE};text-align:center;margin-left:auto;margin-right:auto`;
 
@@ -1495,7 +1544,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v45';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v46';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
@@ -1523,6 +1572,7 @@ function sanitizeExportHtml(html) {
   hardenCtaPrimaryCenter($);
   hardenStatsThreeColumns($);
   hardenStatsFourColumns($);
+  hardenFeatureCardsFourColumns($);
   hardenThreeUpProducts($);
   hardenStepsHorizontalColumns($);
   hardenProactiveDynamicsContainers($);

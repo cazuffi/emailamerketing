@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v45';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v46';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1187,6 +1187,41 @@ assert.match(
   statsFourExport,
   /u\s*\+\s*\.body \.stat-stack > div[\s\S]*?width:\s*100%\s*!important/i,
   'Gmail must neutralize Dynamics send-time flex shells inside four-up stat columns',
+);
+
+const featureCardsFourExport = buildEmailHtml({
+  title: 'Feature cards four audit',
+  modules: ['feature-cards-four'],
+  annotate: false,
+});
+const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
+assert.strictEqual($featureCardsFour('.feature-cards-four-section').length, 1);
+assert.strictEqual($featureCardsFour('td.feature-card-cell').length, 4);
+assert.strictEqual($featureCardsFour('.feature-card').length, 4);
+assert.strictEqual($featureCardsFour('.feature-card-accent').length, 4);
+assert.strictEqual($featureCardsFour('td.feature-card-cell [data-editorblocktype="Text"]').length, 4, 'Feature cards must use one text block per card');
+assert.match($featureCardsFour('td.feature-card-cell').first().attr('width') || '', /50%/i, 'Feature cards must use 50% table column width');
+assert.match($featureCardsFour('.feature-card-body').first().attr('style') || '', /min-height:168px/i, 'Feature cards must ship uniform min-height on desktop');
+assert.match(
+  featureCardsFourExport,
+  /\.feature-cards-four-section td\.feature-card-cell[\s\S]*?width:50% !important/i,
+  'Feature cards must ship base CSS table-cell column width for desktop/Outlook',
+);
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  'Feature cards must keep 2×2 grid above mobile breakpoint',
+);
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:block!important/i,
+  'Mobile feature cards must stack to full width',
+);
+assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
+assert.match(
+  featureCardsFourExport,
+  /u\s*\+\s*\.body \.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  'Gmail desktop must keep feature cards 2×2 via table cells',
 );
 
 const threeUpProductsExport = buildEmailHtml({
