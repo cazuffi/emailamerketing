@@ -1359,11 +1359,14 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('.feature-cards-mobile-stack-cell').each((__, cell) => {
       ensureStyle($(cell), 'padding:0');
     });
+    $section.find('.feature-card-solo-wrap').each((__, wrap) => {
+      const $wrap = $(wrap);
+      const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
+      ensureStyle($wrap, `display:block;width:100%;${isLast ? 'margin:0' : 'margin:0 0 12px 0'};box-sizing:border-box;vertical-align:top`);
+    });
     $section.find('.feature-card-solo').each((__, table) => {
-      const $table = $(table);
-      const isLast = $table.parent().children('.feature-card-solo').last().is($table);
-      ensureStyle($table, `width:100%;border-collapse:collapse${isLast ? '' : ';margin-bottom:12px'}`);
-      $table.find('> tbody > tr > td').each((___, cell) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse');
+      $(table).find('> tbody > tr > td').each((___, cell) => {
         const $cell = $(cell);
         $cell.attr('align', 'left');
         $cell.attr('valign', 'top');
@@ -1588,7 +1591,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v53';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v54';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
