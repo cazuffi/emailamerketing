@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v52';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v53';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1236,6 +1236,16 @@ assert.match(
   featureCardsFourExport,
   /feature-cards-mso-grid[\s\S]*?height:\s*220px/i,
   'Outlook desktop MSO block must fix feature card body height for uniform rows',
+);
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.ExternalClass \.feature-card-solo[\s\S]*?display:inline-block!important/i,
+  'Outlook Web must promote stacked solos into a 2-up grid',
+);
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\s*\+\s*\.body \.feature-card-solo[\s\S]*?display:inline-block!important/i,
+  'Gmail desktop must promote stacked solos into a 2-up grid',
 );
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
 
