@@ -56,7 +56,7 @@ function simulateDynamicsLayoutShell($) {
 }
 
 function inferContainerWidth($, $block) {
-  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .image-split-stack, .accent-band-stack, .step-stack').first();
+  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .feature-card-stack, .image-split-stack, .accent-band-stack, .step-stack').first();
   if ($stackCell.length && $stackCell.is('td')) {
     const horizontalPad = sectionHorizontalPad($, $block);
     const outerWidth = outerTableWidth($, $block);
@@ -67,6 +67,9 @@ function inferContainerWidth($, $block) {
       const contentWidth = outerWidth - horizontalPad;
       const width = Math.round((contentWidth * parseFloat(pctMatch[1])) / 100 - cellPad);
       return Math.max(width, 178);
+    }
+    if ($stackCell.closest('.feature-cards-four-section').length) {
+      return Math.max(Math.round((outerWidth - horizontalPad) / 2), 178);
     }
     if ($stackCell.closest('.stats-four-section').length) {
       return Math.max(Math.round((outerWidth - horizontalPad) / 4), 178);
