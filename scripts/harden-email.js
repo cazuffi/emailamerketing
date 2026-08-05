@@ -1353,15 +1353,18 @@ function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
     $section.removeClass('columns-equal-class');
-    $section.find('.feature-cards-mobile-stack').each((__, wrap) => {
-      ensureStyle($(wrap), 'display:block;width:100%');
+    $section.find('table.feature-cards-mobile-stack').each((__, wrap) => {
+      ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
     });
-    $section.find('.feature-cards-desktop-grid').each((__, wrap) => {
-      ensureStyle($(wrap), 'display:none;max-height:0;overflow:hidden;mso-hide:all');
+    $section.find('table.feature-cards-desktop-grid').each((__, wrap) => {
+      ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
+    });
+    $section.find('.feature-cards-mobile-stack-cell, .feature-cards-desktop-grid-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0');
     });
     $section.find('.feature-card-solo').each((__, table) => {
       const $table = $(table);
-      const isLast = $table.is('.feature-card-solo:last-child');
+      const isLast = $table.parent().children('.feature-card-solo').last().is($table);
       ensureStyle($table, `width:100%;border-collapse:collapse${isLast ? '' : ';margin-bottom:12px'}`);
       $table.find('> tbody > tr > td').each((___, cell) => {
         const $cell = $(cell);
@@ -1567,13 +1570,28 @@ function hardenViewInBrowser($) {
 
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
-  let out = html.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
+  const preserved = [];
+  // Keep feature-cards dual MSO split so Word gets grid-only and others get CSS-swapped blocks.
+  let out = html.replace(
+    /<!--\[if !mso\]><!-->([\s\S]*?feature-cards-mobile-stack[\s\S]*?)<!--<!\[endif\]-->\s*<!--\[if mso\]>([\s\S]*?feature-cards-(?:desktop-grid|mso-grid)[\s\S]*?)<!\[endif\]-->/gi,
+    (_, nonMso, mso) => {
+      const token = `<!--FEATURE_CARDS_DUAL_${preserved.length}-->`;
+      preserved.push(
+        `<!--[if !mso]><!-->${nonMso}<!--<![endif]-->\n<!--[if mso]>${mso}<![endif]-->`,
+      );
+      return token;
+    },
+  );
+  out = out.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
   out = out.replace(/\s*<!--<!\[endif\]-->/gi, '');
   out = out.replace(/<!--\[if mso\]>\s*<v:roundrect[\s\S]*?<!\[endif\]-->\s*/gi, '');
+  preserved.forEach((block, index) => {
+    out = out.replace(`<!--FEATURE_CARDS_DUAL_${index}-->`, block);
+  });
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v50';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v51';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

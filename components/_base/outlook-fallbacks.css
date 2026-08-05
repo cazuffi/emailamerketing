@@ -241,15 +241,10 @@ a.button-outline-link {
   margin-right: auto !important;
 }
 
-.feature-cards-four-section .feature-cards-mobile-stack {
-  display: none !important;
-  max-height: 0 !important;
-  overflow: hidden !important;
-  mso-hide: all;
-}
-
+.feature-cards-four-section .feature-cards-mso-grid,
 .feature-cards-four-section .feature-cards-desktop-grid {
-  display: block !important;
+  display: table !important;
+  width: 100% !important;
   max-height: none !important;
   overflow: visible !important;
 }
