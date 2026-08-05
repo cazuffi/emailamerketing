@@ -1356,10 +1356,7 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('table.feature-cards-mobile-stack').each((__, wrap) => {
       ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
     });
-    $section.find('table.feature-cards-desktop-grid').each((__, wrap) => {
-      ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
-    });
-    $section.find('.feature-cards-mobile-stack-cell, .feature-cards-desktop-grid-cell').each((__, cell) => {
+    $section.find('.feature-cards-mobile-stack-cell').each((__, cell) => {
       ensureStyle($(cell), 'padding:0');
     });
     $section.find('.feature-card-solo').each((__, table) => {
@@ -1571,9 +1568,9 @@ function hardenViewInBrowser($) {
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   const preserved = [];
-  // Keep feature-cards dual MSO split so Word gets grid-only and others get CSS-swapped blocks.
+  // Keep feature-cards MSO split: web clients get stacked solos; Word gets 2×2 grid only.
   let out = html.replace(
-    /<!--\[if !mso\]><!-->([\s\S]*?feature-cards-mobile-stack[\s\S]*?)<!--<!\[endif\]-->\s*<!--\[if mso\]>([\s\S]*?feature-cards-(?:desktop-grid|mso-grid)[\s\S]*?)<!\[endif\]-->/gi,
+    /<!--\[if !mso\]><!-->([\s\S]*?feature-cards-mobile-stack[\s\S]*?)<!--<!\[endif\]-->\s*<!--\[if mso\]>([\s\S]*?feature-cards-mso-grid[\s\S]*?)<!\[endif\]-->/gi,
     (_, nonMso, mso) => {
       const token = `<!--FEATURE_CARDS_DUAL_${preserved.length}-->`;
       preserved.push(
@@ -1591,7 +1588,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v51';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v52';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
