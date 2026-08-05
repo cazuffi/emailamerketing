@@ -1362,7 +1362,8 @@ function hardenFeatureCardsFourColumns($) {
       $cell.attr('valign', 'top');
       $cell.attr('width', '50%');
       $cell.attr('height', '1');
-      ensureStyle($cell, 'width:50%;height:1px;vertical-align:top;text-align:left;box-sizing:border-box');
+      $cell.attr('bgcolor', '#f9f9f9');
+      ensureStyle($cell, 'width:50%;height:1px;vertical-align:top;text-align:left;box-sizing:border-box;background-color:#f9f9f9');
     });
     $section.find('.feature-card').each((__, table) => {
       const $table = $(table);
@@ -1380,7 +1381,7 @@ function hardenFeatureCardsFourColumns($) {
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
       $cell.attr('height', '100%');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;min-height:168px;height:100%;vertical-align:top;text-align:left');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;min-height:220px;height:100%;vertical-align:top;text-align:left');
     });
     $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
       const $el = $(el);
@@ -1554,7 +1555,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v47';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v48';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
