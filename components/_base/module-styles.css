@@ -369,13 +369,6 @@ h2.subhead-orange {
   width: 100%;
   border-collapse: collapse;
 }
-.feature-cards-four-section .feature-cards-desktop-grid {
-  display: none;
-  width: 100%;
-  max-height: 0;
-  overflow: hidden;
-  border-collapse: collapse;
-}
 .feature-cards-four-section .feature-card-solo {
   width: 100%;
   border-collapse: collapse;
@@ -395,78 +388,6 @@ h2.subhead-orange {
   width: 100% !important;
   max-width: 100% !important;
   flex: none !important;
-}
-@media only screen and (min-width: 641px) {
-  .feature-cards-four-section .feature-cards-mobile-stack {
-    display: none !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-  }
-  .feature-cards-four-section .feature-cards-desktop-grid {
-    display: table !important;
-    width: 100% !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-  .feature-cards-four-section .feature-cards-pair {
-    display: table;
-    width: 100%;
-  }
-  .feature-cards-four-section .feature-cards-pair tbody {
-    display: table-row-group;
-    width: 100%;
-  }
-  .feature-cards-four-section .feature-cards-pair tr.feature-cards-pair-row {
-    display: table-row;
-    width: 100%;
-  }
-  .feature-cards-four-section .feature-cards-pair td.feature-card-cell,
-  .feature-cards-four-section .feature-cards-pair .feature-card-stack {
-    display: table-cell;
-    width: 50%;
-    height: 1px;
-    padding-bottom: 0 !important;
-  }
-  .feature-cards-four-section .feature-cards-pair td.feature-card-cell:first-child {
-    padding: 0 6px 12px 0 !important;
-  }
-  .feature-cards-four-section .feature-cards-pair td.feature-card-cell:last-child {
-    padding: 0 0 12px 6px !important;
-  }
-  .feature-cards-four-section .feature-cards-pair:last-child td.feature-card-cell {
-    padding-bottom: 0 !important;
-  }
-  .feature-cards-four-section .feature-cards-pair:last-child td.feature-card-cell:first-child {
-    padding: 0 6px 0 0 !important;
-  }
-  .feature-cards-four-section .feature-cards-pair:last-child td.feature-card-cell:last-child {
-    padding: 0 0 0 6px !important;
-  }
-  .feature-cards-four-section .feature-cards-pair .feature-card {
-    height: 100%;
-  }
-  .feature-cards-four-section .feature-cards-pair .feature-card-body {
-    min-height: 220px;
-    height: 100%;
-  }
-}
-/* Outlook mobile reports a wide CSS viewport; force stack via device width. */
-@media only screen and (max-device-width: 640px) {
-  .feature-cards-four-section .feature-cards-mobile-stack {
-    display: table !important;
-    width: 100% !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-  .feature-cards-four-section .feature-cards-desktop-grid {
-    display: none !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-  }
-  .feature-cards-four-section .feature-cards-pair .feature-card-body {
-    min-height: 0 !important;
-    height: auto !important;
-  }
 }
 
 .icon-circle {
