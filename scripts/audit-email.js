@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v50';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v51';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1213,7 +1213,17 @@ assert.match($featureCardsFour('td.feature-card-cell').first().attr('bgcolor') |
 assert.strictEqual($featureCardsFour('.feature-cards-four-section.columns-equal-class').length, 0, 'Feature cards must not ship columns-equal-class');
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-cards-mobile-stack[\s\S]*?display:block!important/i,
+  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-mobile-stack[\s\S]*?<!--<!\[endif\]-->/i,
+  'Feature cards must keep non-MSO mobile/desktop blocks for web clients',
+);
+assert.match(
+  featureCardsFourExport,
+  /<!--\[if mso\]>[\s\S]*?feature-cards-mso-grid[\s\S]*?<!\[endif\]-->/i,
+  'Feature cards must ship MSO-only desktop grid so Word does not duplicate the stack',
+);
+assert.match(
+  featureCardsFourExport,
+  /\.feature-cards-four-section \.feature-cards-mobile-stack[\s\S]*?display:table!important/i,
   'Feature cards must ship visible mobile stack by default',
 );
 assert.match(
@@ -1228,33 +1238,33 @@ assert.match(
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?\.feature-cards-four-section \.feature-cards-desktop-grid[\s\S]*?display:block!important/i,
-  'Feature cards must reveal desktop grid on pointer devices',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-desktop-grid[\s\S]*?display:table!important/i,
+  'Feature cards must reveal desktop grid on wide viewports (Outlook Web / Gmail desktop)',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?\.feature-cards-four-section \.feature-cards-pair td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
-  'Feature cards must keep 2×2 grid on desktop pointer devices',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-pair td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  'Feature cards must keep 2×2 grid on desktop viewports',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?\.feature-cards-four-section \.feature-cards-pair \.feature-card-body[\s\S]*?min-height:220px!important/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-pair \.feature-card-body[\s\S]*?min-height:220px!important/i,
   'Feature cards must ship desktop min-height for equal rows',
 );
 assert.match(
   featureCardsFourExport,
-  /feature-cards-four-section \.feature-cards-pair \.feature-card-body[\s\S]*?height:\s*220px/i,
-  'Outlook desktop MSO block must fix feature card body height for uniform rows',
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-mobile-stack[\s\S]*?display:table!important/i,
+  'Feature cards must force mobile stack on narrow device-width (Outlook mobile)',
 );
 assert.match(
   featureCardsFourExport,
-  /feature-cards-four-section \.feature-cards-mobile-stack[\s\S]*?display:\s*none/i,
-  'Outlook desktop MSO block must hide mobile stack',
+  /feature-cards-mso-grid[\s\S]*?height:\s*220px/i,
+  'Outlook desktop MSO block must fix feature card body height for uniform rows',
 );
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?u\s*\+\s*\.body \.feature-cards-four-section \.feature-cards-pair td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\s*\+\s*\.body \.feature-cards-four-section \.feature-cards-pair td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
   'Gmail desktop must keep feature cards 2×2 via table cells',
 );
 
@@ -1388,7 +1398,15 @@ $all('[data-section="true"].columns-equal-class').each((_, section) => {
     `Unexpected editable-column section (${cls}) — convert to the fluid pattern`,
   );
 });
-assert(!/\[if !mso\]/i.test(allModulesExport), 'Non-MSO wrappers must not survive export');
+assert(
+  !/\[if !mso\]/i.test(
+    allModulesExport.replace(
+      /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-mobile-stack[\s\S]*?<!--<!\[endif\]-->\s*<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/gi,
+      '',
+    ),
+  ),
+  'Non-MSO wrappers must not survive export (except feature-cards dual layout)',
+);
 assert(!/@media\b/i.test(allModulesNoMedia), 'Compatibility preview must remove every media query');
 assert.strictEqual(
   $all('table.outer').filter((_, table) => /display\s*:\s*block/i.test($all(table).attr('style') || '')).length,
