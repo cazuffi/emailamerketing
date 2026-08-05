@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v53';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v54';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1201,6 +1201,7 @@ const featureCardsFourExport = buildEmailHtml({
 const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
 assert.strictEqual($featureCardsFour('.feature-cards-four-section').length, 1);
 assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack').length, 1, 'Feature cards must ship stacked solos for web/mobile clients');
+assert.strictEqual($featureCardsFour('.feature-card-solo-wrap').length, 4, 'Feature cards must wrap each solo in a div for Outlook Web 2-up');
 assert.strictEqual($featureCardsFour('.feature-card-solo').length, 4, 'Feature cards web stack must use four solo tables');
 assert.strictEqual($featureCardsFour('.feature-cards-desktop-grid').length, 0, 'Feature cards must not ship a CSS-toggled desktop grid to web clients');
 assert.strictEqual($featureCardsFour('.feature-card').length, 4);
@@ -1239,13 +1240,13 @@ assert.match(
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.ExternalClass \.feature-card-solo[\s\S]*?display:inline-block!important/i,
-  'Outlook Web must promote stacked solos into a 2-up grid',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:inline-block!important/i,
+  'Outlook on the web / desktop browsers must promote wraps to 2-up via min-width',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\s*\+\s*\.body \.feature-card-solo[\s\S]*?display:inline-block!important/i,
-  'Gmail desktop must promote stacked solos into a 2-up grid',
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:block!important/i,
+  'Phones must force full-width stacked wraps via max-device-width',
 );
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
 

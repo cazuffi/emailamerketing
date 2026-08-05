@@ -369,13 +369,19 @@ h2.subhead-orange {
   width: 100%;
   border-collapse: collapse;
 }
+.feature-cards-four-section .feature-card-solo-wrap {
+  display: block;
+  width: 100%;
+  margin: 0 0 12px 0;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+.feature-cards-four-section .feature-card-solo-wrap:last-child {
+  margin-bottom: 0;
+}
 .feature-cards-four-section .feature-card-solo {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 12px;
-}
-.feature-cards-four-section .feature-card-solo:last-child {
-  margin-bottom: 0;
 }
 .feature-cards-four-section .feature-cards-pair {
   width: 100%;
@@ -390,56 +396,15 @@ h2.subhead-orange {
   flex: none !important;
 }
 /*
- * Outlook Web (.ExternalClass) and Gmail (u+.body): promote the same stacked
- * solos into a 2×2 grid. Avoid bare min-width — Outlook mobile reports ~980px
- * viewport and must stay stacked. pointer:fine covers other desktop browsers.
+ * Outlook on the web (laptop browser) does not reliably match ExternalClass or
+ * pointer:fine — unsupported features fail the whole query. Use bare min-width
+ * for 2-up on div wraps, and max-device-width to keep phones stacked.
  */
 @media only screen and (min-width: 641px) {
-  .ExternalClass .feature-cards-mobile-stack-cell,
-  [data-ogsc] .feature-cards-mobile-stack-cell,
-  u + .body .feature-cards-mobile-stack-cell {
-    font-size: 0 !important;
-  }
-  .ExternalClass .feature-card-solo,
-  [data-ogsc] .feature-card-solo,
-  u + .body .feature-card-solo {
-    display: inline-block !important;
-    width: 49% !important;
-    max-width: 49% !important;
-    vertical-align: top !important;
-    margin: 0 0.5% 12px !important;
-    font-size: 15px !important;
-    box-sizing: border-box !important;
-  }
-  .ExternalClass .feature-card-solo:nth-last-child(-n+2),
-  [data-ogsc] .feature-card-solo:nth-last-child(-n+2),
-  u + .body .feature-card-solo:nth-last-child(-n+2) {
-    margin-bottom: 0 !important;
-  }
-  .ExternalClass .feature-card-solo .feature-card-body,
-  [data-ogsc] .feature-card-solo .feature-card-body,
-  u + .body .feature-card-solo .feature-card-body {
-    min-height: 220px !important;
-  }
-  .ExternalClass .feature-card-number,
-  [data-ogsc] .feature-card-number,
-  u + .body .feature-card-number {
-    font-size: 22px !important;
-  }
-  .ExternalClass .feature-card-solo h3,
-  .ExternalClass .feature-card-solo p,
-  [data-ogsc] .feature-card-solo h3,
-  [data-ogsc] .feature-card-solo p,
-  u + .body .feature-card-solo h3,
-  u + .body .feature-card-solo p {
-    font-size: 15px !important;
-  }
-}
-@media only screen and (min-width: 641px) and (hover: hover) and (pointer: fine) {
   .feature-cards-four-section .feature-cards-mobile-stack-cell {
     font-size: 0 !important;
   }
-  .feature-cards-four-section .feature-card-solo {
+  .feature-cards-four-section .feature-card-solo-wrap {
     display: inline-block !important;
     width: 49% !important;
     max-width: 49% !important;
@@ -448,11 +413,36 @@ h2.subhead-orange {
     font-size: 15px !important;
     box-sizing: border-box !important;
   }
-  .feature-cards-four-section .feature-card-solo:nth-last-child(-n+2) {
+  .feature-cards-four-section .feature-card-solo-wrap:nth-last-child(-n+2) {
     margin-bottom: 0 !important;
   }
-  .feature-cards-four-section .feature-card-solo .feature-card-body {
+  .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
     min-height: 220px !important;
+  }
+  .feature-cards-four-section .feature-card-number {
+    font-size: 22px !important;
+  }
+  .feature-cards-four-section .feature-card-solo-wrap h3,
+  .feature-cards-four-section .feature-card-solo-wrap p {
+    font-size: 15px !important;
+  }
+}
+@media only screen and (max-device-width: 640px) {
+  .feature-cards-four-section .feature-cards-mobile-stack-cell {
+    font-size: medium !important;
+  }
+  .feature-cards-four-section .feature-card-solo-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 12px !important;
+    font-size: 15px !important;
+  }
+  .feature-cards-four-section .feature-card-solo-wrap:last-child {
+    margin-bottom: 0 !important;
+  }
+  .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
+    min-height: 0 !important;
   }
 }
 
@@ -740,13 +730,13 @@ h2.subhead-orange {
   .icon-grid-cell h3,
   .icon-grid-cell p { text-align: center !important; }
 
-  .feature-card-solo {
+  .feature-card-solo-wrap {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     margin-bottom: 12px !important;
   }
-  .feature-card-solo:last-child { margin-bottom: 0 !important; }
+  .feature-card-solo-wrap:last-child { margin-bottom: 0 !important; }
   .feature-card-body { min-height: 0 !important; height: auto !important; }
   .feature-cards-four-section .feature-card { height: auto !important; }
   .feature-card-number,
