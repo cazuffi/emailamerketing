@@ -1351,18 +1351,23 @@ function hardenThreeUpProducts($) {
 function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
+    $section.removeClass('columns-equal-class');
     $section.find('.feature-cards-four-layout').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
     });
     $section.find('td.feature-card-cell, .feature-card-stack').each((__, cell) => {
       const $cell = $(cell);
+      $cell.addClass('stack-column');
       $cell.attr('align', 'left');
       $cell.attr('valign', 'top');
       $cell.attr('width', '50%');
-      ensureStyle($cell, 'width:50%;vertical-align:top;text-align:left;box-sizing:border-box');
+      $cell.attr('height', '1');
+      ensureStyle($cell, 'width:50%;height:1px;vertical-align:top;text-align:left;box-sizing:border-box');
     });
     $section.find('.feature-card').each((__, table) => {
-      ensureStyle($(table), 'width:100%;border-collapse:collapse;background-color:#f9f9f9');
+      const $table = $(table);
+      $table.attr('height', '100%');
+      ensureStyle($table, 'width:100%;height:100%;border-collapse:collapse;background-color:#f9f9f9');
     });
     $section.find('.feature-card-accent').each((__, cell) => {
       const $cell = $(cell);
@@ -1374,7 +1379,12 @@ function hardenFeatureCardsFourColumns($) {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;min-height:168px;vertical-align:top;text-align:left');
+      $cell.attr('height', '100%');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;min-height:168px;height:100%;vertical-align:top;text-align:left');
+    });
+    $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
+      const $el = $(el);
+      ensureStyle($el, NEUTRAL_CONTAINER_STYLE);
     });
     $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"]').each((__, el) => {
       const $el = $(el);
@@ -1544,7 +1554,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v46';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v47';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
