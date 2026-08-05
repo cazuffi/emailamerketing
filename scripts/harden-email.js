@@ -1362,7 +1362,12 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('.feature-card-solo-wrap').each((__, wrap) => {
       const $wrap = $(wrap);
       const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
-      ensureStyle($wrap, `display:block;width:100%;${isLast ? 'margin:0' : 'margin:0 0 12px 0'};box-sizing:border-box;vertical-align:top`);
+      // Desktop-first 2-up: CSS !important keeps OWA laptop panes in a grid.
+      // Phones restack via max-device-width only (not max-width).
+      ensureStyle(
+        $wrap,
+        `display:inline-block;width:49%;max-width:49%;${isLast ? 'margin:0 0.5% 0' : 'margin:0 0.5% 12px'};vertical-align:top;box-sizing:border-box`,
+      );
     });
     $section.find('.feature-card-solo').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse');
@@ -1591,7 +1596,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v54';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v55';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

@@ -369,15 +369,29 @@ h2.subhead-orange {
   width: 100%;
   border-collapse: collapse;
 }
+/*
+ * Desktop-first 2-up: Outlook on the web reading panes are often <641px, so
+ * min-width media queries never promote a stack-first layout. Default to
+ * inline-block 49% (works at any viewport width). Stack phones only via
+ * max-device-width — do NOT use max-width, or OWA laptop panes stack again.
+ */
+.feature-cards-four-section .feature-cards-mobile-stack-cell {
+  font-size: 0;
+}
 .feature-cards-four-section .feature-card-solo-wrap {
-  display: block;
-  width: 100%;
-  margin: 0 0 12px 0;
+  display: inline-block;
+  width: 49%;
+  max-width: 49%;
+  margin: 0 0.5% 12px;
   box-sizing: border-box;
   vertical-align: top;
+  font-size: 15px;
 }
-.feature-cards-four-section .feature-card-solo-wrap:last-child {
+.feature-cards-four-section .feature-card-solo-wrap:nth-last-child(-n+2) {
   margin-bottom: 0;
+}
+.feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
+  min-height: 220px;
 }
 .feature-cards-four-section .feature-card-solo {
   width: 100%;
@@ -394,38 +408,6 @@ h2.subhead-orange {
   width: 100% !important;
   max-width: 100% !important;
   flex: none !important;
-}
-/*
- * Outlook on the web (laptop browser) does not reliably match ExternalClass or
- * pointer:fine — unsupported features fail the whole query. Use bare min-width
- * for 2-up on div wraps, and max-device-width to keep phones stacked.
- */
-@media only screen and (min-width: 641px) {
-  .feature-cards-four-section .feature-cards-mobile-stack-cell {
-    font-size: 0 !important;
-  }
-  .feature-cards-four-section .feature-card-solo-wrap {
-    display: inline-block !important;
-    width: 49% !important;
-    max-width: 49% !important;
-    vertical-align: top !important;
-    margin: 0 0.5% 12px !important;
-    font-size: 15px !important;
-    box-sizing: border-box !important;
-  }
-  .feature-cards-four-section .feature-card-solo-wrap:nth-last-child(-n+2) {
-    margin-bottom: 0 !important;
-  }
-  .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
-    min-height: 220px !important;
-  }
-  .feature-cards-four-section .feature-card-number {
-    font-size: 22px !important;
-  }
-  .feature-cards-four-section .feature-card-solo-wrap h3,
-  .feature-cards-four-section .feature-card-solo-wrap p {
-    font-size: 15px !important;
-  }
 }
 @media only screen and (max-device-width: 640px) {
   .feature-cards-four-section .feature-cards-mobile-stack-cell {
@@ -730,15 +712,8 @@ h2.subhead-orange {
   .icon-grid-cell h3,
   .icon-grid-cell p { text-align: center !important; }
 
-  .feature-card-solo-wrap {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-bottom: 12px !important;
-  }
-  .feature-card-solo-wrap:last-child { margin-bottom: 0 !important; }
-  .feature-card-body { min-height: 0 !important; height: auto !important; }
-  .feature-cards-four-section .feature-card { height: auto !important; }
+  /* Feature-card wraps stack only via max-device-width (see above) — not
+     max-width — so Outlook on the web laptop reading panes stay 2-up. */
   .feature-card-number,
   .feature-card-subtitle,
   .feature-card-body h3,
