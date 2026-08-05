@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v56';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v57';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1200,18 +1200,19 @@ const featureCardsFourExport = buildEmailHtml({
 });
 const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
 assert.strictEqual($featureCardsFour('.feature-cards-four-section').length, 1);
-assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack').length, 1, 'Feature cards must ship stacked solos for web/mobile clients');
-assert.strictEqual($featureCardsFour('.feature-card-solo-wrap').length, 4, 'Feature cards must wrap each solo in a div for Outlook Web 2-up');
-assert.strictEqual($featureCardsFour('.feature-card-solo').length, 4, 'Feature cards web stack must use four solo tables');
+assert.strictEqual($featureCardsFour('.feature-cards-web-grid').length, 1, 'Feature cards must ship web pair-row grid for OWA/Gmail');
+assert.strictEqual($featureCardsFour('.feature-cards-web-grid .feature-cards-pair').length, 2, 'Web grid must use two pair-row tables');
+assert.strictEqual($featureCardsFour('.feature-cards-web-grid td.feature-card-cell').length, 4, 'Web grid must have four card cells');
+assert.strictEqual($featureCardsFour('.feature-card-solo-wrap').length, 0, 'Fixed-height solo wraps must be removed');
 assert.strictEqual($featureCardsFour('.feature-cards-desktop-grid').length, 0, 'Feature cards must not ship a CSS-toggled desktop grid to web clients');
 assert.strictEqual($featureCardsFour('.feature-card').length, 4);
 assert.strictEqual($featureCardsFour('.feature-card-accent').length, 4);
-assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack [data-editorblocktype="Text"]').length, 4, 'Feature cards stack must use one text block per card');
+assert.strictEqual($featureCardsFour('.feature-cards-web-grid [data-editorblocktype="Text"]').length, 4, 'Web grid must use one text block per card');
 assert.strictEqual($featureCardsFour('.feature-cards-four-section.columns-equal-class').length, 0, 'Feature cards must not ship columns-equal-class');
 assert.match(
   featureCardsFourExport,
-  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-mobile-stack[\s\S]*?<!--<!\[endif\]-->/i,
-  'Feature cards must keep non-MSO stacked solos for Outlook Web / mobile / Gmail',
+  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-web-grid[\s\S]*?<!--<!\[endif\]-->/i,
+  'Feature cards must keep non-MSO pair-row grid for Outlook Web / mobile / Gmail',
 );
 assert.match(
   featureCardsFourExport,
@@ -1225,8 +1226,8 @@ assert.doesNotMatch(
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-cards-mobile-stack[\s\S]*?display:table!important/i,
-  'Feature cards must ship visible mobile stack styles',
+  /\.feature-cards-four-section \.feature-cards-web-grid\{[^}]*display:table!important/i,
+  'Feature cards must ship visible web pair-row styles',
 );
 assert.match(
   featureCardsFourExport,
@@ -1240,39 +1241,29 @@ assert.match(
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:49%!important/i,
-  'Outlook on the web must default to desktop-first 2-up (reading panes are often <641px)',
+  /\.feature-cards-web-grid td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  'Outlook on the web must keep pair cells as table-cell for row equal-height',
+);
+assert.doesNotMatch(
+  featureCardsFourExport,
+  /\.feature-cards-web-grid[\s\S]{0,400}?height:280px!important/i,
+  'Web pair rows must not use fixed card body heights',
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*height:284px!important/i,
-  'Outlook on the web solo wraps must use a fixed height for equal card squares',
-);
-assert.match(
-  featureCardsFourExport,
-  /\.feature-card-solo-wrap \.feature-card-body\{[^}]*height:280px!important/i,
-  'Outlook on the web card bodies must use fixed height (min-height alone is unreliable in OWA)',
-);
-assert.match(
-  featureCardsFourExport,
-  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:block!important/i,
-  'Phones must force full-width stacked wraps via max-device-width only',
-);
-assert.match(
-  featureCardsFourExport,
-  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap \.feature-card-body[\s\S]*?height:auto!important/i,
-  'Phones must drop fixed card heights when stacking',
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-cards-web-grid td\.feature-card-cell[\s\S]*?display:block!important/i,
+  'Phones must stack pair cells via max-device-width only',
 );
 {
-  // Strip max-device-width phone overrides, then ensure no remaining rule restacks wraps
-  // via viewport max-width (that would collapse OWA laptop reading panes).
+  // Strip max-device-width phone overrides, then ensure viewport max-width does not
+  // restack web pair cells (that would collapse OWA laptop reading panes).
   const withoutPhoneOverride = featureCardsFourExport.replace(
     /@media only screen and \(max-device-width:\s*640px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
     '',
   );
   assert.doesNotMatch(
     withoutPhoneOverride,
-    /\.feature-card-solo-wrap[^{]*\{[^}]*display:\s*block!important/i,
+    /@media only screen and \(max-width:\s*480px\)[\s\S]{0,1200}?\.feature-cards-four-section td\.feature-card-cell[\s\S]{0,120}?display:\s*block!important/i,
     'Do not restack feature cards via max-width — Outlook Web laptop panes would stack',
   );
 }
@@ -1411,7 +1402,7 @@ $all('[data-section="true"].columns-equal-class').each((_, section) => {
 assert(
   !/\[if !mso\]/i.test(
     allModulesExport.replace(
-      /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-mobile-stack[\s\S]*?<!--<!\[endif\]-->\s*<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/gi,
+      /<!--\[if !mso\]><!-->\s*<table class="feature-cards-web-grid"[\s\S]*?<!--<!\[endif\]-->\s*<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/gi,
       '',
     ),
   ),
