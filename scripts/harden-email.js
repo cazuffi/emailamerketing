@@ -1027,7 +1027,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-four-layout')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-pair')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1352,23 +1352,23 @@ function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
     $section.removeClass('columns-equal-class');
-    $section.find('.feature-cards-four-layout').each((__, table) => {
+    $section.find('.feature-cards-pair').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
     });
-    $section.find('td.feature-card-cell, .feature-card-stack').each((__, cell) => {
+    $section.find('.feature-cards-pair td.feature-card-cell, .feature-cards-pair .feature-card-stack').each((__, cell) => {
       const $cell = $(cell);
       $cell.addClass('stack-column');
       $cell.attr('align', 'left');
       $cell.attr('valign', 'top');
-      $cell.attr('width', '50%');
-      $cell.attr('height', '1');
+      $cell.attr('width', '100%');
       $cell.attr('bgcolor', '#f9f9f9');
-      ensureStyle($cell, 'width:50%;height:1px;vertical-align:top;text-align:left;box-sizing:border-box;background-color:#f9f9f9');
+      ensureStyle($cell, 'width:100%;vertical-align:top;text-align:left;box-sizing:border-box;background-color:#f9f9f9');
+    });
+    $section.find('.feature-cards-pair tr.feature-cards-pair-row').each((__, row) => {
+      ensureStyle($(row), 'width:100%');
     });
     $section.find('.feature-card').each((__, table) => {
-      const $table = $(table);
-      $table.attr('height', '100%');
-      ensureStyle($table, 'width:100%;height:100%;border-collapse:collapse;background-color:#f9f9f9');
+      ensureStyle($(table), 'width:100%;border-collapse:collapse;background-color:#f9f9f9');
     });
     $section.find('.feature-card-accent').each((__, cell) => {
       const $cell = $(cell);
@@ -1380,8 +1380,7 @@ function hardenFeatureCardsFourColumns($) {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
-      $cell.attr('height', '100%');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;min-height:220px;height:100%;vertical-align:top;text-align:left');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left');
     });
     $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
       const $el = $(el);
@@ -1555,7 +1554,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v48';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v49';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

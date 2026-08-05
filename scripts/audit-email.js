@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v48';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v49';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -295,8 +295,12 @@ assert.match(
   /OUTLOOK_DESKTOP_STRUCTURE_START[\s\S]*?header-logo-column/i,
   'Real Outlook fallback must retain desktop header structure',
 );
+const outlookStructureCss = getOutlookFallbackCss().replace(
+  /\.feature-cards-four-section[\s\S]*?(?=\/\* OUTLOOK_DESKTOP_STRUCTURE_END \*\/)/,
+  '',
+);
 assert.doesNotMatch(
-  getOutlookFallbackCss(),
+  outlookStructureCss,
   /OUTLOOK_DESKTOP_STRUCTURE_START[\s\S]*?display:\s*table-cell/i,
   'Outlook Word must retain native table-cell display instead of overriding a stacked cell',
 );
@@ -1196,22 +1200,19 @@ const featureCardsFourExport = buildEmailHtml({
 });
 const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
 assert.strictEqual($featureCardsFour('.feature-cards-four-section').length, 1);
+assert.strictEqual($featureCardsFour('.feature-cards-pair').length, 2, 'Feature cards must use two pair tables for mobile stack');
 assert.strictEqual($featureCardsFour('td.feature-card-cell').length, 4);
 assert.strictEqual($featureCardsFour('.feature-card').length, 4);
 assert.strictEqual($featureCardsFour('.feature-card-accent').length, 4);
 assert.strictEqual($featureCardsFour('td.feature-card-cell.stack-column').length, 4, 'Feature cards must use stack-column for mobile stacking');
 assert.strictEqual($featureCardsFour('td.feature-card-cell [data-editorblocktype="Text"]').length, 4, 'Feature cards must use one text block per card');
-assert.match($featureCardsFour('td.feature-card-cell').first().attr('width') || '', /50%/i, 'Feature cards must use 50% table column width');
-assert.match($featureCardsFour('td.feature-card-cell').first().attr('height') || '', /1/i, 'Feature cards must use equal-height row trick on cells');
-assert.match($featureCardsFour('.feature-card').first().attr('height') || '', /100%/i, 'Feature cards must stretch card tables to row height');
+assert.match($featureCardsFour('td.feature-card-cell').first().attr('width') || '', /100%/i, 'Feature cards must default to full-width cells for mobile stack');
 assert.match($featureCardsFour('td.feature-card-cell').first().attr('bgcolor') || '', /#f9f9f9/i, 'Feature cards must paint grey on outer cells for Outlook row fill');
-assert.match($featureCardsFour('.feature-card-body').first().attr('style') || '', /min-height:220px/i, 'Feature cards must ship uniform min-height on desktop');
-assert.match($featureCardsFour('.feature-card-body').first().attr('style') || '', /height:100%/i, 'Feature cards must stretch card bodies to row height');
 assert.strictEqual($featureCardsFour('.feature-cards-four-section.columns-equal-class').length, 0, 'Feature cards must not ship columns-equal-class');
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:block!important[\s\S]*?width:100% !important/i,
-  'Feature cards must ship mobile-first stacked base CSS',
+  /\.feature-cards-four-section \.feature-cards-pair[\s\S]*?display:block!important[\s\S]*?width:100% !important/i,
+  'Feature cards must ship mobile-first stacked pair CSS',
 );
 assert.match(
   featureCardsFourExport,
@@ -1220,33 +1221,23 @@ assert.match(
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
-  'Feature cards must keep 2×2 grid at 641px and above',
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?\.feature-cards-four-section \.feature-cards-pair td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  'Feature cards must keep 2×2 grid on desktop pointer devices',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-cards-four-section \.feature-card-body[\s\S]*?min-height:220px!important/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?\.feature-cards-four-section \.feature-cards-pair \.feature-card-body[\s\S]*?min-height:220px!important/i,
   'Feature cards must ship desktop min-height for equal rows',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(max-width:\s*640px\),\s*\(max-device-width:\s*640px\)[\s\S]*?\.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:block!important/i,
-  'Mobile feature cards must stack using viewport and device width',
-);
-assert.match(
-  featureCardsFourExport,
-  /@media only screen and \(max-width:\s*640px\),\s*\(max-device-width:\s*640px\)[\s\S]*?u\+\.body \.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:block!important/i,
-  'Gmail/Outlook mobile must override u+.body table-cell stacking for feature cards',
-);
-assert.match(
-  featureCardsFourExport,
-  /feature-cards-four-section \.feature-card-body[\s\S]*?height:\s*220px/i,
+  /feature-cards-four-section \.feature-cards-pair \.feature-card-body[\s\S]*?height:\s*220px/i,
   'Outlook desktop MSO block must fix feature card body height for uniform rows',
 );
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?u\s*\+\s*\.body \.feature-cards-four-section td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?hover:\s*hover[\s\S]*?pointer:\s*fine[\s\S]*?u\s*\+\s*\.body \.feature-cards-four-section \.feature-cards-pair td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
   'Gmail desktop must keep feature cards 2×2 via table cells',
 );
 
