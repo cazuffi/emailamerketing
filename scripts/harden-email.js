@@ -667,6 +667,7 @@ function removeHiddenElements($) {
     $('*').each((_, el) => {
       const $el = $(el);
       if ($el.is('style, head, title, meta, link')) return;
+      if ($el.hasClass('feature-cards-desktop-grid')) return;
       if (!isHiddenStyle($el.attr('style'))) return;
       $el.remove();
       changed = true;
@@ -1027,7 +1028,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-pair')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-pair') || $table.hasClass('feature-card-solo')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1352,6 +1353,24 @@ function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
     $section.removeClass('columns-equal-class');
+    $section.find('.feature-cards-mobile-stack').each((__, wrap) => {
+      ensureStyle($(wrap), 'display:block;width:100%');
+    });
+    $section.find('.feature-cards-desktop-grid').each((__, wrap) => {
+      ensureStyle($(wrap), 'display:none;max-height:0;overflow:hidden;mso-hide:all');
+    });
+    $section.find('.feature-card-solo').each((__, table) => {
+      const $table = $(table);
+      const isLast = $table.is('.feature-card-solo:last-child');
+      ensureStyle($table, `width:100%;border-collapse:collapse${isLast ? '' : ';margin-bottom:12px'}`);
+      $table.find('> tbody > tr > td').each((___, cell) => {
+        const $cell = $(cell);
+        $cell.attr('align', 'left');
+        $cell.attr('valign', 'top');
+        $cell.attr('bgcolor', '#f9f9f9');
+        ensureStyle($cell, 'padding:0;vertical-align:top;text-align:left;background-color:#f9f9f9');
+      });
+    });
     $section.find('.feature-cards-pair').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
     });
@@ -1360,9 +1379,9 @@ function hardenFeatureCardsFourColumns($) {
       $cell.addClass('stack-column');
       $cell.attr('align', 'left');
       $cell.attr('valign', 'top');
-      $cell.attr('width', '100%');
+      $cell.attr('width', '50%');
       $cell.attr('bgcolor', '#f9f9f9');
-      ensureStyle($cell, 'width:100%;vertical-align:top;text-align:left;box-sizing:border-box;background-color:#f9f9f9');
+      ensureStyle($cell, 'width:50%;vertical-align:top;text-align:left;box-sizing:border-box;background-color:#f9f9f9');
     });
     $section.find('.feature-cards-pair tr.feature-cards-pair-row').each((__, row) => {
       ensureStyle($(row), 'width:100%');
@@ -1386,7 +1405,7 @@ function hardenFeatureCardsFourColumns($) {
       const $el = $(el);
       ensureStyle($el, NEUTRAL_CONTAINER_STYLE);
     });
-    $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"]').each((__, el) => {
+    $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"], .feature-card-solo [data-editorblocktype="Text"]').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'left');
       ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:left');
@@ -1554,7 +1573,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v49';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v50';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
