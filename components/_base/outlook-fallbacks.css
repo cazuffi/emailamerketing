@@ -241,26 +241,32 @@ a.button-outline-link {
   margin-right: auto !important;
 }
 
-.feature-cards-four-section .feature-cards-four-layout {
+.feature-cards-four-section .feature-cards-pair {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
-.feature-cards-four-section td.feature-card-cell,
-.feature-cards-four-section .feature-card-stack {
-  vertical-align: top;
-  text-align: left;
-  box-sizing: border-box;
+.feature-cards-four-section .feature-cards-pair tr.feature-cards-pair-row {
+  display: table-row !important;
 }
 
-.feature-cards-four-section .feature-card {
+.feature-cards-four-section .feature-cards-pair td.feature-card-cell,
+.feature-cards-four-section .feature-cards-pair .feature-card-stack {
+  display: table-cell !important;
+  width: 50% !important;
+  vertical-align: top !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+
+.feature-cards-four-section .feature-cards-pair .feature-card {
   width: 100%;
   border-collapse: collapse;
   background-color: #f9f9f9;
 }
 
-.feature-cards-four-section .feature-card-body {
+.feature-cards-four-section .feature-cards-pair .feature-card-body {
   background-color: #f9f9f9;
   padding: 16px 18px;
   vertical-align: top;
