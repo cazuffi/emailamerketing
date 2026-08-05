@@ -365,12 +365,33 @@ h2.subhead-orange {
   box-sizing: border-box;
 }
 /*
- * Web/OWA: real 2-column pair rows so siblings share row height (no fixed
- * px). Phones stack via max-device-width only — not max-width — so Outlook on
- * the web laptop reading panes stay 2-up.
+ * Solo wraps (divs): stack by default (Outlook mobile + weak CSS).
+ * Promote to 2-up with min-device-width (device screen, not iframe/viewport):
+ * - OWA laptop reading panes stay 2-up (device is wide even when pane <641px)
+ * - Outlook mobile stays stacked (device ~390; ignores fake ~980 CSS viewport)
+ * Never use bare min-width / max-width alone for this module.
  */
-.feature-cards-four-section .feature-cards-web-grid {
+.feature-cards-four-section .feature-cards-mobile-stack {
   display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+.feature-cards-four-section .feature-cards-mobile-stack-cell {
+  font-size: medium;
+}
+.feature-cards-four-section .feature-card-solo-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 12px 0;
+  box-sizing: border-box;
+  vertical-align: top;
+  font-size: 15px;
+}
+.feature-cards-four-section .feature-card-solo-wrap:last-child {
+  margin-bottom: 0;
+}
+.feature-cards-four-section .feature-card-solo {
   width: 100%;
   border-collapse: collapse;
 }
@@ -379,37 +400,6 @@ h2.subhead-orange {
   border-collapse: collapse;
   table-layout: fixed;
 }
-.feature-cards-four-section .feature-cards-web-grid .feature-cards-pair {
-  display: table !important;
-  width: 100% !important;
-}
-.feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tbody {
-  display: table-row-group !important;
-}
-.feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tr.feature-cards-pair-row {
-  display: table-row !important;
-  width: 100% !important;
-}
-.feature-cards-four-section .feature-cards-web-grid td.feature-card-cell,
-.feature-cards-four-section .feature-cards-web-grid .feature-card-stack {
-  display: table-cell !important;
-  width: 50% !important;
-  max-width: 50% !important;
-  vertical-align: top !important;
-  text-align: left !important;
-  box-sizing: border-box !important;
-}
-.feature-cards-four-section .feature-cards-web-grid .feature-card {
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  background-color: #f9f9f9;
-}
-.feature-cards-four-section .feature-cards-web-grid .feature-card-body {
-  height: auto !important;
-  min-height: 0 !important;
-  vertical-align: top;
-}
 .feature-cards-four-section .feature-card-body [data-container="true"],
 .feature-cards-four-section .feature-card-body > div {
   display: block !important;
@@ -417,28 +407,25 @@ h2.subhead-orange {
   max-width: 100% !important;
   flex: none !important;
 }
-@media only screen and (max-device-width: 640px) {
-  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair,
-  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tbody,
-  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tr.feature-cards-pair-row {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
+@media only screen and (min-device-width: 641px) {
+  .feature-cards-four-section .feature-cards-mobile-stack-cell {
+    font-size: 0 !important;
   }
-  .feature-cards-four-section .feature-cards-web-grid td.feature-card-cell,
-  .feature-cards-four-section .feature-cards-web-grid .feature-card-stack {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 0 12px 0 !important;
+  .feature-cards-four-section .feature-card-solo-wrap {
+    display: inline-block !important;
+    width: 49% !important;
+    max-width: 49% !important;
+    margin: 0 0.5% 12px !important;
+    font-size: 15px !important;
     box-sizing: border-box !important;
+    vertical-align: top !important;
   }
-  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair:last-child td.feature-card-cell:last-child,
-  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair:last-child .feature-card-stack:last-child {
-    padding-bottom: 0 !important;
+  .feature-cards-four-section .feature-card-solo-wrap:nth-last-child(-n+2) {
+    margin-bottom: 0 !important;
   }
-  .feature-cards-four-section .feature-cards-web-grid .feature-card {
-    height: auto !important;
+  .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
+    /* Soft floor for near-even OWA cards — not a fixed height. */
+    min-height: 220px !important;
   }
 }
 
