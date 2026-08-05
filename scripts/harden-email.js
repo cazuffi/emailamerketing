@@ -1362,22 +1362,25 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('.feature-card-solo-wrap').each((__, wrap) => {
       const $wrap = $(wrap);
       const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
-      // Desktop-first 2-up: CSS !important keeps OWA laptop panes in a grid.
-      // Phones restack via max-device-width only (not max-width).
+      // Desktop-first 2-up with fixed wrap height so OWA cards stay equal squares.
+      // Phones restack + drop height via max-device-width only (not max-width).
       ensureStyle(
         $wrap,
-        `display:inline-block;width:49%;max-width:49%;${isLast ? 'margin:0 0.5% 0' : 'margin:0 0.5% 12px'};vertical-align:top;box-sizing:border-box`,
+        `display:inline-block;width:49%;max-width:49%;height:284px;${isLast ? 'margin:0 0.5% 0' : 'margin:0 0.5% 12px'};vertical-align:top;box-sizing:border-box`,
       );
     });
     $section.find('.feature-card-solo').each((__, table) => {
-      ensureStyle($(table), 'width:100%;border-collapse:collapse');
+      ensureStyle($(table), 'width:100%;height:100%;border-collapse:collapse');
       $(table).find('> tbody > tr > td').each((___, cell) => {
         const $cell = $(cell);
         $cell.attr('align', 'left');
         $cell.attr('valign', 'top');
         $cell.attr('bgcolor', '#f9f9f9');
-        ensureStyle($cell, 'padding:0;vertical-align:top;text-align:left;background-color:#f9f9f9');
+        ensureStyle($cell, 'padding:0;vertical-align:top;text-align:left;background-color:#f9f9f9;height:100%');
       });
+    });
+    $section.find('.feature-card-solo .feature-card').each((__, table) => {
+      ensureStyle($(table), 'width:100%;height:100%;border-collapse:collapse;background-color:#f9f9f9');
     });
     $section.find('.feature-cards-pair').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
@@ -1395,6 +1398,8 @@ function hardenFeatureCardsFourColumns($) {
       ensureStyle($(row), 'width:100%');
     });
     $section.find('.feature-card').each((__, table) => {
+      // Solo cards already got height:100% above; avoid wiping it.
+      if ($(table).closest('.feature-card-solo').length) return;
       ensureStyle($(table), 'width:100%;border-collapse:collapse;background-color:#f9f9f9');
     });
     $section.find('.feature-card-accent').each((__, cell) => {
@@ -1403,7 +1408,14 @@ function hardenFeatureCardsFourColumns($) {
       $cell.attr('height', '4');
       ensureStyle($cell, 'height:4px;line-height:4px;font-size:0;padding:0;background-color:#ef7800');
     });
-    $section.find('.feature-card-body').each((__, cell) => {
+    $section.find('.feature-card-solo .feature-card-body').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#f9f9f9');
+      $cell.attr('valign', 'top');
+      $cell.attr('height', '280');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:280px;min-height:280px');
+    });
+    $section.find('.feature-cards-pair .feature-card-body').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
@@ -1596,7 +1608,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v55';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v56';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

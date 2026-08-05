@@ -386,12 +386,24 @@ h2.subhead-orange {
   box-sizing: border-box;
   vertical-align: top;
   font-size: 15px;
+  /* Fixed wrap height so OWA cards read as equal squares (inline-block
+     siblings do not stretch to match each other). */
+  height: 284px;
 }
 .feature-cards-four-section .feature-card-solo-wrap:nth-last-child(-n+2) {
   margin-bottom: 0;
 }
+.feature-cards-four-section .feature-card-solo-wrap .feature-card-solo,
+.feature-cards-four-section .feature-card-solo-wrap .feature-card {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+}
 .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
-  min-height: 220px;
+  /* OWA ignores min-height on many tds — use height for uniform bodies. */
+  height: 280px;
+  min-height: 280px;
+  vertical-align: top;
 }
 .feature-cards-four-section .feature-card-solo {
   width: 100%;
@@ -417,13 +429,19 @@ h2.subhead-orange {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
     margin: 0 0 12px !important;
     font-size: 15px !important;
   }
   .feature-cards-four-section .feature-card-solo-wrap:last-child {
     margin-bottom: 0 !important;
   }
+  .feature-cards-four-section .feature-card-solo-wrap .feature-card-solo,
+  .feature-cards-four-section .feature-card-solo-wrap .feature-card {
+    height: auto !important;
+  }
   .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
+    height: auto !important;
     min-height: 0 !important;
   }
 }

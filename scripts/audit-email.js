@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v55';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v56';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1245,8 +1245,23 @@ assert.match(
 );
 assert.match(
   featureCardsFourExport,
+  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*height:284px!important/i,
+  'Outlook on the web solo wraps must use a fixed height for equal card squares',
+);
+assert.match(
+  featureCardsFourExport,
+  /\.feature-card-solo-wrap \.feature-card-body\{[^}]*height:280px!important/i,
+  'Outlook on the web card bodies must use fixed height (min-height alone is unreliable in OWA)',
+);
+assert.match(
+  featureCardsFourExport,
   /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:block!important/i,
   'Phones must force full-width stacked wraps via max-device-width only',
+);
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap \.feature-card-body[\s\S]*?height:auto!important/i,
+  'Phones must drop fixed card heights when stacking',
 );
 {
   // Strip max-device-width phone overrides, then ensure no remaining rule restacks wraps
