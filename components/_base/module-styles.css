@@ -364,48 +364,13 @@ h2.subhead-orange {
   text-align: left;
   box-sizing: border-box;
 }
-.feature-cards-four-section .feature-cards-mobile-stack {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
-}
 /*
- * Desktop-first 2-up: Outlook on the web reading panes are often <641px, so
- * min-width media queries never promote a stack-first layout. Default to
- * inline-block 49% (works at any viewport width). Stack phones only via
- * max-device-width — do NOT use max-width, or OWA laptop panes stack again.
+ * Web/OWA: real 2-column pair rows so siblings share row height (no fixed
+ * px). Phones stack via max-device-width only — not max-width — so Outlook on
+ * the web laptop reading panes stay 2-up.
  */
-.feature-cards-four-section .feature-cards-mobile-stack-cell {
-  font-size: 0;
-}
-.feature-cards-four-section .feature-card-solo-wrap {
-  display: inline-block;
-  width: 49%;
-  max-width: 49%;
-  margin: 0 0.5% 12px;
-  box-sizing: border-box;
-  vertical-align: top;
-  font-size: 15px;
-  /* Fixed wrap height so OWA cards read as equal squares (inline-block
-     siblings do not stretch to match each other). */
-  height: 284px;
-}
-.feature-cards-four-section .feature-card-solo-wrap:nth-last-child(-n+2) {
-  margin-bottom: 0;
-}
-.feature-cards-four-section .feature-card-solo-wrap .feature-card-solo,
-.feature-cards-four-section .feature-card-solo-wrap .feature-card {
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-}
-.feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
-  /* OWA ignores min-height on many tds — use height for uniform bodies. */
-  height: 280px;
-  min-height: 280px;
-  vertical-align: top;
-}
-.feature-cards-four-section .feature-card-solo {
+.feature-cards-four-section .feature-cards-web-grid {
+  display: table;
   width: 100%;
   border-collapse: collapse;
 }
@@ -413,6 +378,37 @@ h2.subhead-orange {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+}
+.feature-cards-four-section .feature-cards-web-grid .feature-cards-pair {
+  display: table !important;
+  width: 100% !important;
+}
+.feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tbody {
+  display: table-row-group !important;
+}
+.feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tr.feature-cards-pair-row {
+  display: table-row !important;
+  width: 100% !important;
+}
+.feature-cards-four-section .feature-cards-web-grid td.feature-card-cell,
+.feature-cards-four-section .feature-cards-web-grid .feature-card-stack {
+  display: table-cell !important;
+  width: 50% !important;
+  max-width: 50% !important;
+  vertical-align: top !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+.feature-cards-four-section .feature-cards-web-grid .feature-card {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  background-color: #f9f9f9;
+}
+.feature-cards-four-section .feature-cards-web-grid .feature-card-body {
+  height: auto !important;
+  min-height: 0 !important;
+  vertical-align: top;
 }
 .feature-cards-four-section .feature-card-body [data-container="true"],
 .feature-cards-four-section .feature-card-body > div {
@@ -422,27 +418,27 @@ h2.subhead-orange {
   flex: none !important;
 }
 @media only screen and (max-device-width: 640px) {
-  .feature-cards-four-section .feature-cards-mobile-stack-cell {
-    font-size: medium !important;
-  }
-  .feature-cards-four-section .feature-card-solo-wrap {
+  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair,
+  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tbody,
+  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair tr.feature-cards-pair-row {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: auto !important;
-    margin: 0 0 12px !important;
-    font-size: 15px !important;
   }
-  .feature-cards-four-section .feature-card-solo-wrap:last-child {
-    margin-bottom: 0 !important;
+  .feature-cards-four-section .feature-cards-web-grid td.feature-card-cell,
+  .feature-cards-four-section .feature-cards-web-grid .feature-card-stack {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0 12px 0 !important;
+    box-sizing: border-box !important;
   }
-  .feature-cards-four-section .feature-card-solo-wrap .feature-card-solo,
-  .feature-cards-four-section .feature-card-solo-wrap .feature-card {
-    height: auto !important;
+  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair:last-child td.feature-card-cell:last-child,
+  .feature-cards-four-section .feature-cards-web-grid .feature-cards-pair:last-child .feature-card-stack:last-child {
+    padding-bottom: 0 !important;
   }
-  .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
+  .feature-cards-four-section .feature-cards-web-grid .feature-card {
     height: auto !important;
-    min-height: 0 !important;
   }
 }
 
@@ -730,8 +726,6 @@ h2.subhead-orange {
   .icon-grid-cell h3,
   .icon-grid-cell p { text-align: center !important; }
 
-  /* Feature-card wraps stack only via max-device-width (see above) — not
-     max-width — so Outlook on the web laptop reading panes stay 2-up. */
   .feature-card-number,
   .feature-card-subtitle,
   .feature-card-body h3,
