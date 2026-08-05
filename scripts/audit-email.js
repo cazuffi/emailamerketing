@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v54';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v55';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1240,14 +1240,27 @@ assert.match(
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:inline-block!important/i,
-  'Outlook on the web / desktop browsers must promote wraps to 2-up via min-width',
+  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:49%!important/i,
+  'Outlook on the web must default to desktop-first 2-up (reading panes are often <641px)',
 );
 assert.match(
   featureCardsFourExport,
   /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:block!important/i,
-  'Phones must force full-width stacked wraps via max-device-width',
+  'Phones must force full-width stacked wraps via max-device-width only',
 );
+{
+  // Strip max-device-width phone overrides, then ensure no remaining rule restacks wraps
+  // via viewport max-width (that would collapse OWA laptop reading panes).
+  const withoutPhoneOverride = featureCardsFourExport.replace(
+    /@media only screen and \(max-device-width:\s*640px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
+    '',
+  );
+  assert.doesNotMatch(
+    withoutPhoneOverride,
+    /\.feature-card-solo-wrap[^{]*\{[^}]*display:\s*block!important/i,
+    'Do not restack feature cards via max-width — Outlook Web laptop panes would stack',
+  );
+}
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
 
 const threeUpProductsExport = buildEmailHtml({
