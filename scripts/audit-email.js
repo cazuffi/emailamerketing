@@ -14,8 +14,9 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v65';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v66';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
+const { buildCompleteEmailDocument } = require('./harden-email');
 
 const options = {
   title: 'Audit fixture',
@@ -50,6 +51,51 @@ assert.strictEqual(
   exported,
   'Send preview markup must exactly match Copy HTML when Outlook simulation is off',
 );
+
+// Complete email document structure (export pipeline must not DOM-normalize away <head>)
+assert.match(exported, /^<!DOCTYPE html PUBLIC "-\/\/W3C\/\/DTD XHTML 1\.0 Transitional\/\/EN"/i);
+assert.match(exported, /<head>[\s\S]*name="viewport"[\s\S]*<\/head>/i, 'viewport meta must appear before </head>');
+assert.match(exported, /<head>[\s\S]*<style[\s\S]*<\/style>[\s\S]*<\/head>/i, 'responsive style block must appear before </head>');
+assert.ok(
+  exported.indexOf('</head>') > -1 && exported.indexOf('</head>') < exported.search(/<body[\s>]/i),
+  '</head> must appear before <body',
+);
+assert.doesNotMatch(exported, /<head><\/head>\s*<body/i, 'must not emit empty <head></head><body>');
+assert.doesNotMatch(exported, /<body[^>]*>\s*=/i, 'must not emit <body>=');
+assert.strictEqual((exported.match(/<head[\s>]/gi) || []).length, 1, 'exactly one <head>');
+assert.strictEqual((exported.match(/<body[\s>]/gi) || []).length, 1, 'exactly one <body>');
+assert.match(exported, /<body[^>]*class="[^"]*\bbody\b[^"]*"/i, 'body must include class="body" for Gmail u+.body rules');
+{
+  const bodyOpen = exported.search(/<body[\s>]/i);
+  const bodyClose = exported.search(/<\/body>/i);
+  const bodyInner = exported.slice(bodyOpen, bodyClose);
+  assert.doesNotMatch(bodyInner, /<meta[\s>]/i, 'no meta elements between <body> and </body>');
+  // MSO conditional <style> inside <!--[if mso]> is allowed in head only; body must not
+  // contain a normal (non-conditional) style block from a relocated <head>.
+  assert.doesNotMatch(
+    bodyInner.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi, ''),
+    /<style[\s>]/i,
+    'no normal style blocks inside the body',
+  );
+}
+assert.match(
+  exported,
+  /@media only screen and \(max-width:\s*480px\)/i,
+  'exported file must preserve max-width:480px responsive media queries',
+);
+{
+  // Clipboard and download must share the same compiledEmailHtml string path.
+  const clipboardHtml = exported;
+  const downloadHtml = buildEmailHtml(options);
+  assert.strictEqual(clipboardHtml, downloadHtml, 'clipboard and download exports must use the same compiledEmailHtml');
+  const rebuilt = buildCompleteEmailDocument({
+    headMarkup: '<!--test-head-->',
+    bodyMarkup: '<!--test-body-->',
+  });
+  assert.match(rebuilt, /<head>\n<!--test-head-->\n<\/head>/);
+  assert.match(rebuilt, /<body class="body" dir="ltr">\n<!--test-body-->\n<\/body>/);
+  assert.doesNotMatch(rebuilt, /<body[^>]*>\s*=/);
+}
 
 const $ = cheerio.load(exported, { xml: false }, false);
 
@@ -1244,6 +1290,11 @@ assert.match(
   featureCardsFourExport,
   /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-card-solo-wrap\{[^}]*display:block!important[^}]*width:100%!important/i,
   'Phones must restack at max-width:480px',
+);
+assert.match(
+  featureCardsFourExport,
+  /<head>[\s\S]*@media only screen and \(max-width:\s*480px\)[\s\S]*\.feature-card-solo-wrap[\s\S]*<\/head>/i,
+  'Feature-card max-width:480px media query must remain inside <head> in the exported file',
 );
 assert.match(
   featureCardsFourExport,

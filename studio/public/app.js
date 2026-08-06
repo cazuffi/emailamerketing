@@ -155,7 +155,10 @@ async function copyHtmlExport() {
     return;
   }
   const payload = buildPayload();
-  const { html } = await api('/api/build', {
+  // Use the server-compiled complete document string only.
+  // Do NOT read preview iframe / temporary DOM serialization — browsers relocate
+  // <title>/<meta>/<style> out of a fake body and emit empty <head></head>.
+  const { html: compiledEmailHtml } = await api('/api/build', {
     method: 'POST',
     body: JSON.stringify({
       title: payload.title,
@@ -163,7 +166,11 @@ async function copyHtmlExport() {
       overrides: payload.indexOverrides,
     }),
   });
-  await navigator.clipboard.writeText(html);
+  if (!compiledEmailHtml || /<head><\/head>\s*<body/i.test(compiledEmailHtml) || /<body[^>]*>\s*=/i.test(compiledEmailHtml)) {
+    throw new Error('Export returned malformed document structure');
+  }
+  state.lastCompiledEmailHtml = compiledEmailHtml;
+  await navigator.clipboard.writeText(compiledEmailHtml);
   toast('HTML copied — paste directly into D365 HTML (do not open in online HTML editors)', 'success');
 }
 
@@ -1713,6 +1720,8 @@ async function buildPreview() {
       html = fullHtml;
     }
     initPreviewFrameInteraction(frame);
+    // Preview must use the compiled complete document string (srcdoc), never a
+    // body-only fragment re-serialized from the iframe DOM.
     frame.srcdoc = html;
     const syncAndBind = () => {
       syncPreviewFrameHeight(frame);

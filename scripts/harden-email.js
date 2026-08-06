@@ -963,7 +963,7 @@ function normalizeInlineBackgrounds($) {
 
 function hardenEmailHtml(html) {
   if (!html || typeof html !== 'string') return html;
-  const $ = cheerio.load(html, { xml: false }, false);
+  const $ = loadEmailCheerio(html);
   hardenTables($);
   hardenLayoutShell($);
   hardenOuterTableCentering($);
@@ -1005,7 +1005,7 @@ function hardenEmailHtml(html) {
   hardenHybridStackLineHeights($);
   hardenSectionGaps($);
   normalizeInlineBackgrounds($);
-  return $.html();
+  return serializeEmailCheerio($);
 }
 
 function parseContainerWidthPct($el) {
@@ -1607,12 +1607,73 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v65';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v66';
+
+const EMAIL_DOCTYPE =
+  '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+
+/**
+ * Assemble a complete email document as a raw string.
+ * Never derive export markup from preview DOM / iframe / temporary div serialization.
+ */
+function buildCompleteEmailDocument({
+  headMarkup = '',
+  bodyMarkup = '',
+  bodyClass = 'body',
+  bodyDir = 'ltr',
+} = {}) {
+  const head = String(headMarkup || '').trim();
+  // Strip accidental leading "=" (seen when fragment HTML was wrongly body-wrapped).
+  let body = String(bodyMarkup || '')
+    .replace(/^\uFEFF/, '')
+    .replace(/^=+\s*/, '')
+    .replace(/^\s+/, '');
+  const classes = String(bodyClass || 'body')
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!classes.includes('body')) classes.unshift('body');
+  const dirAttr = bodyDir ? ` dir="${bodyDir}"` : '';
+  return (
+    `${EMAIL_DOCTYPE}\n` +
+    `<html>\n` +
+    `<head>\n${head}\n</head>\n` +
+    `<body class="${classes.join(' ')}"${dirAttr}>\n` +
+    `${body}\n` +
+    `</body>\n` +
+    `</html>`
+  );
+}
+
+function loadEmailCheerio(html) {
+  return cheerio.load(html, { xml: false, decodeEntities: false }, true);
+}
+
+function serializeEmailCheerio($, { buildMarker = null } = {}) {
+  const $body = $('body').first();
+  if ($body.length) {
+    $body.addClass('body');
+    if (!$body.attr('dir')) $body.attr('dir', 'ltr');
+  }
+
+  const headMarkup = $('head').html() || '';
+  let bodyMarkup = $body.length ? ($body.html() || '') : ($.root().html() || '');
+  bodyMarkup = bodyMarkup.replace(/^=+\s*/, '');
+
+  if (buildMarker) {
+    const marker = `<!-- ${buildMarker} -->`;
+    bodyMarkup = bodyMarkup.replace(/^\s*<!--\s*email-marketing\/[\s\S]*?-->\s*/i, '');
+    bodyMarkup = `${marker}\n${bodyMarkup.replace(/^\s+/, '')}`;
+  }
+
+  const bodyClass = (($body.attr('class') || 'body').trim()) || 'body';
+  const bodyDir = $body.attr('dir') || 'ltr';
+  return buildCompleteEmailDocument({ headMarkup, bodyMarkup, bodyClass, bodyDir });
+}
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
   const flattened = flattenOutlookConditionals(html);
-  const $ = cheerio.load(flattened, { xml: false }, false);
+  const $ = loadEmailCheerio(flattened);
   removeHiddenElements($);
   stripStudioMetadata($);
   hardenD365Containers($);
@@ -1648,7 +1709,16 @@ function sanitizeExportHtml(html) {
   hardenEmptyImageSubtext($);
   unwrapPassengerDivs($);
   normalizeInlineBackgrounds($);
-  return `<!-- ${BUILD_MARKER} -->\n${flattenOutlookConditionals($.html())}`;
+  const compiledEmailHtml = serializeEmailCheerio($, { buildMarker: BUILD_MARKER });
+  return flattenOutlookConditionals(compiledEmailHtml);
 }
 
-module.exports = { hardenEmailHtml, sanitizeExportHtml };
+module.exports = {
+  hardenEmailHtml,
+  sanitizeExportHtml,
+  buildCompleteEmailDocument,
+  loadEmailCheerio,
+  serializeEmailCheerio,
+  BUILD_MARKER,
+  EMAIL_DOCTYPE,
+};

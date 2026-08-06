@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 
 const cheerio = require('cheerio');
+const {
+  buildCompleteEmailDocument,
+  loadEmailCheerio,
+  serializeEmailCheerio,
+} = require('./harden-email');
 
 /**
  * Approximate what Dynamics 365 does on SEND (verified from real Gmail source).
  * Send transform wraps editor blocks in anonymous flex divs — NOT data-container.
  */
 function simulateDynamicsPaste(html) {
-  const $ = cheerio.load(html, { xml: false }, false);
+  const $ = loadEmailCheerio(wrapDynamicsDocument(html));
 
   simulateDynamicsLayoutShell($);
 
@@ -34,12 +39,21 @@ function simulateDynamicsPaste(html) {
     $block.wrap($wrapper);
   });
 
-  return wrapDynamicsDocument($.html());
+  // Keep a complete document string — never emit empty <head></head><body> wrappers.
+  return serializeEmailCheerio($);
 }
 
 function wrapDynamicsDocument(html) {
+  if (/<html[\s>][\s\S]*<head[\s>][\s\S]*<\/head>[\s\S]*<body[\s>]/i.test(html)) {
+    return html;
+  }
+  // Legacy fragment exports: place content in body, never invent an empty head
+  // that leaves title/meta/style stranded after <body>.
   if (/<body[\s>]/i.test(html)) return html;
-  return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>${html}</body></html>`;
+  return buildCompleteEmailDocument({
+    headMarkup: '',
+    bodyMarkup: html,
+  });
 }
 
 function simulateDynamicsLayoutShell($) {
