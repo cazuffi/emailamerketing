@@ -241,45 +241,51 @@ a.button-outline-link {
   margin-right: auto !important;
 }
 
-.feature-cards-four-section .feature-cards-mso-grid,
-.feature-cards-four-section .feature-cards-desktop-grid {
+.feature-cards-four-section .feature-cards-grid {
   display: table !important;
   width: 100% !important;
-  max-height: none !important;
-  overflow: visible !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
 }
-
-.feature-cards-four-section .feature-cards-pair {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+.feature-cards-four-section .feature-cards-grid tbody {
+  display: table-row-group !important;
 }
-
-.feature-cards-four-section .feature-cards-pair tr.feature-cards-pair-row {
+.feature-cards-four-section .feature-cards-row {
   display: table-row !important;
 }
-
-.feature-cards-four-section .feature-cards-pair td.feature-card-cell,
-.feature-cards-four-section .feature-cards-pair .feature-card-stack {
+.feature-cards-four-section .feature-card-cell {
   display: table-cell !important;
   width: 50% !important;
   vertical-align: top !important;
   text-align: left !important;
-  box-sizing: border-box !important;
 }
-
-.feature-cards-four-section .feature-cards-pair .feature-card {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #f9f9f9;
-}
-
-.feature-cards-four-section .feature-cards-pair .feature-card-body {
-  background-color: #f9f9f9;
-  padding: 16px 18px;
-  vertical-align: top;
-  text-align: left;
+.feature-cards-four-section .feature-card-body {
+  height: 220px !important;
+  vertical-align: top !important;
+  text-align: left !important;
   mso-line-height-rule: exactly;
-  height: 220px;
+}
+.cta-band-grey .cta-band-grey-shell {
+  padding: 26px 28px !important;
+  border-left: 4px solid #ef7800 !important;
+  border-right: 4px solid #ffffff !important;
+}
+.cta-band-grey .cta-band-grey-layout {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+.cta-band-grey .cta-band-grey-layout tbody { display: table-row-group !important; }
+.cta-band-grey .cta-band-grey-layout tr { display: table-row !important; }
+.cta-band-grey .cta-band-grey-copy-cell {
+  display: table-cell !important;
+  width: 68% !important;
+  text-align: left !important;
+  padding: 0 16px 0 0 !important;
+}
+.cta-band-grey .cta-band-grey-button {
+  display: table-cell !important;
+  width: 32% !important;
+  text-align: right !important;
 }
 /* OUTLOOK_DESKTOP_STRUCTURE_END */
