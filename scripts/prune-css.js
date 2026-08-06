@@ -46,12 +46,6 @@ const GLOBAL_SCOPE_CLASSES = new Set([
   'columns-equal-class',
   'containerWrapper',
   'contentBlockWrapper',
-  'cta-band-grey',
-  'cta-band-grey-button',
-  'cta-band-grey-copy',
-  'cta-band-grey-copy-inner',
-  'cta-band-grey-shell',
-  'cta-band-grey-title',
   'cta-button-block',
   'cta-outline-center',
   'cta-primary-center',
@@ -216,7 +210,12 @@ function selectorPartActive(part, activeClasses) {
   if (isStructuralSelector(part)) return true;
   const classes = extractSelectorClasses(part);
   if (classes.length === 0) return true;
-  const sectionClasses = classes.filter((cls) => cls.endsWith('-section'));
+  // cta-band-grey predates the `-section` root naming convention, but is still
+  // a module scope. Do not retain its responsive rules merely because a
+  // descendant uses a global class such as buttonTable.
+  const sectionClasses = classes.filter(
+    (cls) => cls.endsWith('-section') || cls === 'cta-band-grey',
+  );
   if (sectionClasses.length > 0) {
     return sectionClasses.some(
       (cls) => activeClasses.has(cls) || GLOBAL_SCOPE_CLASSES.has(cls),
