@@ -1353,21 +1353,20 @@ function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
     $section.removeClass('columns-equal-class');
-    // Mobile-first solo wraps (default stack). No inline display — OWA can
-    // promote via hover/pointer media. Never add stack-column.
+    // Desktop-first 50% wraps (fit 592px content well). Never add stack-column.
     $section.find('table.feature-cards-mobile-stack').each((__, wrap) => {
       ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
     });
     $section.find('.feature-cards-mobile-stack-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:medium;text-align:left');
+      ensureStyle($(cell), 'padding:0;font-size:0;text-align:left');
     });
     $section.find('.feature-card-solo-wrap').each((__, wrap) => {
       const $wrap = $(wrap);
-      const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
-      // Soft stack-first: no display in inline styles (divs default to block).
+      // Inline 2-up so OWA grids without stylesheet display battles.
+      // width:50% + box-sizing + padding fits exactly in 592px (no 300px wrap).
       ensureStyle(
         $wrap,
-        `width:100%;max-width:100%;${isLast ? 'margin:0' : 'margin:0 0 12px'};box-sizing:border-box`,
+        'display:inline-block;width:50%;max-width:50%;margin:0;padding:0 6px 12px;box-sizing:border-box;vertical-align:top',
       );
     });
     $section.find('.feature-cards-clear').each((__, clear) => {
@@ -1418,7 +1417,8 @@ function hardenFeatureCardsFourColumns($) {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left');
+      $cell.attr('height', '220');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:220px;min-height:220px');
     });
     $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
       const $el = $(el);
@@ -1607,7 +1607,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v64';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v65';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

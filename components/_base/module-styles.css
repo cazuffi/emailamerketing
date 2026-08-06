@@ -365,33 +365,32 @@ h2.subhead-orange {
   box-sizing: border-box;
 }
 /*
- * v64 — mobile-first (viewport media has failed repeatedly on Outlook mobile):
- * - Default = stacked full-width solo wraps (plain block divs). Phones stack
- *   with zero media-query dependency, including Outlook's ~980px fake viewport.
- * - Promote to 2-up only for mouse/fine-pointer desktops (Outlook Web laptop).
- * - Do not put display in inline styles — OWA must be free to apply stylesheet
- *   display without fighting an inline display:block.
- * - MSO path stays real td width=50% tables for Outlook desktop Word.
+ * v65 — desktop-first 2×2 that fits the 592px content well:
+ * - Available width: 640 - 24 - 24 = 592px
+ * - Each wrap is width:50% + box-sizing:border-box + padding 0 6px 12px
+ *   → 296px including gutters, so two columns fit exactly (no 300px wrap)
+ * - Default is 2-up (no hover/pointer/min-width gate — OWA ignores those)
+ * - Phones restack at max-width:480px only
+ * - Desktop bodies use height+min-height 220px (top-aligned); mobile auto
+ * - MSO path stays real td width=50% tables for Outlook Classic
  */
 .feature-cards-four-section .feature-cards-mobile-stack {
   width: 100%;
   border-collapse: collapse;
 }
 .feature-cards-four-section .feature-cards-mobile-stack-cell {
-  font-size: medium;
+  font-size: 0;
   text-align: left;
 }
 .feature-cards-four-section .feature-card-solo-wrap {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  margin: 0 0 12px;
+  display: inline-block;
+  width: 50%;
+  max-width: 50%;
+  margin: 0;
+  padding: 0 6px 12px;
   box-sizing: border-box;
   vertical-align: top;
   font-size: 15px;
-}
-.feature-cards-four-section .feature-cards-mobile-stack-cell > .feature-card-solo-wrap:nth-child(4) {
-  margin-bottom: 0;
 }
 .feature-cards-four-section .feature-cards-clear {
   clear: both;
@@ -403,6 +402,12 @@ h2.subhead-orange {
 .feature-cards-four-section .feature-card-solo {
   width: 100%;
   border-collapse: collapse;
+}
+.feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
+  height: 220px;
+  min-height: 220px;
+  vertical-align: top;
+  text-align: left;
 }
 .feature-cards-four-section .feature-cards-pair {
   width: 100%;
@@ -419,20 +424,21 @@ h2.subhead-orange {
   flex: none !important;
   flex-basis: auto !important;
 }
-/* Mouse desktops / OWA laptop — not touch phones (including 980px Android). */
-@media only screen and (hover: hover) and (pointer: fine) and (min-width: 481px) {
-  .feature-cards-four-section .feature-cards-mobile-stack-cell {
-    font-size: 0 !important;
-  }
+@media only screen and (max-width: 480px) {
   .feature-cards-four-section .feature-card-solo-wrap {
-    display: inline-block !important;
+    display: block !important;
     width: 100% !important;
-    max-width: 300px !important;
-    margin: 0 4px 12px 0 !important;
+    max-width: 100% !important;
+    margin: 0 0 12px !important;
+    padding: 0 !important;
     font-size: 15px !important;
   }
+  .feature-cards-four-section .feature-cards-mobile-stack-cell > .feature-card-solo-wrap:nth-child(4) {
+    margin-bottom: 0 !important;
+  }
   .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
-    min-height: 220px !important;
+    height: auto !important;
+    min-height: 0 !important;
     vertical-align: top !important;
   }
 }
