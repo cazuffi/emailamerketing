@@ -123,23 +123,26 @@ function buildEmailHtml(options = {}) {
     fullCss: !!options.fullCss,
     minifyCss: !options.annotate && !options.fullCss,
   });
-  let hardened = hardenEmailHtml(assembled);
+  // compiledEmailHtml is always a complete <!DOCTYPE>…</html> string.
+  // Clipboard, download, Dynamics export, and iframe.srcdoc must use this string
+  // directly — never re-serialize from preview DOM / iframe / temporary div.
+  let compiledEmailHtml = hardenEmailHtml(assembled);
   const isPreview =
     options.libraryPreview || options.previewSample || options.previewOutlookSim || options.previewCssOff;
   // Every non-editing path must use the exact same D365-safe markup as Copy HTML.
   // Preview-only transforms are applied afterwards and never alter structure.
   if (!options.annotate) {
-    hardened = sanitizeExportHtml(hardened);
+    compiledEmailHtml = sanitizeExportHtml(compiledEmailHtml);
   }
   if (isPreview) {
-    return preparePreviewHtml(hardened, {
+    return preparePreviewHtml(compiledEmailHtml, {
       sampleData: !!options.previewSample,
       libraryPreview: !!options.libraryPreview,
       outlookSim: !!options.previewOutlookSim,
       mediaQueriesDisabled: !!options.previewCssOff,
     });
   }
-  return hardened;
+  return compiledEmailHtml;
 }
 
 function buildFile(sourcePath, outputPath) {
