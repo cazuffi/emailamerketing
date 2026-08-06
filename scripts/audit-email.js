@@ -870,16 +870,17 @@ assert.strictEqual($('.comparison-heading-section + .comparison-split-section').
 
 const greyCtaTable = $('.cta-band-grey .cta-band-grey-button .buttonTable');
 const greyCtaLink = $('.cta-band-grey .cta-band-grey-button a.buttonClass');
-const greyCtaColumns = $('.cta-band-grey [data-container="true"]');
+const greyCtaLayout = $('.cta-band-grey .cta-band-grey-layout');
+const greyCtaColumns = greyCtaLayout.find('> tbody > tr > td');
 const greyCtaShell = $('.cta-band-grey .cta-band-grey-shell');
-const greyCtaCopyInner = $('.cta-band-grey .cta-band-grey-copy-inner');
-// Grey CTA keeps the Dynamics editable-column layout (68/32) so it renders
-// full-width with the button correctly on the right in a Dynamics send.
-assert.strictEqual(greyCtaColumns.eq(0).attr('data-container-width'), '68.00');
-assert.strictEqual(greyCtaColumns.eq(1).attr('data-container-width'), '32.00');
+assert.strictEqual(greyCtaLayout.length, 1, 'Grey CTA must use one presentation layout table');
+assert.strictEqual(greyCtaColumns.length, 2);
+assert.strictEqual(greyCtaColumns.eq(0).attr('width'), '68%');
+assert.strictEqual(greyCtaColumns.eq(1).attr('width'), '32%');
+assert.strictEqual($('.cta-band-grey [data-container], .cta-band-grey [data-container-width]').length, 0, 'Grey CTA must not use Dynamics layout containers');
 assert.match(greyCtaShell.attr('style') || '', /border-left:4px solid #ef7800/i);
 assert.match(greyCtaShell.attr('style') || '', /border-right:4px solid #ffffff/i);
-assert.match(greyCtaCopyInner.attr('style') || '', /padding:0 16px 0 0/i);
+assert.match(greyCtaColumns.eq(0).attr('style') || '', /padding:0 16px 0 0/i);
 assert.strictEqual(greyCtaTable.attr('width'), '160');
 assert.match(greyCtaLink.attr('style') || '', /width:auto/i);
 assert.match(greyCtaLink.attr('style') || '', /padding:14px 16px/i);
@@ -1245,104 +1246,50 @@ const featureCardsFourExport = buildEmailHtml({
   annotate: false,
 });
 const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
-assert.strictEqual($featureCardsFour('.feature-cards-four-section').length, 1);
-assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack').length, 1, 'Feature cards web path must use solo wraps');
-assert.strictEqual($featureCardsFour('.feature-card-solo-wrap').length, 4, 'Feature cards must use four solo wraps');
-assert.strictEqual($featureCardsFour('.feature-cards-web-grid').length, 0, 'Do not ship a separate web table grid copy');
-assert.ok(
-  $featureCardsFour('.feature-card-solo-wrap').toArray().every((wrap) => {
-    const style = $featureCardsFour(wrap).attr('style') || '';
-    return /display:\s*inline-block/i.test(style) && /width:\s*50%/i.test(style) && /box-sizing:\s*border-box/i.test(style);
-  }),
-  'Solo wraps must inline desktop-first 50% + box-sizing so OWA grids without stylesheet fights',
-);
-assert.strictEqual($featureCardsFour('.feature-cards-desktop-grid').length, 0, 'MSO desktop grid must stay inside MSO conditional comments');
-assert.strictEqual($featureCardsFour('.feature-card').length, 4);
-assert.strictEqual($featureCardsFour('.feature-card-accent').length, 4);
-assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack [data-editorblocktype="Text"]').length, 4, 'Solo stack must use one text block per card');
-assert.strictEqual($featureCardsFour('.feature-cards-four-section.columns-equal-class').length, 0, 'Feature cards must not ship columns-equal-class');
+const featureGrid = $featureCardsFour('.feature-cards-four-section .feature-cards-grid');
+const featureCells = featureGrid.find('> tbody > .feature-cards-row > .feature-card-cell');
+assert.strictEqual(featureGrid.length, 1, 'Feature cards must use one shared presentation grid');
+assert.strictEqual(featureGrid.find('> tbody > .feature-cards-row').length, 2, 'Feature grid must have two desktop rows');
+assert.strictEqual(featureCells.length, 4, 'Feature grid must have four card cells');
+assert.strictEqual(featureGrid.find('.feature-card').length, 4);
+assert.strictEqual(featureGrid.find('[data-editorblocktype="Text"]').length, 4, 'Each card must have one editable copy block');
+assert.strictEqual($featureCardsFour('.feature-cards-four-section [data-container], .feature-cards-four-section [data-container-width]').length, 0);
+assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /<!--\[if\s+!?mso\]/i, 'Feature cards must not duplicate markup in client conditionals');
+featureCells.each((_, cell) => {
+  assert.strictEqual($featureCardsFour(cell).attr('width'), '50%', 'Desktop card cells must be equal width');
+  assert.strictEqual($featureCardsFour(cell).attr('align'), 'left', 'Card content must be left aligned');
+});
+featureGrid.find('.feature-card-body').each((_, body) => {
+  assert.strictEqual($featureCardsFour(body).attr('height'), '220', 'Desktop card bodies must share an explicit height');
+  assert.strictEqual($featureCardsFour(body).attr('align'), 'left');
+});
 assert.match(
   featureCardsFourExport,
-  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-mobile-stack[\s\S]*?<!--<!\[endif\]-->/i,
-  'Feature cards must keep non-MSO solo wraps for Outlook Web / mobile / Gmail',
-);
-assert.match(
-  featureCardsFourExport,
-  /<!--\[if mso\]>[\s\S]*?feature-cards-mso-grid[\s\S]*?<!\[endif\]-->/i,
-  'Feature cards must ship MSO-only desktop grid for Outlook desktop app',
-);
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-desktop-grid[\s\S]*?<!--<!\[endif\]-->/i,
-  'Non-MSO clients must not receive the MSO desktop grid copy',
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-grid,[\s\S]*?\.feature-cards-grid tbody,[\s\S]*?\.feature-cards-row[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;[\s\S]*?max-width:\s*100% !important;[\s\S]*?\.feature-card-cell[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;/i,
+  'Feature cards must make the complete grid hierarchy mobile-safe at 480px',
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:50%!important[^}]*max-width:50%!important[^}]*padding:0 6px 12px!important[^}]*box-sizing:border-box!important/i,
-  'Default must be desktop-first 50% with border-box gutters (fits 592px content well)',
+  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-grid[\s\S]*?display:table!important[\s\S]*?\.feature-cards-four-section \.feature-cards-grid tbody[\s\S]*?display:table-row-group!important[\s\S]*?\.feature-cards-four-section \.feature-cards-row[\s\S]*?display:table-row!important[\s\S]*?td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  'Desktop compatibility CSS must restore the complete feature-grid table hierarchy',
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-card-solo-wrap \.feature-card-body\{[^}]*height:220px!important[^}]*min-height:220px!important/i,
-  'Desktop bodies need explicit height+min-height for equal OWA card heights',
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-cards-four-section \.feature-card-body[\s\S]*?height:\s*auto !important;[\s\S]*?min-height:\s*0 !important;/i,
+  'Stacked cards must release the desktop fixed and minimum heights',
 );
-assert.match(
-  featureCardsFourExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-card-solo-wrap\{[^}]*display:block!important[^}]*width:100%!important/i,
-  'Phones must restack at max-width:480px',
-);
-assert.match(
-  featureCardsFourExport,
-  /<head>[\s\S]*@media only screen and \(max-width:\s*480px\)[\s\S]*\.feature-card-solo-wrap[\s\S]*<\/head>/i,
-  'Feature-card max-width:480px media query must remain inside <head> in the exported file',
-);
-assert.match(
-  featureCardsFourExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-card-solo-wrap \.feature-card-body\{[^}]*height:auto!important[^}]*min-height:0!important/i,
-  'Mobile must release fixed card body height',
-);
-assert.match(
-  featureCardsFourExport,
-  /\.feature-cards-four-section[\s\S]*?\[data-container="true"\][\s\S]*?flex-basis:auto!important/i,
-  'Feature cards must neutralize Dynamics flex containers inside card bodies',
-);
-assert.match(
-  featureCardsFourExport,
-  /feature-cards-mso-grid[\s\S]*?height:\s*220px/i,
-  'Outlook desktop MSO block must fix feature card body height for uniform rows',
-);
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /max-width:300px!important/i,
-  'Do not use max-width:300px — two cards overflow the 592px content well',
-);
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /hover:\s*hover|pointer:\s*fine/i,
-  'Do not gate desktop grid on hover/pointer — Outlook Web ignores those',
-);
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /float:\s*left!important/i,
-  'Do not use float grids — Outlook Web ignores float for this module',
-);
-{
-  const withoutPhoneOverride = featureCardsFourExport.replace(
-    /@media only screen and \(max-width:\s*480px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
-    '',
+[
+  'Reliable power &amp; energy visibility',
+  'Connected control &amp; visualization',
+  'Industrial communications',
+  'Modular, ready-to-install solutions',
+].forEach((content) => {
+  assert.strictEqual(
+    featureCardsFourExport.split(content).length - 1,
+    1,
+    `Feature-card content must appear once: ${content}`,
   );
-  assert.match(
-    withoutPhoneOverride,
-    /\.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:50%!important/i,
-    'Outside phone media, desktop 2-up must remain the default',
-  );
-  assert.doesNotMatch(
-    withoutPhoneOverride,
-    /\.feature-card-solo-wrap\{[^}]*display:block!important[^}]*width:100%!important[^}]*max-width:100%!important/i,
-    'Do not default to stacked full-width wraps outside phone media',
-  );
-}
-assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
+});
 
 const threeUpProductsExport = buildEmailHtml({
   title: 'Three up products audit',
@@ -1417,7 +1364,6 @@ const allModuleIds = loadManifest().modules.map((module) => module.id);
 // "Add element here" dropzone, which does not appear in the sent email.
 const editableLayoutModules = new Set([
   'comparison-split',
-  'cta-band-grey',
 ]);
 const allModulesExport = buildEmailHtml({
   title: 'All-modules audit',
@@ -1463,25 +1409,20 @@ assert.strictEqual(
   0,
   'Studio metadata must not leak from any module',
 );
-// Only the intentional editable-layout modules (comparison-split, cta-band-grey)
+// Only intentional editable-layout modules (currently comparison-split)
 // may ship the Dynamics editable-column pattern; everything else must be fluid or
 // plain so the editor cannot show an "Add element here" dropzone.
 $all('[data-section="true"].columns-equal-class').each((_, section) => {
   const cls = $all(section).attr('class') || '';
   const isAllowed = [...editableLayoutModules].some((id) => cls.includes(`${id}-section`) || cls.includes(id));
   assert(
-    isAllowed || /comparison|cta-band-grey/.test(cls),
+    isAllowed || /comparison/.test(cls),
     `Unexpected editable-column section (${cls}) — convert to the fluid pattern`,
   );
 });
 assert(
-  !/\[if !mso\]/i.test(
-    allModulesExport.replace(
-      /<!--\[if !mso\]><!-->\s*<table class="feature-cards-mobile-stack"[\s\S]*?<!--<!\[endif\]-->\s*<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/gi,
-      '',
-    ),
-  ),
-  'Non-MSO wrappers must not survive export (except feature-cards dual layout)',
+  !/\[if !mso\]/i.test(allModulesExport),
+  'Non-MSO wrappers must not survive export',
 );
 assert(!/@media\b/i.test(allModulesNoMedia), 'Compatibility preview must remove every media query');
 assert.strictEqual(
