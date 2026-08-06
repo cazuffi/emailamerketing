@@ -381,7 +381,7 @@ h2.subhead-orange {
   max-width: 100% !important;
   text-align: left !important;
 }
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 640px) {
   .feature-cards-four-section .feature-cards-grid,
   .feature-cards-four-section .feature-cards-grid tbody,
   .feature-cards-four-section .feature-cards-row {
@@ -389,10 +389,16 @@ h2.subhead-orange {
     width: 100% !important;
     max-width: 100% !important;
   }
+  .feature-cards-four-section .feature-cards-grid {
+    table-layout: auto !important;
+  }
   .feature-cards-four-section .feature-card-cell {
     display: block !important;
+    clear: both !important;
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
     padding: 0 0 12px 0 !important;
   }
   .feature-cards-four-section .feature-cards-row:last-child .feature-card-cell:last-child {
@@ -401,6 +407,15 @@ h2.subhead-orange {
   .feature-cards-four-section .feature-card-body {
     height: auto !important;
     min-height: 0 !important;
+  }
+  .feature-cards-four-section .feature-card-body [data-container="true"] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+    flex-basis: auto !important;
+    margin: 0 !important;
   }
 }
 

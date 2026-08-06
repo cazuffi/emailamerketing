@@ -8,8 +8,8 @@ const {
 } = require('./harden-email');
 
 /**
- * Approximate what Dynamics 365 does on SEND (verified from real Gmail source).
- * Send transform wraps editor blocks in anonymous flex divs — NOT data-container.
+ * Approximate what Dynamics 365 does after paste/send, based on copied-back
+ * Dynamics markup. Editor blocks receive fixed-width data-container flex shells.
  */
 function simulateDynamicsPaste(html) {
   const $ = loadEmailCheerio(wrapDynamicsDocument(html));
@@ -28,14 +28,16 @@ function simulateDynamicsPaste(html) {
 
   $('[data-editorblocktype]').each((_, block) => {
     const $block = $(block);
-    if ($block.parent('[data-d365-flex-wrap="true"]').length) return;
+    if ($block.parent('[data-container="true"]').length) return;
 
     const width = inferContainerWidth($, $block);
-    const $wrapper = $('<div></div>').attr('data-d365-flex-wrap', 'true');
+    const $wrapper = $('<div></div>').attr({
+      'data-container': 'true',
+    });
     setStyleProp($wrapper, 'width', `${width}px`);
     setStyleProp($wrapper, 'flex', `0 0 ${width}px`);
+    setStyleProp($wrapper, 'flex-basis', `${width}px`);
     setStyleProp($wrapper, 'display', 'flex');
-    setStyleProp($wrapper, 'flex-direction', 'column');
     $block.wrap($wrapper);
   });
 
@@ -70,8 +72,9 @@ function simulateDynamicsLayoutShell($) {
 }
 
 function inferContainerWidth($, $block) {
-  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .feature-card-cell, .image-split-stack, .accent-band-stack, .step-stack').first();
+  const $stackCell = $block.closest('.stat-stack, .benefit-stack, .product-stack, .feature-card-cell, .cta-band-grey-copy-cell, .cta-band-grey-button, .image-split-stack, .accent-band-stack, .step-stack').first();
   if ($stackCell.length && $stackCell.is('td')) {
+    if ($stackCell.hasClass('feature-card-cell')) return 254;
     const horizontalPad = sectionHorizontalPad($, $block);
     const outerWidth = outerTableWidth($, $block);
     const cellWidthAttr = String($stackCell.attr('width') || '');

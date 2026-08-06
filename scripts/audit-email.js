@@ -249,7 +249,7 @@ assert.match(
 );
 const introCenteredPasted = simulateDynamicsPaste(introCenteredExport);
 const $introPasted = cheerio.load(introCenteredPasted, { xml: false }, false);
-assert.strictEqual($introPasted('.mod-intro-centered [data-d365-flex-wrap="true"]').length, 3);
+assert.strictEqual($introPasted('.mod-intro-centered [data-container="true"]').length, 3);
 assert.strictEqual($introPasted('.mod-intro-centered .intro-centered-inner td[align="center"]').length, 3);
 
 const imageSplitExport = buildEmailHtml({
@@ -654,7 +654,7 @@ assert.match(
 
 const simulatedDynamics = simulateDynamicsPaste(exported);
 assert.match(simulatedDynamics, /columns-equal-class/i, 'Dynamics simulation must add columns-equal-class');
-assert.match(simulatedDynamics, /data-d365-flex-wrap="true"|display:flex;flex-direction:column/i, 'Dynamics simulation must wrap editor blocks in send-time flex shells');
+assert.match(simulatedDynamics, /data-container="true"[^>]*style="[^"]*width:[^;]+;[^"]*flex:0 0 /i, 'Dynamics simulation must wrap editor blocks in send-time flex shells');
 assert.strictEqual($('[data-layout="true"]').length, 1, 'Export keeps a single layout shell');
 assert.strictEqual(
   $('[data-layout="true"]').parent('[data-layout="true"]').length,
@@ -762,7 +762,7 @@ assert.doesNotMatch(
 );
 const headlineH2CenterPasted = simulateDynamicsPaste(headlineH2CenterExport);
 const $headlineH2CenterPasted = cheerio.load(headlineH2CenterPasted, { xml: false }, false);
-assert.strictEqual($headlineH2CenterPasted('.headline-block-center-section [data-d365-flex-wrap="true"]').length, 2);
+assert.strictEqual($headlineH2CenterPasted('.headline-block-center-section [data-container="true"]').length, 2);
 assert.strictEqual($headlineH2CenterPasted('.headline-block-center-inner td[align="center"]').length, 2);
 
 const headlineH3CenterExport = buildEmailHtml({
@@ -1245,6 +1245,25 @@ const featureCardsFourExport = buildEmailHtml({
   modules: ['feature-cards-four'],
   annotate: false,
 });
+const d365CompatSource = fs.readFileSync(
+  path.join(__dirname, '../components/_base/d365-send-compat.css'),
+  'utf8',
+);
+assert.match(
+  d365CompatSource,
+  /@media only screen and \(min-width:481px\)[\s\S]*?\.stats-three-section \.stats-three-layout/,
+  'Unrelated responsive modules must retain their 481px desktop breakpoint',
+);
+assert.match(
+  d365CompatSource,
+  /@media only screen and \(max-width:480px\)[\s\S]*?\.stats-three-section td\.stat-stack/,
+  'Unrelated responsive modules must retain their 480px mobile breakpoint',
+);
+assert.doesNotMatch(
+  d365CompatSource,
+  /@media only screen and \(min-width:481px\)\{\s*\.feature-cards-four-section/,
+  'Feature cards must not restore desktop semantics at the unrelated 481px breakpoint',
+);
 const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
 const featureGrid = $featureCardsFour('.feature-cards-four-section .feature-cards-grid');
 const featureCells = featureGrid.find('> tbody > .feature-cards-row > .feature-card-cell');
@@ -1265,17 +1284,17 @@ featureGrid.find('.feature-card-body').each((_, body) => {
 });
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-grid,[\s\S]*?\.feature-cards-grid tbody,[\s\S]*?\.feature-cards-row[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;[\s\S]*?max-width:\s*100% !important;[\s\S]*?\.feature-card-cell[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;/i,
-  'Feature cards must make the complete grid hierarchy mobile-safe at 480px',
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-grid,[\s\S]*?\.feature-cards-grid tbody,[\s\S]*?\.feature-cards-row[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;[\s\S]*?max-width:\s*100% !important;[\s\S]*?\.feature-card-cell[\s\S]*?display:\s*block !important;[\s\S]*?width:\s*100% !important;/i,
+  'Feature cards must make the complete grid hierarchy mobile-safe at 640px',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*481px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-grid[\s\S]*?display:table!important[\s\S]*?\.feature-cards-four-section \.feature-cards-grid tbody[\s\S]*?display:table-row-group!important[\s\S]*?\.feature-cards-four-section \.feature-cards-row[\s\S]*?display:table-row!important[\s\S]*?td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]*?\.feature-cards-four-section \.feature-cards-grid[\s\S]*?display:table!important[\s\S]*?\.feature-cards-four-section \.feature-cards-grid tbody[\s\S]*?display:table-row-group!important[\s\S]*?\.feature-cards-four-section \.feature-cards-row[\s\S]*?display:table-row!important[\s\S]*?td\.feature-card-cell[\s\S]*?display:table-cell!important/i,
   'Desktop compatibility CSS must restore the complete feature-grid table hierarchy',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*?\.feature-cards-four-section \.feature-card-body[\s\S]*?height:\s*auto !important;[\s\S]*?min-height:\s*0 !important;/i,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.feature-cards-four-section \.feature-card-body[\s\S]*?height:\s*auto !important;[\s\S]*?min-height:\s*0 !important;/i,
   'Stacked cards must release the desktop fixed and minimum heights',
 );
 [
@@ -1290,6 +1309,52 @@ assert.match(
     `Feature-card content must appear once: ${content}`,
   );
 });
+
+const featureCardsFourPasted = simulateDynamicsPaste(featureCardsFourExport);
+const $featureCardsFourPasted = cheerio.load(featureCardsFourPasted, { xml: false }, false);
+const featureInjectedContainers = $featureCardsFourPasted(
+  '.feature-cards-four-section .feature-card-body [data-container="true"]',
+);
+assert.strictEqual(featureInjectedContainers.length, 4, 'Dynamics simulation must inject one fixed wrapper per feature card');
+featureInjectedContainers.each((_, wrapper) => {
+  const style = $featureCardsFourPasted(wrapper).attr('style') || '';
+  assert.match(style, /width:254px/i, 'Simulation must model the observed 254px wrapper width');
+  assert.match(style, /flex:0 0 254px/i, 'Simulation must model the observed fixed flex shorthand');
+  assert.match(style, /flex-basis:254px/i, 'Simulation must model the observed fixed flex basis');
+});
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*?\.feature-cards-four-section \.feature-card-body \[data-container="true"\][\s\S]*?width:\s*100% !important;[\s\S]*?min-width:\s*0 !important;[\s\S]*?flex:\s*none !important;[\s\S]*?flex-basis:\s*auto !important;[\s\S]*?margin:\s*0 !important;/i,
+  'Compiled mobile CSS must neutralize observed Dynamics fixed-width feature wrappers',
+);
+assert.match(
+  featureCardsFourPasted,
+  /columns-equal-class/i,
+  'Dynamics simulation must model columns-equal-class on the feature section',
+);
+assert.match(
+  $featureCardsFourPasted('.feature-cards-four-section table.outer').attr('style') || '',
+  /width:640px/i,
+  'Dynamics simulation must model the fixed-width outer table transform',
+);
+
+const featureCtaExport = buildEmailHtml({
+  title: 'Feature cards and CTA Dynamics audit',
+  modules: ['feature-cards-four', 'cta-band-grey'],
+  annotate: false,
+});
+const featureCtaPasted = simulateDynamicsPaste(featureCtaExport);
+const $featureCtaPasted = cheerio.load(featureCtaPasted, { xml: false }, false);
+assert.strictEqual(
+  $featureCtaPasted('.cta-band-grey [data-container="true"]').length,
+  2,
+  'Dynamics simulation must inject fixed wrappers for both CTA copy blocks',
+);
+assert.match(
+  featureCtaExport,
+  /\.cta-band-grey \[data-container="true"\][\s\S]*?width:\s*100% !important;[\s\S]*?flex:\s*none !important;/i,
+  'Compiled CTA compatibility CSS must neutralize injected fixed-width wrappers',
+);
 
 const threeUpProductsExport = buildEmailHtml({
   title: 'Three up products audit',
