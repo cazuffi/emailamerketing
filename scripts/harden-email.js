@@ -513,7 +513,7 @@ function hardenCtaBandGrey($) {
     $section.find('.cta-band-grey-shell').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f4f4f4');
-      ensureStyle($cell, 'background-color:#f4f4f4;width:100%;border-left:4px solid #ef7800;border-right:4px solid #ffffff');
+      ensureStyle($cell, 'background-color:#f4f4f4;width:100%;border-left:0;border-right:0');
     });
   });
 }
@@ -667,7 +667,6 @@ function removeHiddenElements($) {
     $('*').each((_, el) => {
       const $el = $(el);
       if ($el.is('style, head, title, meta, link')) return;
-      if ($el.hasClass('feature-cards-desktop-grid')) return;
       if (!isHiddenStyle($el.attr('style'))) return;
       $el.remove();
       changed = true;
@@ -1028,7 +1027,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-pair') || $table.hasClass('feature-card-solo') || $table.hasClass('feature-cards-mobile-stack') || $table.hasClass('feature-cards-mso-grid') || $table.hasClass('feature-cards-desktop-grid')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1171,7 +1170,7 @@ function hardenAccentBandColumns($) {
   $('.accent-band').each((_, section) => {
     const $section = $(section);
     $section.find('.accent-band-layout').each((__, table) => {
-      ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
+      ensureStyle($(table), 'display:block;width:100%;max-width:100%;border-collapse:collapse;table-layout:auto');
     });
     $section.find('td.accent-band-copy, .accent-band-stack-cell.accent-band-copy').each((__, cell) => {
       const $cell = $(cell);
@@ -1197,7 +1196,7 @@ function hardenImageSplitColumns($) {
   $('.image-split-text-section').each((_, section) => {
     const $section = $(section);
     $section.find('.image-split-layout').each((__, table) => {
-      ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
+      ensureStyle($(table), 'display:block;width:100%;max-width:100%;border-collapse:collapse;table-layout:auto');
     });
     $section.find('td.image-split-copy, .image-split-stack-cell.image-split-copy').each((__, cell) => {
       const $cell = $(cell);
@@ -1353,49 +1352,16 @@ function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
     $section.removeClass('columns-equal-class');
-    // Desktop-first 50% wraps (fit 592px content well). Never add stack-column.
-    $section.find('table.feature-cards-mobile-stack').each((__, wrap) => {
-      ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
-    });
-    $section.find('.feature-cards-mobile-stack-cell').each((__, cell) => {
-      ensureStyle($(cell), 'padding:0;font-size:0;text-align:left');
-    });
-    $section.find('.feature-card-solo-wrap').each((__, wrap) => {
-      const $wrap = $(wrap);
-      // Inline 2-up so OWA grids without stylesheet display battles.
-      // width:50% + box-sizing + padding fits exactly in 592px (no 300px wrap).
-      ensureStyle(
-        $wrap,
-        'display:inline-block;width:50%;max-width:50%;margin:0;padding:0 6px 12px;box-sizing:border-box;vertical-align:top',
-      );
-    });
-    $section.find('.feature-cards-clear').each((__, clear) => {
-      ensureStyle($(clear), 'clear:both;display:block;font-size:0;line-height:0;height:0');
-    });
-    $section.find('.feature-card-solo').each((__, table) => {
-      ensureStyle($(table), 'width:100%;border-collapse:collapse');
-      $(table).find('> tbody > tr > td').each((___, cell) => {
-        const $cell = $(cell);
-        $cell.attr('align', 'left');
-        $cell.attr('valign', 'top');
-        $cell.attr('bgcolor', '#f9f9f9');
-        ensureStyle($cell, 'padding:0;vertical-align:top;text-align:left;background-color:#f9f9f9');
-      });
-    });
-    $section.find('.feature-cards-pair').each((__, table) => {
+    $section.find('.feature-cards-grid').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
     });
-    $section.find('.feature-cards-pair td.feature-card-cell, .feature-cards-pair .feature-card-stack').each((__, cell) => {
+    $section.find('.feature-card-cell').each((__, cell) => {
       const $cell = $(cell);
       $cell.removeClass('stack-column');
       $cell.attr('align', 'left');
       $cell.attr('valign', 'top');
-      $cell.attr('width', '50%');
-      $cell.attr('bgcolor', '#f9f9f9');
-      ensureStyle($cell, 'width:50%;vertical-align:top;text-align:left;box-sizing:border-box;background-color:#f9f9f9');
-    });
-    $section.find('.feature-cards-pair tr.feature-cards-pair-row').each((__, row) => {
-      ensureStyle($(row), 'width:100%');
+      $cell.attr('width', '100%');
+      ensureStyle($cell, 'display:block;clear:both;width:100%;max-width:100%;min-width:100%;vertical-align:top;text-align:left;box-sizing:border-box');
     });
     $section.find('.feature-card').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;background-color:#f9f9f9');
@@ -1406,28 +1372,18 @@ function hardenFeatureCardsFourColumns($) {
       $cell.attr('height', '4');
       ensureStyle($cell, 'height:4px;line-height:4px;font-size:0;padding:0;background-color:#ef7800');
     });
-    $section.find('.feature-cards-mso-grid .feature-card-body').each((__, cell) => {
+    $section.find('.feature-card-body').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
+      $cell.attr('align', 'left');
       $cell.attr('valign', 'top');
-      $cell.attr('height', '220');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:220px');
+      $cell.removeAttr('height');
+      ensureStyle($cell, 'height:auto;min-height:0;background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left');
     });
-    $section.find('.feature-card-solo .feature-card-body').each((__, cell) => {
-      const $cell = $(cell);
-      $cell.attr('bgcolor', '#f9f9f9');
-      $cell.attr('valign', 'top');
-      $cell.attr('height', '220');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:220px;min-height:220px');
-    });
-    $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
-      const $el = $(el);
-      ensureStyle($el, NEUTRAL_CONTAINER_STYLE);
-    });
-    $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"], .feature-card-solo [data-editorblocktype="Text"]').each((__, el) => {
+    $section.find('.feature-card-body > div').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'left');
-      ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:left');
+      ensureStyle($el, 'display:block;width:100%;max-width:100%;text-align:left');
     });
     $section.find('.feature-card-number').each((__, el) => {
       ensureStyle($(el), 'font-family:ARIALNB,Arial,sans-serif;font-size:22px;line-height:1.1;color:#ef7800;margin:0 0 10px 0;text-align:left');
@@ -1435,10 +1391,10 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('.feature-card-subtitle').each((__, el) => {
       ensureStyle($(el), 'margin:0 0 10px 0;text-align:left;font-size:15px;line-height:1.4');
     });
-    $section.find('td.feature-card-cell h3, .feature-card-body h3').each((__, el) => {
+    $section.find('.feature-card-body h3').each((__, el) => {
       ensureStyle($(el), 'margin:0 0 8px 0;text-align:left;font-size:15px;line-height:1.35');
     });
-    $section.find('td.feature-card-cell [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle), .feature-card-solo [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle)').each((__, el) => {
+    $section.find('.feature-card-body [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle)').each((__, el) => {
       ensureStyle($(el), 'margin:0;text-align:left;font-size:15px;line-height:1.6');
     });
   });
@@ -1586,24 +1542,10 @@ function hardenViewInBrowser($) {
 
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
-  const preserved = [];
-  // Keep feature-cards MSO split: web gets mobile-first solo wraps; Word gets MSO grid.
-  let out = html.replace(
-    /<!--\[if !mso\]><!-->(\s*<table class="feature-cards-mobile-stack"[\s\S]*?)<!--<!\[endif\]-->\s*<!--\[if mso\]>([\s\S]*?feature-cards-mso-grid[\s\S]*?)<!\[endif\]-->/gi,
-    (_, nonMso, mso) => {
-      const token = `<!--FEATURE_CARDS_DUAL_${preserved.length}-->`;
-      preserved.push(
-        `<!--[if !mso]><!-->${nonMso}<!--<![endif]-->\n<!--[if mso]>${mso}<![endif]-->`,
-      );
-      return token;
-    },
-  );
+  let out = html;
   out = out.replace(/<!--\[if !mso\]><!-->\s*/gi, '');
   out = out.replace(/\s*<!--<!\[endif\]-->/gi, '');
   out = out.replace(/<!--\[if mso\]>\s*<v:roundrect[\s\S]*?<!\[endif\]-->\s*/gi, '');
-  preserved.forEach((block, index) => {
-    out = out.replace(`<!--FEATURE_CARDS_DUAL_${index}-->`, block);
-  });
   return out;
 }
 
