@@ -1420,7 +1420,7 @@ function hardenFeatureCardsFourColumns($) {
   });
 }
 
-const NEUTRAL_CONTAINER_STYLE = 'display:block;width:100%;max-width:100%;flex:none';
+const NEUTRAL_CONTAINER_STYLE = 'display:block;width:100%;max-width:100%;min-width:0;flex:none;flex-basis:auto';
 const CENTERED_CONTAINER_STYLE = `${NEUTRAL_CONTAINER_STYLE};text-align:center;margin-left:auto;margin-right:auto`;
 
 function hardenProactiveDynamicsContainers($) {
@@ -1584,7 +1584,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v62';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v63';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;

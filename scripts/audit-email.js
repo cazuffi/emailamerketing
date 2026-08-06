@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v62';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v63';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1230,17 +1230,27 @@ assert.doesNotMatch(
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section[\s\S]*?td\.feature-card-cell\{[^}]*display:table-cell!important[^}]*width:50%!important/i,
-  'Default CSS must keep table-cell 50% so OWA stays 2-up without media gates',
+  /\.feature-cards-four-section[\s\S]*?td\.feature-card-cell\{[^}]*width:50%!important/i,
+  'Default CSS must keep 50% widths; HTML width attrs drive OWA without display:!important fights',
+);
+assert.doesNotMatch(
+  featureCardsFourExport,
+  /\.feature-cards-four-section[\s\S]*?td\.feature-card-cell\{[^}]*display:table-cell!important/i,
+  'Do not force table-cell!important in send CSS — it overrides mobile stack after Dynamics CSS duplication',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?td\.feature-card-cell[\s\S]*?display:block!important[\s\S]*?width:100%!important/i,
-  'Phones must restack table cells via max-device-width only',
+  /@media only screen and \(max-device-width:\s*640px\),only screen and \(max-width:\s*480px\)[\s\S]*?td\.feature-card-cell[\s\S]*?display:block!important[\s\S]*?width:100%!important/i,
+  'Phones must restack via max-device-width:640 OR max-width:480 (not 640 — spare OWA panes)',
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-card-body[\s\S]*?\[data-container="true"\]/i,
+  /@media only screen and \(max-device-width:\s*640px\),only screen and \(max-width:\s*480px\)[\s\S]*?\[data-container="true"\][\s\S]*?flex-basis:auto!important/i,
+  'Phone media must kill Dynamics fixed-width flex containers that cause messy grids',
+);
+assert.match(
+  featureCardsFourExport,
+  /\.feature-cards-four-section[\s\S]*?\[data-container="true"\][\s\S]*?flex-basis:auto!important/i,
   'Feature cards must neutralize Dynamics flex containers inside card bodies',
 );
 assert.match(
@@ -1263,9 +1273,17 @@ assert.doesNotMatch(
   /@media only screen and \(min-device-width:\s*641px\)[\s\S]{0,400}?\.feature-card-cell/i,
   'Do not gate 2-up on min-device-width — Outlook Web may not match it',
 );
+assert.doesNotMatch(
+  featureCardsFourExport,
+  /@media only screen and \(max-width:\s*640px\)[^{]*\{[^}]*feature-card-cell[^}]*display:block!important/i,
+  'Do not use max-width:640 for feature-card stack — Outlook Web laptop panes would restack',
+);
 {
   const withoutPhoneOverride = featureCardsFourExport.replace(
-    /@media only screen and \(max-device-width:\s*640px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
+    /@media only screen and \(max-device-width:\s*640px\),only screen and \(max-width:\s*480px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
+    '',
+  ).replace(
+    /@media only screen and \(max-device-width:\s*640px\),\s*only screen and \(max-width:\s*480px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
     '',
   );
   assert.doesNotMatch(
