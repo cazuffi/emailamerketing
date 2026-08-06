@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v63';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v64';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1200,23 +1200,22 @@ const featureCardsFourExport = buildEmailHtml({
 });
 const $featureCardsFour = cheerio.load(featureCardsFourExport, { xml: false }, false);
 assert.strictEqual($featureCardsFour('.feature-cards-four-section').length, 1);
-assert.strictEqual($featureCardsFour('.feature-cards-web-grid').length, 1, 'Feature cards web path must use real table grid for OWA');
-assert.strictEqual($featureCardsFour('.feature-card-solo-wrap').length, 0, 'Solo/float wraps fail in OWA — must not ship');
-assert.strictEqual($featureCardsFour('.feature-cards-web-grid td.feature-card-cell').length, 4, 'Web grid must expose four td cells');
+assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack').length, 1, 'Feature cards web path must use mobile-first solo wraps');
+assert.strictEqual($featureCardsFour('.feature-card-solo-wrap').length, 4, 'Feature cards must use four solo wraps');
+assert.strictEqual($featureCardsFour('.feature-cards-web-grid').length, 0, 'Table web grids do not restack on Outlook mobile — must not ship');
 assert.ok(
-  $featureCardsFour('.feature-cards-web-grid td.feature-card-cell').toArray().every((cell) => ($featureCardsFour(cell).attr('width') || '') === '50%'),
-  'Web grid cells must set HTML width="50%" (OWA ignores CSS-only column widths)',
+  $featureCardsFour('.feature-card-solo-wrap').toArray().every((wrap) => !/display\s*:/i.test($featureCardsFour(wrap).attr('style') || '')),
+  'Solo wraps must not set inline display (soft stack-first — OWA stylesheet can promote)',
 );
-assert.strictEqual($featureCardsFour('.feature-cards-web-grid td.feature-card-cell.stack-column').length, 0, 'Do not mark feature cards stack-column (global max-width would restack OWA)');
 assert.strictEqual($featureCardsFour('.feature-cards-desktop-grid').length, 0, 'MSO desktop grid must stay inside MSO conditional comments');
 assert.strictEqual($featureCardsFour('.feature-card').length, 4);
 assert.strictEqual($featureCardsFour('.feature-card-accent').length, 4);
-assert.strictEqual($featureCardsFour('.feature-cards-web-grid [data-editorblocktype="Text"]').length, 4, 'Web grid must use one text block per card');
+assert.strictEqual($featureCardsFour('.feature-cards-mobile-stack [data-editorblocktype="Text"]').length, 4, 'Solo stack must use one text block per card');
 assert.strictEqual($featureCardsFour('.feature-cards-four-section.columns-equal-class').length, 0, 'Feature cards must not ship columns-equal-class');
 assert.match(
   featureCardsFourExport,
-  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-web-grid[\s\S]*?<!--<!\[endif\]-->/i,
-  'Feature cards must keep non-MSO table grid for Outlook Web / mobile / Gmail',
+  /<!--\[if !mso\]><!-->[\s\S]*?feature-cards-mobile-stack[\s\S]*?<!--<!\[endif\]-->/i,
+  'Feature cards must keep non-MSO solo wraps for Outlook Web / mobile / Gmail',
 );
 assert.match(
   featureCardsFourExport,
@@ -1230,23 +1229,13 @@ assert.doesNotMatch(
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section[\s\S]*?td\.feature-card-cell\{[^}]*width:50%!important/i,
-  'Default CSS must keep 50% widths; HTML width attrs drive OWA without display:!important fights',
-);
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /\.feature-cards-four-section[\s\S]*?td\.feature-card-cell\{[^}]*display:table-cell!important/i,
-  'Do not force table-cell!important in send CSS — it overrides mobile stack after Dynamics CSS duplication',
+  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:block!important[^}]*width:100%!important[^}]*max-width:100%!important/i,
+  'Default CSS must be stacked full-width so Outlook mobile needs no media query',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(max-device-width:\s*640px\),only screen and \(max-width:\s*480px\)[\s\S]*?td\.feature-card-cell[\s\S]*?display:block!important[\s\S]*?width:100%!important/i,
-  'Phones must restack via max-device-width:640 OR max-width:480 (not 640 — spare OWA panes)',
-);
-assert.match(
-  featureCardsFourExport,
-  /@media only screen and \(max-device-width:\s*640px\),only screen and \(max-width:\s*480px\)[\s\S]*?\[data-container="true"\][\s\S]*?flex-basis:auto!important/i,
-  'Phone media must kill Dynamics fixed-width flex containers that cause messy grids',
+  /@media only screen and \(hover:\s*hover\) and \(pointer:\s*fine\) and \(min-width:\s*481px\)[\s\S]*?\.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*max-width:300px!important/i,
+  'Only mouse/fine-pointer desktops may promote to 2-up (spares Outlook mobile 980px viewport)',
 );
 assert.match(
   featureCardsFourExport,
@@ -1261,35 +1250,22 @@ assert.match(
 assert.doesNotMatch(
   featureCardsFourExport,
   /height:284px!important|height:280px!important|height:250px!important/i,
-  'Web path relies on table-row equal height — avoid fixed grey body boxes',
+  'Avoid oversized locked web body heights',
 );
 assert.doesNotMatch(
   featureCardsFourExport,
   /float:\s*left!important/i,
   'Do not use float grids — Outlook Web ignores float for this module',
 );
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /@media only screen and \(min-device-width:\s*641px\)[\s\S]{0,400}?\.feature-card-cell/i,
-  'Do not gate 2-up on min-device-width — Outlook Web may not match it',
-);
-assert.doesNotMatch(
-  featureCardsFourExport,
-  /@media only screen and \(max-width:\s*640px\)[^{]*\{[^}]*feature-card-cell[^}]*display:block!important/i,
-  'Do not use max-width:640 for feature-card stack — Outlook Web laptop panes would restack',
-);
 {
-  const withoutPhoneOverride = featureCardsFourExport.replace(
-    /@media only screen and \(max-device-width:\s*640px\),only screen and \(max-width:\s*480px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
-    '',
-  ).replace(
-    /@media only screen and \(max-device-width:\s*640px\),\s*only screen and \(max-width:\s*480px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
+  const withoutDesktopPromote = featureCardsFourExport.replace(
+    /@media only screen and \(hover:\s*hover\) and \(pointer:\s*fine\) and \(min-width:\s*481px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
     '',
   );
   assert.doesNotMatch(
-    withoutPhoneOverride,
-    /td\.feature-card-cell\{[^}]*display:\s*block!important/i,
-    'Do not restack feature-card cells outside phone media — Outlook Web laptop panes would stack',
+    withoutDesktopPromote,
+    /\.feature-card-solo-wrap\{[^}]*display:inline-block!important/i,
+    'Do not default to 2-up inline-block — Outlook mobile would stay a grid without media',
   );
 }
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
@@ -1427,7 +1403,7 @@ $all('[data-section="true"].columns-equal-class').each((_, section) => {
 assert(
   !/\[if !mso\]/i.test(
     allModulesExport.replace(
-      /<!--\[if !mso\]><!-->\s*<table class="feature-cards-web-grid"[\s\S]*?<!--<!\[endif\]-->\s*<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/gi,
+      /<!--\[if !mso\]><!-->\s*<table class="feature-cards-mobile-stack"[\s\S]*?<!--<!\[endif\]-->\s*<!--\[if mso\]>[\s\S]*?<!\[endif\]-->/gi,
       '',
     ),
   ),

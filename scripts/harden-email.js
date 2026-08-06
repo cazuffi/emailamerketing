@@ -1028,7 +1028,7 @@ function hardenD365Containers($) {
     // Responsive two-up / image-split columns stack via CSS — do not mark
     // layout cells as Dynamics data-container or they pick up fixed widths.
     if ($table.closest('.two-up-text-section, .image-split-text-section, .accent-band').length) return;
-    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-pair') || $table.hasClass('feature-cards-web-grid') || $table.hasClass('feature-cards-mso-grid') || $table.hasClass('feature-cards-desktop-grid')) return;
+    if ($table.hasClass('image-split-layout') || $table.hasClass('accent-band-layout') || $table.hasClass('stats-three-layout') || $table.hasClass('stats-four-layout') || $table.hasClass('three-up-benefits-layout') || $table.hasClass('three-up-products-layout') || $table.hasClass('steps-horizontal-layout') || $table.hasClass('feature-cards-pair') || $table.hasClass('feature-card-solo') || $table.hasClass('feature-cards-mobile-stack') || $table.hasClass('feature-cards-mso-grid') || $table.hasClass('feature-cards-desktop-grid')) return;
     // The known-good D365 header is a plain two-cell table. Marking its cells
     // as designer containers changes their widths during the send transform.
     if ($table.closest('.header-standard-section').length) return;
@@ -1353,10 +1353,35 @@ function hardenFeatureCardsFourColumns($) {
   $('.feature-cards-four-section').each((_, section) => {
     const $section = $(section);
     $section.removeClass('columns-equal-class');
-    // Real <td width="50%"> pairs for OWA (ignores float/div grids). Never add
-    // stack-column — global max-width:640px rules would restack OWA panes.
-    $section.find('table.feature-cards-web-grid').each((__, wrap) => {
-      ensureStyle($(wrap), 'width:100%;border-collapse:collapse;table-layout:fixed');
+    // Mobile-first solo wraps (default stack). No inline display — OWA can
+    // promote via hover/pointer media. Never add stack-column.
+    $section.find('table.feature-cards-mobile-stack').each((__, wrap) => {
+      ensureStyle($(wrap), 'width:100%;border-collapse:collapse');
+    });
+    $section.find('.feature-cards-mobile-stack-cell').each((__, cell) => {
+      ensureStyle($(cell), 'padding:0;font-size:medium;text-align:left');
+    });
+    $section.find('.feature-card-solo-wrap').each((__, wrap) => {
+      const $wrap = $(wrap);
+      const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
+      // Soft stack-first: no display in inline styles (divs default to block).
+      ensureStyle(
+        $wrap,
+        `width:100%;max-width:100%;${isLast ? 'margin:0' : 'margin:0 0 12px'};box-sizing:border-box`,
+      );
+    });
+    $section.find('.feature-cards-clear').each((__, clear) => {
+      ensureStyle($(clear), 'clear:both;display:block;font-size:0;line-height:0;height:0');
+    });
+    $section.find('.feature-card-solo').each((__, table) => {
+      ensureStyle($(table), 'width:100%;border-collapse:collapse');
+      $(table).find('> tbody > tr > td').each((___, cell) => {
+        const $cell = $(cell);
+        $cell.attr('align', 'left');
+        $cell.attr('valign', 'top');
+        $cell.attr('bgcolor', '#f9f9f9');
+        ensureStyle($cell, 'padding:0;vertical-align:top;text-align:left;background-color:#f9f9f9');
+      });
     });
     $section.find('.feature-cards-pair').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse;table-layout:fixed');
@@ -1389,18 +1414,17 @@ function hardenFeatureCardsFourColumns($) {
       $cell.attr('height', '220');
       ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:220px');
     });
-    $section.find('.feature-cards-web-grid .feature-card-body').each((__, cell) => {
+    $section.find('.feature-card-solo .feature-card-body').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
-      // Row equal-height via table layout; no fixed grey box on web.
       ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left');
     });
     $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
       const $el = $(el);
       ensureStyle($el, NEUTRAL_CONTAINER_STYLE);
     });
-    $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"]').each((__, el) => {
+    $section.find('td.feature-card-cell [data-editorblocktype="Text"], .feature-card-stack [data-editorblocktype="Text"], .feature-card-solo [data-editorblocktype="Text"]').each((__, el) => {
       const $el = $(el);
       $el.attr('align', 'left');
       ensureStyle($el, 'display:block;width:100%;max-width:100%;flex:none;text-align:left');
@@ -1414,7 +1438,7 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('td.feature-card-cell h3, .feature-card-body h3').each((__, el) => {
       ensureStyle($(el), 'margin:0 0 8px 0;text-align:left;font-size:15px;line-height:1.35');
     });
-    $section.find('td.feature-card-cell [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle)').each((__, el) => {
+    $section.find('td.feature-card-cell [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle), .feature-card-solo [data-editorblocktype="Text"] > p:not(.feature-card-number):not(.feature-card-subtitle)').each((__, el) => {
       ensureStyle($(el), 'margin:0;text-align:left;font-size:15px;line-height:1.6');
     });
   });
@@ -1563,10 +1587,9 @@ function hardenViewInBrowser($) {
 function flattenOutlookConditionals(html) {
   if (!html || typeof html !== 'string') return html;
   const preserved = [];
-  // Keep feature-cards MSO split: web gets td-width pair grid; Word gets MSO grid.
-  // Anchor on the web-grid table (not the CSS class name in <style>).
+  // Keep feature-cards MSO split: web gets mobile-first solo wraps; Word gets MSO grid.
   let out = html.replace(
-    /<!--\[if !mso\]><!-->(\s*<table class="feature-cards-web-grid"[\s\S]*?)<!--<!\[endif\]-->\s*<!--\[if mso\]>([\s\S]*?feature-cards-mso-grid[\s\S]*?)<!\[endif\]-->/gi,
+    /<!--\[if !mso\]><!-->(\s*<table class="feature-cards-mobile-stack"[\s\S]*?)<!--<!\[endif\]-->\s*<!--\[if mso\]>([\s\S]*?feature-cards-mso-grid[\s\S]*?)<!\[endif\]-->/gi,
     (_, nonMso, mso) => {
       const token = `<!--FEATURE_CARDS_DUAL_${preserved.length}-->`;
       preserved.push(
@@ -1584,7 +1607,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v63';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v64';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
