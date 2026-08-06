@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v60';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v61';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1226,18 +1226,18 @@ assert.doesNotMatch(
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:49%!important/i,
-  'Default must be desktop-first 2-up so Outlook Web laptop panes grid without a media gate',
+  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*float:left!important[^}]*width:49%!important/i,
+  'Default 2-up must use float (not display) so OWA can grid without fighting stack-first inline',
 );
 assert.match(
   featureCardsFourExport,
-  /feature-card-solo-wrap"[^>]*style="[^"]*display:\s*inline-block[^"]*width:\s*49%/i,
-  'Inline styles must be 2-up (v55) — stack-first inline loses in Outlook Web',
+  /feature-card-solo-wrap"[^>]*style="[^"]*display:\s*block[^"]*width:\s*100%/i,
+  'Inline must be stack-first so Outlook mobile stacks when CSS media is weak',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:block!important/i,
-  'Phones must restack via max-device-width only',
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?float:none!important/i,
+  'Phones must cancel float via max-device-width only',
 );
 assert.match(
   featureCardsFourExport,
@@ -1249,10 +1249,20 @@ assert.match(
   /feature-cards-mso-grid[\s\S]*?height:\s*220px/i,
   'Outlook desktop MSO block must fix feature card body height for uniform rows',
 );
+assert.match(
+  featureCardsFourExport,
+  /\.feature-card-solo-wrap \.feature-card-body\{[^}]*height:250px!important/i,
+  'Web solo bodies need fixed height for uniform OWA squares',
+);
+assert.match(
+  featureCardsFourExport,
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap \.feature-card-body[\s\S]*?height:auto!important/i,
+  'Phones must release fixed card body height',
+);
 assert.doesNotMatch(
   featureCardsFourExport,
   /height:284px!important|height:280px!important/i,
-  'Do not lock web solo wraps to fixed heights (empty grey padding)',
+  'Avoid oversized locked heights that leave large empty grey',
 );
 assert.doesNotMatch(
   featureCardsFourExport,
@@ -1261,7 +1271,7 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(
   featureCardsFourExport,
-  /@media only screen and \(min-width:\s*641px\)[\s\S]{0,400}?\.feature-card-solo-wrap[\s\S]{0,120}?display:inline-block!important/i,
+  /@media only screen and \(min-width:\s*641px\)[\s\S]{0,400}?\.feature-card-solo-wrap[\s\S]{0,120}?float:left!important/i,
   'Do not promote via min-width — Outlook mobile fake viewport would stay 2-up',
 );
 {
@@ -1271,8 +1281,8 @@ assert.doesNotMatch(
   );
   assert.doesNotMatch(
     withoutPhoneOverride,
-    /\.feature-card-solo-wrap[^{]*\{[^}]*display:\s*block!important/i,
-    'Do not restack feature cards via max-width — Outlook Web laptop panes would stack',
+    /\.feature-card-solo-wrap[^{]*\{[^}]*float:\s*none!important/i,
+    'Do not cancel float outside phone media — Outlook Web laptop must stay 2-up',
   );
 }
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');

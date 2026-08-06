@@ -1362,12 +1362,15 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('.feature-card-solo-wrap').each((__, wrap) => {
       const $wrap = $(wrap);
       const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
-      // Inline 2-up (same as v55): OWA often won't let stylesheet !important
-      // beat a stack-first inline. Phones restack via max-device-width CSS.
+      // Stack-first inline so Outlook mobile stacks without CSS. OWA 2-up
+      // comes from float:left in stylesheet (avoids fighting inline display).
       ensureStyle(
         $wrap,
-        `display:inline-block;width:49%;max-width:49%;${isLast ? 'margin:0 0.5% 0' : 'margin:0 0.5% 12px'};vertical-align:top;box-sizing:border-box`,
+        `display:block;width:100%;max-width:100%;${isLast ? 'margin:0' : 'margin:0 0 12px'};box-sizing:border-box`,
       );
+    });
+    $section.find('.feature-cards-clear').each((__, clear) => {
+      ensureStyle($(clear), 'clear:both;display:block;font-size:0;line-height:0;height:0');
     });
     $section.find('.feature-card-solo').each((__, table) => {
       ensureStyle($(table), 'width:100%;border-collapse:collapse');
@@ -1403,11 +1406,19 @@ function hardenFeatureCardsFourColumns($) {
       $cell.attr('height', '4');
       ensureStyle($cell, 'height:4px;line-height:4px;font-size:0;padding:0;background-color:#ef7800');
     });
-    $section.find('.feature-card-solo .feature-card-body, .feature-cards-pair .feature-card-body').each((__, cell) => {
+    $section.find('.feature-card-solo .feature-card-body').each((__, cell) => {
       const $cell = $(cell);
       $cell.attr('bgcolor', '#f9f9f9');
       $cell.attr('valign', 'top');
-      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left');
+      $cell.attr('height', '250');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:250px;min-height:250px');
+    });
+    $section.find('.feature-cards-pair .feature-card-body').each((__, cell) => {
+      const $cell = $(cell);
+      $cell.attr('bgcolor', '#f9f9f9');
+      $cell.attr('valign', 'top');
+      $cell.attr('height', '220');
+      ensureStyle($cell, 'background-color:#f9f9f9;padding:16px 18px;vertical-align:top;text-align:left;height:220px');
     });
     $section.find('[data-container="true"], .feature-card-body > div').each((__, el) => {
       const $el = $(el);
@@ -1597,7 +1608,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v60';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v61';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
