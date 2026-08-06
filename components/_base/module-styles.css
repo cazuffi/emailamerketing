@@ -365,55 +365,30 @@ h2.subhead-orange {
   box-sizing: border-box;
 }
 /*
- * v61 dual-client pattern:
- * - Inline is stack-first (display:block;width:100%) so Outlook mobile /
- *   no-CSS clients stack even when max-device-width CSS is weak.
- * - Desktop/OWA 2-up uses float:left + width:49% (no media gate). Float
- *   bypasses OWA refusing to override inline display with stylesheet
- *   display:!important (the v55/v59 trap).
- * - Phones cancel float via max-device-width only.
- * - Fixed body height keeps OWA squares uniform; reset on phone.
+ * v62 (Copilot / OWA-aligned):
+ * - Web path uses real <td width="50%"> pair tables — OWA honors HTML table
+ *   widths and ignores float/div grids.
+ * - Do NOT use .stack-column here: global max-width:640px stack rules would
+ *   restack OWA laptop reading panes.
+ * - Phones restack via max-device-width only (device-width ~390 on phones).
+ * - Table rows give equal card heights in OWA without fixed grey boxes.
  */
-.feature-cards-four-section .feature-cards-mobile-stack {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
-}
-.feature-cards-four-section .feature-cards-mobile-stack-cell {
-  font-size: 0;
-}
-.feature-cards-four-section .feature-card-solo-wrap {
-  float: left;
-  width: 49%;
-  max-width: 49%;
-  margin: 0 0.5% 12px;
-  box-sizing: border-box;
-  font-size: 15px;
-}
-.feature-cards-four-section .feature-cards-mobile-stack-cell > .feature-card-solo-wrap:nth-child(3),
-.feature-cards-four-section .feature-cards-mobile-stack-cell > .feature-card-solo-wrap:nth-child(4) {
-  margin-bottom: 0;
-}
-.feature-cards-four-section .feature-cards-clear {
-  clear: both;
-  display: block;
-  font-size: 0;
-  line-height: 0;
-  height: 0;
-}
-.feature-cards-four-section .feature-card-solo {
-  width: 100%;
-  border-collapse: collapse;
-}
-.feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
-  height: 250px;
-  min-height: 250px;
-  vertical-align: top;
-}
+.feature-cards-four-section .feature-cards-web-grid,
 .feature-cards-four-section .feature-cards-pair {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+}
+.feature-cards-four-section .feature-cards-pair tr.feature-cards-pair-row {
+  display: table-row;
+}
+.feature-cards-four-section .feature-cards-web-grid td.feature-card-cell,
+.feature-cards-four-section .feature-cards-pair td.feature-card-cell {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+  text-align: left;
+  box-sizing: border-box;
 }
 .feature-cards-four-section .feature-card-body [data-container="true"],
 .feature-cards-four-section .feature-card-body > div {
@@ -423,23 +398,29 @@ h2.subhead-orange {
   flex: none !important;
 }
 @media only screen and (max-device-width: 640px) {
-  .feature-cards-four-section .feature-cards-mobile-stack-cell {
-    font-size: medium !important;
-  }
-  .feature-cards-four-section .feature-card-solo-wrap {
-    float: none !important;
+  .feature-cards-four-section .feature-cards-web-grid,
+  .feature-cards-four-section .feature-cards-web-grid tbody,
+  .feature-cards-four-section .feature-cards-pair,
+  .feature-cards-four-section .feature-cards-pair tbody,
+  .feature-cards-four-section .feature-cards-pair tr.feature-cards-pair-row {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 0 12px !important;
-    font-size: 15px !important;
   }
-  .feature-cards-four-section .feature-cards-mobile-stack-cell > .feature-card-solo-wrap:nth-child(4) {
-    margin-bottom: 0 !important;
+  .feature-cards-four-section .feature-cards-web-grid td.feature-card-cell,
+  .feature-cards-four-section .feature-cards-pair td.feature-card-cell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
   }
-  .feature-cards-four-section .feature-card-solo-wrap .feature-card-body {
-    min-height: 0 !important;
-    height: auto !important;
+  .feature-cards-four-section .feature-cards-pair td.feature-card-cell {
+    padding-bottom: 12px !important;
+  }
+  .feature-cards-four-section .feature-cards-pair:last-child td.feature-card-cell:last-child {
+    padding-bottom: 0 !important;
   }
 }
 
