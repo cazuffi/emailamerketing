@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v58';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v59';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1226,13 +1226,13 @@ assert.doesNotMatch(
 );
 assert.match(
   featureCardsFourExport,
-  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:block!important[^}]*width:100%!important/i,
-  'Default must be stacked solos for Outlook mobile',
+  /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:49%!important/i,
+  'Default must be desktop-first 2-up so Outlook Web laptop panes grid without a media gate',
 );
 assert.match(
   featureCardsFourExport,
-  /@media only screen and \(min-device-width:\s*641px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:inline-block!important/i,
-  'OWA/Gmail desktop must promote to 2-up via min-device-width (not min-width)',
+  /@media only screen and \(max-device-width:\s*640px\)[\s\S]*?\.feature-card-solo-wrap[\s\S]*?display:block!important/i,
+  'Phones must restack via max-device-width only',
 );
 assert.match(
   featureCardsFourExport,
@@ -1251,9 +1251,25 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(
   featureCardsFourExport,
+  /@media only screen and \(min-device-width:\s*641px\)[\s\S]{0,400}?\.feature-card-solo-wrap/i,
+  'Do not gate 2-up on min-device-width — Outlook Web may not match it',
+);
+assert.doesNotMatch(
+  featureCardsFourExport,
   /@media only screen and \(min-width:\s*641px\)[\s\S]{0,400}?\.feature-card-solo-wrap[\s\S]{0,120}?display:inline-block!important/i,
   'Do not promote via min-width — Outlook mobile fake viewport would stay 2-up',
 );
+{
+  const withoutPhoneOverride = featureCardsFourExport.replace(
+    /@media only screen and \(max-device-width:\s*640px\)\s*\{(?:[^{}]|\{[^{}]*\})*\}/gi,
+    '',
+  );
+  assert.doesNotMatch(
+    withoutPhoneOverride,
+    /\.feature-card-solo-wrap[^{]*\{[^}]*display:\s*block!important/i,
+    'Do not restack feature cards via max-width — Outlook Web laptop panes would stack',
+  );
+}
 assert.doesNotMatch($featureCardsFour('.feature-cards-four-section').html() || '', /tbContainer multi/i, 'Feature cards must not use Dynamics editable-column table');
 
 const threeUpProductsExport = buildEmailHtml({
