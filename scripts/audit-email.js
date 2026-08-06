@@ -14,7 +14,7 @@ const {
   removeMediaQueriesFromCss,
 } = require('./preview-sample');
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v59';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v60';
 const { GMAIL_CLIP_BYTES, GMAIL_CLIP_SAFE_BYTES } = require('./prune-css');
 
 const options = {
@@ -1228,6 +1228,11 @@ assert.match(
   featureCardsFourExport,
   /\.feature-cards-four-section \.feature-card-solo-wrap\{[^}]*display:inline-block!important[^}]*width:49%!important/i,
   'Default must be desktop-first 2-up so Outlook Web laptop panes grid without a media gate',
+);
+assert.match(
+  featureCardsFourExport,
+  /feature-card-solo-wrap"[^>]*style="[^"]*display:\s*inline-block[^"]*width:\s*49%/i,
+  'Inline styles must be 2-up (v55) — stack-first inline loses in Outlook Web',
 );
 assert.match(
   featureCardsFourExport,
