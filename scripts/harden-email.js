@@ -1362,11 +1362,11 @@ function hardenFeatureCardsFourColumns($) {
     $section.find('.feature-card-solo-wrap').each((__, wrap) => {
       const $wrap = $(wrap);
       const isLast = $wrap.parent().children('.feature-card-solo-wrap').last().is($wrap);
-      // Inline stack-first so Outlook mobile stays one-per-row when stylesheets
-      // are weak. CSS !important promotes to 2-up for OWA/Gmail desktop.
+      // Inline 2-up (same as v55): OWA often won't let stylesheet !important
+      // beat a stack-first inline. Phones restack via max-device-width CSS.
       ensureStyle(
         $wrap,
-        `display:block;width:100%;max-width:100%;${isLast ? 'margin:0' : 'margin:0 0 12px 0'};vertical-align:top;box-sizing:border-box`,
+        `display:inline-block;width:49%;max-width:49%;${isLast ? 'margin:0 0.5% 0' : 'margin:0 0.5% 12px'};vertical-align:top;box-sizing:border-box`,
       );
     });
     $section.find('.feature-card-solo').each((__, table) => {
@@ -1597,7 +1597,7 @@ function flattenOutlookConditionals(html) {
   return out;
 }
 
-const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v59';
+const BUILD_MARKER = 'email-marketing/2.0.0+d365-send-compat+css-prune+gmail-dynamics-v60';
 
 function sanitizeExportHtml(html) {
   if (!html || typeof html !== 'string') return html;
